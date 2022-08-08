@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(originbot_bringup)
+project(originbot_base)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -25,12 +25,24 @@ find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(serial REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-install(
-  DIRECTORY launch config
-  DESTINATION share/${PROJECT_NAME}
-)
+include_directories(
+  ${PROJECT_SOURCE_DIR}/
+  ${PROJECT_SOURCE_DIR}/include
+  )
+
+file(GLOB_RECURSE HEADERFILES
+  ${PROJECT_SOURCE_DIR}/include/*.h
+  )
+
+add_executable(originbot_base src/originbot_base.cpp)
+ament_target_dependencies(originbot_base rclcpp nav_msgs sensor_msgs geometry_msgs serial tf2_ros)
+
+install(TARGETS
+  originbot_base
+  DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

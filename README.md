@@ -4,7 +4,7 @@
 OriginBot智能机器人开源套件
 
 #### 软件架构
-
+- originbot_base：机器人底盘驱动
 - originbot_bringup：机器人启动相关的脚本和文件
 - originbot_description：机器人模型及加载脚本
 - originbot_navigation：机器人定位与导航相关的脚本和配置文件
