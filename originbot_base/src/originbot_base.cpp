@@ -76,7 +76,7 @@ void originbot_driver::driver_loop()
             else
                 speed[1] = sensor_data_raw_[6] * -1.0 / 100.0;
 
-            // ??
+            // 在原地旋转时减小误差
             if (abs(speed[0] + speed[1]) <= 0.03 && speed[0] * speed[1] < 0)
             {
                 if (speed[0] > 0)
