@@ -6,6 +6,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+    
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -13,6 +14,7 @@ def generate_launch_description():
         # arguments=['-d', rviz_config_dir],
         parameters=[{'use_sim_time': use_sim_time}],
         output='screen')
+        
     gmapping_node=Node(
     	package='slam_gmapping',
     	node_executable='slam_gmapping', 
