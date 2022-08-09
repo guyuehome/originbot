@@ -19,12 +19,6 @@ def generate_launch_description():
             on_exit=launch.actions.Shutdown(),
             condition=launch.conditions.IfCondition(
                 launch.substitutions.LaunchConfiguration('open_rviz'))),
-        launch_ros.actions.Node(
-            package='tf2_ros',
-            node_executable='static_transform_publisher',
-            name='base_link_to_imu',
-            arguments="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /imu_link".split(
-                ' ')),
 
         launch.actions.IncludeLaunchDescription(
             launch.launch_description_sources.PythonLaunchDescriptionSource(

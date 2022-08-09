@@ -23,8 +23,17 @@ def generate_launch_description():
                 'port_name': LaunchConfiguration('port_name'), 
         }])
 
+    originbot_imu_tf = Node(
+        package='tf2_ros',
+        node_executable='static_transform_publisher', 
+
+        emulate_tty=True,
+        arguments="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /imu_link".split(
+                ' '))
+        
     return LaunchDescription([
         # use_sim_time_arg,
         port_name_arg,
-        originbot_base_node
+        originbot_base_node,
+        originbot_imu_tf
     ])
