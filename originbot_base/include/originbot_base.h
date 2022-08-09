@@ -92,7 +92,7 @@ private:
     rclcpp::TimerBase::SharedPtr imu_timer_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
-    rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr status_publisher_;
+    rclcpp::Publisher<originbot_msgs::msg::OriginbotStatus>::SharedPtr status_publisher_;
 
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
