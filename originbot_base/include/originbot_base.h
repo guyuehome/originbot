@@ -4,6 +4,7 @@
 #include <cstring>
 #include <string>
 #include <cmath>
+#include <thread>
 #include <algorithm>
 #include <serial/serial.h>
 
@@ -20,41 +21,71 @@ using std::placeholders::_1;
 
 #define ORIGINBOT_WHEEL_TRACK (0.1)
 
-typedef struct _RECEIVE_DATA_
-{
-    uint8_t rx[9];              //定义长度
-    uint8_t flag_stop;          //标识位
-    unsigned char frame_header; //帧头
-    float left_dirct;           //左电机速度方向
-    float left_speed;           //左电机速度
-    float right_dirct;          //右电机速度方向
-    float right_speed;          //右电机速度
-    unsigned char flag_test;    //校验位
-    unsigned char frame_tail;   //帧尾
-} RECEIVE_DATA;
+// originbot protocol data format
+typedef struct {
+    uint8_t header;
+    uint8_t id;
+    uint8_t length;
+    uint8_t data[6];
+    uint8_t check;
+    uint8_t tail;
+} DataFrame;
 
-class originbot_driver : public rclcpp::Node
+typedef struct {
+    float acceleration_x;
+    float acceleration_y;
+    float acceleration_z;
+    float angular_x;
+    float angular_y;
+    float angular_z;
+    float roll;
+    float pitch;
+    float yaw;
+} DataImu;
+
+enum {
+    FRAME_ID_MOTION       = 0x01,
+    FRAME_ID_VELOCITY     = 0x02,
+    FRAME_ID_ACCELERATION = 0x03,
+    FRAME_ID_ANGULAR      = 0x04,
+    FRAME_ID_EULER        = 0x05,
+    FRAME_ID_SENSOR       = 0x06,
+    FRAME_ID_HMI          = 0x07,
+};
+
+class OriginbotBase : public rclcpp::Node
 {
 public:
-    originbot_driver();
-    ~originbot_driver();
+    OriginbotBase(std::string nodeName);
+    ~OriginbotBase();
 
     void driver_loop();
     
 private:
-    bool get_sensor_data();
-    int  find_data(uint8_t ar[], int n, int element);
-    float imu_conversion(uint8_t data_high, uint8_t data_low);
+    void readRawData();
+    bool checkDataFrame(DataFrame &frame);
+    void processDataFrame(DataFrame &frame);
+
+    void processVelocityData(DataFrame &frame);
+    void processAngularData(DataFrame &frame);
+    void processAccelerationData(DataFrame &frame);
+    void processEulerData(DataFrame &frame);
+    void processSensorData(DataFrame &frame);
+
+    double imu_conversion(uint8_t data_high, uint8_t data_low);
+    double degToRad(double deg);
 
     void odom_publisher(float vx, float vth);
-    void imu_publisher(float linear_acceleration[3], float angular_velocity[3], float euler[3]);
+    void imu_publisher();
     void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
 
 private:
     serial::Serial serial_;
-    rclcpp::Time current_time_, last_time_;
-    float x_, y_, th_;
-    uint8_t sensor_data_raw_[53];
+    rclcpp::Time current_time_;
+    float odom_x_=0.0, odom_y_=0.0, odom_th_=0.0;
+    
+    std::shared_ptr<std::thread> read_data_thread_;
+    DataImu imuData_;
 
     rclcpp::TimerBase::SharedPtr odom_timer_;
     rclcpp::TimerBase::SharedPtr imu_timer_;

@@ -1,158 +1,241 @@
-#include "originbot_driver.h"
+#include "originbot_base.h"
 
-originbot_driver::originbot_driver() : Node("originbot_driver")
+OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 {
+    // 加载参数
     std::string port_name="ttyUSB0";    
     this->declare_parameter("port_name");   //声明参数
     this->get_parameter_or<std::string>("port_name", port_name, "ttyUSB0");//获取参数
-    std::cout << "Loading parameters: " << std::endl;
-    std::cout << "- port name: " << port_name << std::endl;
+    printf("Loading parameters: \n - port name: %s\n", port_name.c_str()); 
 
     // 创建里程计、IMU的发布者、速度指令的订阅者和TF广播器
     odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
     imu_publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
-    cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&originbot_driver::cmd_vel_callback, this, _1));
+    cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
-
-    // 初始化机器人的初始位置
-    x_ = 0;
-    y_ = 0;
-    th_= 0;
 
     // 控制器与扩展驱动板卡的串口配置与通信
     try
     {
-        ///尝试初始化与开启串口
-        serial_.setPort("/dev/" + port_name);                     //选择要开启的串口号
-        serial_.setBaudrate(115200);                              //设置波特率
-        serial_.setTimeout(serial::Timeout::simpleTimeout(2000)); //超时等待
-        serial_.open();                                           //开启串口
+        serial_.setPort("/dev/" + port_name);                            //选择要开启的串口号
+        serial_.setBaudrate(115200);                                     //设置波特率
+        serial::Timeout timeOut = serial::Timeout::simpleTimeout(2000);  //超时等待
+        serial_.setTimeout(timeOut);                                     
+        serial_.open();                                                  //开启串口
     }
     catch (serial::IOException &e)
     {
         RCLCPP_ERROR(this->get_logger(), "originbot can not open serial port,Please check the serial port cable! "); //如果开启串口失败，打印错误信息
     }
 
+    // 如果串口打开，则驱动读取数据的线程
     if (serial_.isOpen())
     {
         RCLCPP_INFO(this->get_logger(), "originbot serial port opened"); //串口开启成功提示
+
+        read_data_thread_ = std::shared_ptr<std::thread>(
+            new std::thread(std::bind(&OriginbotBase::readRawData, this)));
     }
 
-    // 启动定时器，按照固定频率更新里程计和IMU的话题
-    odom_timer_ = this->create_wall_timer(50ms, std::bind(&originbot_driver::odom_publisher, this));
-    imu_timer_  = this->create_wall_timer(50ms, std::bind(&originbot_driver::imu_publisher, this));
+    RCLCPP_INFO(this->get_logger(), "originbot Start ...");
 }
 
-originbot_driver::~originbot_driver()
+OriginbotBase::~OriginbotBase()
 {
     serial_.close();
 }
 
-void originbot_driver::driver_loop()
+void OriginbotBase::readRawData()
 {
-    float speed[2] = {0.0, 0.0};
-    float vx = 0, vth = 0;
-    float delta_th = 0, delta_x = 0, delta_y = 0, vth = 0;
-    float linear_acceleration[3] = {0.0}, angular_velocity[3] = {0.0}, euler[3] = {0.0};
+    uint8_t rx_data = 0;
+    DataFrame frame;
 
-    last_time_ = this->now();
-    while (rclcpp::ok())
+    while (rclcpp::ok()) 
     {
-        float dt = (current_time_.seconds() - last_time_.seconds());
-        current_time_ = this->now();
-
-        if (get_sensor_data())
+        auto len = serial_.read(&rx_data, 1);
+        if (len < 1)
+            continue;
+        
+        // 发现帧头
+        if(rx_data == 0x55)
         {
-            RCLCPP_INFO(this->get_logger(), "Update data successful");
+            // 读取完整的数据帧
+            serial_.read(&frame.id, 10);
 
-            // 获取机器人两侧轮子的速度，单位m/s
-            if (sensor_data_raw_[3] == 0xFF)
-                speed[0] = 1.0 * sensor_data_raw_[4] / 100.0;
-            else
-                speed[0] = sensor_data_raw_[4] * -1.0 / 100.0;
-
-            if (sensor_data_raw_[5] == 0xFF)
-                speed[1] = 1.0 * sensor_data_raw_[6] / 100.0;
-            else
-                speed[1] = sensor_data_raw_[6] * -1.0 / 100.0;
-
-            // 在原地旋转时减小误差
-            if (abs(speed[0] + speed[1]) <= 0.03 && speed[0] * speed[1] < 0)
+            // 判断帧尾是否正确
+            if(frame.tail != 0xbb)
             {
-                if (speed[0] > 0)
-                    speed[1] = -1.0 * speed[0];
-                else
-                    speed[0] = -1.0 * speed[1];
+                RCLCPP_WARN(this->get_logger(), "Data frame tail error!"); 
+                printf("Frame raw data[Error]: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
+                        frame.header, frame.id, frame.length, frame.data[0], frame.data[1], frame.data[2], 
+                        frame.data[3], frame.data[4], frame.data[5], frame.check, frame.tail);
+                continue;
             }
 
-            // 通过两侧轮子的速度，计算机器人整体的线速度和角速度
-            vx  = (speed[0] + speed[1]) / 2;
-            vth = (speed[1] - speed[0]) / ORIGINBOT_WHEEL_TRACK;
-            // if (vth < -1)
-            //     vth = -1;
-            // if (vth > 1)
-            //     vth = 1;
-            RCLCPP_INFO(this->get_logger(), "dt=%f 左轮速度=%f 右轮速度=%f 线速度=%f 角速度=%f", dt, speed[0], speed[1], vx, vth);
+            frame.header = 0x55;
+            
+            //帧校验
+            if(checkDataFrame(frame))
+            {
+                // printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
+                //         frame.header, frame.id, frame.length, frame.data[0], frame.data[1], frame.data[2], 
+                //         frame.data[3], frame.data[4], frame.data[5], frame.check, frame.tail);
 
-            // 里程计的微分量计算
-            delta_x = vx * cos(th_) * dt;
-            delta_y = vx * sin(th_) * dt;
-            delta_th = vth * dt;
-
-            // 里程积分计算
-            x_ = x_ + delta_x;
-            y_ = y_ + delta_y;
-            th_ = th_ + delta_th;
-            //  if(th_>3.1415926) th_-=3.1415926*2;
-            //  if(th_<-3.1415926) th_+=3.1415926*2;
-
-            RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", x_, y_, th_, delta_x, delta_y, delta_th);
-
-            odom_publisher(vx, vth);
-
-            // 获取机器人IMU的数据
-            // linear_acceleration[0]=imu_conversion(sensor_data_raw_[13],sensor_data_raw_[12])/1671.84;
-            // linear_acceleration[1]=imu_conversion(sensor_data_raw_[15],sensor_data_raw_[14])/1671.84;
-            // linear_acceleration[2]=imu_conversion(sensor_data_raw_[17],sensor_data_raw_[16])/1671.84;
-            // angular_velocity[0]=imu_conversion(sensor_data_raw_[24],sensor_data_raw_[23])*0.00026644;
-            // angular_velocity[1]=imu_conversion(sensor_data_raw_[26],sensor_data_raw_[25])*0.00026644;
-            // angular_velocity[2]=imu_conversion(sensor_data_raw_[28],sensor_data_raw_[27])*0.00026644;
-            // euler[0]=imu_conversion(sensor_data_raw_[35],sensor_data_raw_[34]);
-            // euler[1]=imu_conversion(sensor_data_raw_[37],sensor_data_raw_[36]);
-            // euler[2]=imu_conversion(sensor_data_raw_[39],sensor_data_raw_[38]);
-            linear_acceleration[0] = imu_conversion(sensor_data_raw_[12], sensor_data_raw_[13]) / 1671.84;
-            linear_acceleration[1] = imu_conversion(sensor_data_raw_[14], sensor_data_raw_[15]) / 1671.84;
-            linear_acceleration[2] = imu_conversion(sensor_data_raw_[16], sensor_data_raw_[17]) / 1671.84;
-            angular_velocity[0] = imu_conversion(sensor_data_raw_[23], sensor_data_raw_[24]) * 0.00026644;
-            angular_velocity[1] = imu_conversion(sensor_data_raw_[25], sensor_data_raw_[26]) * 0.00026644;
-            angular_velocity[2] = imu_conversion(sensor_data_raw_[27], sensor_data_raw_[28]) * 0.00026644;
-            euler[0] = imu_conversion(sensor_data_raw_[34], sensor_data_raw_[35]) * 0.00026644;
-            euler[1] = imu_conversion(sensor_data_raw_[36], sensor_data_raw_[37]) * 0.00026644;
-            euler[2] = imu_conversion(sensor_data_raw_[38], sensor_data_raw_[39]) * 0.00026644;
-            // RCLCPP_INFO(this->get_logger(), "二进制下imu数据 %f %f %f %f %f %f %f %f %f ",linear_acceleration[0],linear_acceleration[1],linear_acceleration[2],angular_velocity[0],angular_velocity[1],angular_velocity[2],euler[0],euler[1],euler[2]);
-
-            imu_publisher(linear_acceleration, angular_velocity, euler);
-
-            last_time_ = current_time_;
+                //处理帧数据
+                processDataFrame(frame);
+            }
+            else
+            {
+                RCLCPP_WARN(this->get_logger(), "Data frame check failed!"); 
+            }
         }
-
-        rclcpp::spin_some(shared_from_this());
     }
 }
 
-void originbot_driver::odom_publisher(float vx, float vth)
+bool OriginbotBase::checkDataFrame(DataFrame &frame)
+{    
+    if(((frame.data[0] + frame.data[1] + frame.data[2] + 
+        frame.data[3] + frame.data[4] + frame.data[5]) & 0xff) == frame.check)
+        return true;
+    else
+        return false;
+}
+
+void OriginbotBase::processDataFrame(DataFrame &frame)
+{
+    switch(frame.id)
+    {
+    case FRAME_ID_VELOCITY:
+        processVelocityData(frame);
+        break;
+    case FRAME_ID_ACCELERATION:
+        processAccelerationData(frame);
+        break;
+    case FRAME_ID_ANGULAR:
+        processAngularData(frame);
+        break;
+    case FRAME_ID_EULER:
+        processEulerData(frame);
+        break;
+    case FRAME_ID_SENSOR:
+        processSensorData(frame);
+        break;
+    default:
+        RCLCPP_ERROR(this->get_logger(), "Frame ID Error[%d]", frame.id);
+        break;
+    }
+}
+
+void OriginbotBase::processVelocityData(DataFrame &frame)
+{
+    RCLCPP_INFO(this->get_logger(), "Process velocity data");
+
+    float left_speed = 0.0, right_speed = 0.0;
+    float vx = 0.0, vth = 0.0;
+    float delta_th = 0.0, delta_x = 0.0, delta_y = 0.0;
+
+    static rclcpp::Time last_time_ = this->now();
+    current_time_ = this->now();
+
+    float dt = (current_time_.seconds() - last_time_.seconds());
+    last_time_ = current_time_;    
+
+    // 获取机器人两侧轮子的速度，单位mm/s --> m/s
+    uint16_t dataTemp = frame.data[2];
+    float speedTemp = (float)((dataTemp << 8) | frame.data[1]);
+    if (frame.data[0] == 0)
+        left_speed = -1.0 * speedTemp / 1000.0;
+    else
+        left_speed = speedTemp / 1000.0;
+
+    dataTemp = frame.data[5];
+    speedTemp = (float)((dataTemp << 8) | frame.data[4]);
+    if (frame.data[3] == 0)
+        right_speed = -1.0 * speedTemp / 1000.0;
+    else
+        right_speed = speedTemp / 1000.0;
+
+    // 通过两侧轮子的速度，计算机器人整体的线速度和角速度
+    vx  = (left_speed  + right_speed) / 2;                    //m/s
+    vth = (right_speed - left_speed) / ORIGINBOT_WHEEL_TRACK; //rad/s
+
+    RCLCPP_INFO(this->get_logger(), "dt=%f left_speed=%f right_speed=%f vx=%f vth=%f", dt, left_speed, right_speed, vx, vth);
+
+    // 里程计的微分量计算
+    delta_x = vx * cos(odom_th_) * dt;
+    delta_y = vx * sin(odom_th_) * dt;
+    delta_th = vth * dt;
+
+    // 里程积分计算
+    odom_x_  += delta_x;
+    odom_y_  += delta_y;
+    odom_th_ += delta_th;
+    
+    // 校正姿态角度，让机器人处于-180~180度之间
+    if(odom_th_ > M_PI) 
+        odom_th_ -= M_PI*2;
+    else if(odom_th_ < (-M_PI)) 
+        odom_th_ += M_PI*2;
+
+    RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
+
+    odom_publisher(vx, vth);    
+}
+
+double OriginbotBase::degToRad(double deg) 
+{
+    return deg / 180.0 * M_PI;
+}
+
+void OriginbotBase::processAccelerationData(DataFrame &frame)
+{
+    RCLCPP_INFO(this->get_logger(), "Process acceleration data");
+
+    imuData_.acceleration_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * 16 * 9.8;
+    imuData_.acceleration_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * 16 * 9.8;
+    imuData_.acceleration_z = imu_conversion(frame.data[5], frame.data[4]) / 32768 * 16 * 9.8;
+}
+
+void OriginbotBase::processAngularData(DataFrame &frame)
+{
+    RCLCPP_INFO(this->get_logger(), "Process angular data");
+
+    imuData_.angular_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(2000);
+    imuData_.angular_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(2000);
+    imuData_.angular_z = imu_conversion(frame.data[5], frame.data[4]) / 32768 * degToRad(2000);
+}
+
+void OriginbotBase::processEulerData(DataFrame &frame)
+{
+    RCLCPP_INFO(this->get_logger(), "Process euler data");
+
+    imuData_.roll  = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(180);
+    imuData_.pitch = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(180);
+    imuData_.yaw   = imu_conversion(frame.data[5], frame.data[4]) / 32768 * degToRad(180);
+
+    imu_publisher();
+}
+
+void OriginbotBase::processSensorData(DataFrame &frame)
+{
+    RCLCPP_INFO(this->get_logger(), "Process sensor data");
+
+    frame = frame;
+}
+
+void OriginbotBase::odom_publisher(float vx, float vth)
 {
     auto odom_msg = nav_msgs::msg::Odometry();
 
     //里程数据计算
     odom_msg.header.frame_id = "odom";
     odom_msg.header.stamp = this->get_clock()->now();
-    odom_msg.pose.pose.position.x = x_;
-    odom_msg.pose.pose.position.y = y_;
+    odom_msg.pose.pose.position.x = odom_x_;
+    odom_msg.pose.pose.position.y = odom_y_;
     odom_msg.pose.pose.position.z = 0;
 
     tf2::Quaternion q;
-    q.setRPY(0, 0, th_);
+    q.setRPY(0, 0, odom_th_);
     odom_msg.child_frame_id = "base_link";
     odom_msg.pose.pose.orientation.x = q[0];
     odom_msg.pose.pose.orientation.y = q[1];
@@ -169,6 +252,12 @@ void originbot_driver::odom_publisher(float vx, float vth)
                                              0, 0, 0, 0, 1e6, 0,
 
                                              0, 0, 0, 0, 0, 1e-9};
+    const double odom_pose_covariance2[36]= {1e-9,    0,    0,   0,   0,    0,
+										      0, 1e-3, 1e-9,   0,   0,    0,
+										      0,    0,  1e6,   0,   0,    0,
+										      0,    0,    0, 1e6,   0,    0,
+										      0,    0,    0,   0, 1e6,    0,
+										      0,    0,    0,   0,   0, 1e-9 };
 
     odom_msg.twist.twist.linear.x = vx;
     odom_msg.twist.twist.linear.y = 0.00;
@@ -188,6 +277,13 @@ void originbot_driver::odom_publisher(float vx, float vth)
                                               0, 0, 0, 0, 1e6, 0,
 
                                               0, 0, 0, 0, 0, 1e-9};
+    const double odom_twist_covariance2[36] = {1e-9,    0,    0,   0,   0,    0, 
+                                        0, 1e-3, 1e-9,   0,   0,    0,
+                                        0,    0,  1e6,   0,   0,    0,
+                                        0,    0,    0, 1e6,   0,    0,
+                                        0,    0,    0,   0, 1e6,    0,
+                                        0,    0,    0,   0,   0, 1e-9};
+
     // RCLCPP_INFO(this->get_logger(), "%f %f %f",x,y,th);
 
     if (vx == 0 && vth == 0)
@@ -205,8 +301,8 @@ void originbot_driver::odom_publisher(float vx, float vth)
     t.header.frame_id = "odom";
     t.child_frame_id  = "base_link";
 
-    t.transform.translation.x = x_;
-    t.transform.translation.y = y_;
+    t.transform.translation.x = odom_x_;
+    t.transform.translation.y = odom_y_;
     t.transform.translation.z = 0.0;
 
     t.transform.rotation.x = q[0];
@@ -217,23 +313,23 @@ void originbot_driver::odom_publisher(float vx, float vth)
     tf_broadcaster_->sendTransform(t);
 }
 
-void originbot_driver::imu_publisher(float linear_acceleration[3], float angular_velocity[3], float euler[3])
+void OriginbotBase::imu_publisher()
 {
     auto imu_msg = sensor_msgs::msg::Imu();
 
     imu_msg.header.frame_id = "imu_link";
     imu_msg.header.stamp = this->get_clock()->now();
 
-    imu_msg.linear_acceleration.x = linear_acceleration[0];
-    imu_msg.linear_acceleration.y = linear_acceleration[1];
-    imu_msg.linear_acceleration.z = linear_acceleration[2];
+    imu_msg.linear_acceleration.x = imuData_.acceleration_x;
+    imu_msg.linear_acceleration.y = imuData_.acceleration_y;
+    imu_msg.linear_acceleration.z = imuData_.acceleration_z;
 
-    imu_msg.angular_velocity.x = angular_velocity[0];
-    imu_msg.angular_velocity.y = angular_velocity[1];
-    imu_msg.angular_velocity.z = angular_velocity[2];
+    imu_msg.angular_velocity.x = imuData_.angular_x;
+    imu_msg.angular_velocity.y = imuData_.angular_y;
+    imu_msg.angular_velocity.z = imuData_.angular_z;
 
     tf2::Quaternion q;
-    q.setRPY(euler[0], euler[1], euler[2]);
+    q.setRPY(imuData_.roll, imuData_.pitch, imuData_.yaw);
 
     imu_msg.orientation.x = q[0];
     imu_msg.orientation.y = q[1];
@@ -246,15 +342,13 @@ void originbot_driver::imu_publisher(float linear_acceleration[3], float angular
 
     imu_msg.orientation_covariance = {0.0025, 0.0000, 0.0000, 0.0000, 0.0025, 0.0000, 0.0000, 0.0000, 0.0025};
 
-    // RCLCPP_INFO(this->get_logger(), "Imu Data Publish.");
+    RCLCPP_INFO(this->get_logger(), "Imu Data Publish.");
     imu_publisher_->publish(imu_msg);
 }
 
-void originbot_driver::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
+void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
-    int left_motor_speed = 0, right_motor_speed = 0;
-
-    int leftFlag = 0xff, rightFlag = 0xff;
+    DataFrame cmdFrame;
     float leftSpeed = 0.0, rightSpeed = 0.0;
 
     float x_linear = msg->linear.x;
@@ -277,27 +371,33 @@ void originbot_driver::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedP
         rightSpeed = x_linear + z_angular * ORIGINBOT_WHEEL_TRACK / 2.0;
     }
 
-    RCLCPP_INFO(this->get_logger(), "leftSpeed = '%f'   rightSpeed = '%f'", leftSpeed * 100, rightSpeed * 100);
+    RCLCPP_INFO(this->get_logger(), "leftSpeed = '%f' rightSpeed = '%f'", leftSpeed * 100, rightSpeed * 100);
 
     if (leftSpeed < 0)
-        leftFlag = 0x00;
+        cmdFrame.data[0] = 0x00;
     else
-        leftFlag = 0xff;
-    left_motor_speed = int(abs(leftSpeed) * 100); //速度值从m/s变为cm/s
+        cmdFrame.data[0] = 0xff;
+    cmdFrame.data[1] = int(abs(leftSpeed) * 1000) & 0xff;         //速度值从m/s变为mm/s
+    cmdFrame.data[2] = (int(abs(leftSpeed) * 1000) >> 8) & 0xff;
 
     if (rightSpeed < 0)
-        rightFlag = 0x00;
+        cmdFrame.data[3] = 0x00;
     else
-        rightFlag = 0xff;
-    right_motor_speed = int(abs(rightSpeed) * 100);
+        cmdFrame.data[3] = 0xff;
+    cmdFrame.data[4] = int(abs(rightSpeed) * 1000) & 0xff;        //速度值从m/s变为mm/s
+    cmdFrame.data[5] = (int(abs(rightSpeed) * 1000) >> 8) & 0xff;
 
-    int dataCheck = (leftFlag + left_motor_speed + rightFlag + right_motor_speed) & 0xff;
+    cmdFrame.check = (cmdFrame.data[0] + cmdFrame.data[1] + cmdFrame.data[2] + 
+                      cmdFrame.data[3] + cmdFrame.data[4] + cmdFrame.data[5]) & 0xff;
 
     //一组数据
-    uint8_t data[9] = {0x55, 0x01, 0x04, leftFlag, left_motor_speed, rightFlag, right_motor_speed, dataCheck, 0xbb};
+    cmdFrame.header = 0x55;
+    cmdFrame.id     = 0x01;
+    cmdFrame.length = 0x06;
+    cmdFrame.tail   = 0xbb;
     try
     {
-        serial_.write(data, sizeof(data)); //向串口发数据，发送时int转bytes
+        serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
     }
 
     catch (serial::IOException &e)
@@ -306,22 +406,7 @@ void originbot_driver::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedP
     }
 }
 
-int originbot_driver::find_data(uint8_t ar[], int n, int element) //查找元素并返回位置下标,find(数组，长度，元素)
-{
-    int i = 0;
-    int index = -1; //原始下标，没找到元素返回-1
-
-    for (i = 0; i < n; i++)
-    {
-        if (element == ar[i] && ar[i + 1] == 0x02)
-        {
-            index = i;    //记录元素下标
-            return index; //返回下标
-        }
-    }
-}
-
-float originbot_driver::imu_conversion(uint8_t data_high, uint8_t data_low)
+double OriginbotBase::imu_conversion(uint8_t data_high, uint8_t data_low)
 {
     short transition_16;
     
@@ -332,40 +417,12 @@ float originbot_driver::imu_conversion(uint8_t data_high, uint8_t data_low)
     return transition_16;
 }
 
-bool originbot_driver::get_sensor_data()
-{
-    uint8_t  Receive_Data_Pr[100] = {0};  //临时变量，保存>下位机数据
-
-    serial_.read(Receive_Data_Pr, sizeof(Receive_Data_Pr)); //通过串口读取下位机发送过来的数据
-    int index = find_data(Receive_Data_Pr, 100, 0x55);
-
-    for (int i = index, j = 0; j < 53; i++, j++)
-    {
-        sensor_data_raw_[j] = Receive_Data_Pr[i];
-    }
-
-    if (sensor_data_raw_[0] == 0x55 && sensor_data_raw_[52] == 0xBB)
-    {
-        //   RCLCPP_INFO(this->get_logger(), "速度反馈 %X %X %X %X %X %X %X %X %X",Receive_Data_Pr[index],Receive_Data_Pr[index+1],Receive_Data_Pr[index+2],Receive_Data_Pr[index+3],Receive_Data_Pr[index+4],Receive_Data_Pr[index+5],Receive_Data_Pr[index+6],Receive_Data_Pr[index+7],Receive_Data_Pr[index+8]);
-        //   index+=9;
-        //   RCLCPP_INFO(this->get_logger(), "陀螺仪加速度 %X %X %X %X %X %X %X %X %X %X %X",Receive_Data_Pr[index],Receive_Data_Pr[index+1],Receive_Data_Pr[index+2],Receive_Data_Pr[index+3],Receive_Data_Pr[index+4],Receive_Data_Pr[index+5],Receive_Data_Pr[index+6],Receive_Data_Pr[index+7],Receive_Data_Pr[index+8],Receive_Data_Pr[index+9],Receive_Data_Pr[index+10]);
-        //     index+=11;
-        //   RCLCPP_INFO(this->get_logger(), "陀螺仪角速度 %X %X %X %X %X %X %X %X %X %X %X",Receive_Data_Pr[index],Receive_Data_Pr[index+1],Receive_Data_Pr[index+2],Receive_Data_Pr[index+3],Receive_Data_Pr[index+4],Receive_Data_Pr[index+5],Receive_Data_Pr[index+6],Receive_Data_Pr[index+7],Receive_Data_Pr[index+8],Receive_Data_Pr[index+9],Receive_Data_Pr[index+10]);
-        //      index+=11;
-        //  RCLCPP_INFO(this->get_logger(), "陀螺仪欧拉角 %X %X %X %X %X %X %X %X %X %X %X",Receive_Data_Pr[index],Receive_Data_Pr[index+1],Receive_Data_Pr[index+2],Receive_Data_Pr[index+3],Receive_Data_Pr[index+4],Receive_Data_Pr[index+5],Receive_Data_Pr[index+6],Receive_Data_Pr[index+7],Receive_Data_Pr[index+8],Receive_Data_Pr[index+9],Receive_Data_Pr[index+10]);
-        //       index+=11;
-        //   RCLCPP_INFO(this->get_logger(), "传感器数据 %X %X %X %X %X %X %X %X %X %X %X",Receive_Data_Pr[index],Receive_Data_Pr[index+1],Receive_Data_Pr[index+2],Receive_Data_Pr[index+3],Receive_Data_Pr[index+4],Receive_Data_Pr[index+5],Receive_Data_Pr[index+6],Receive_Data_Pr[index+7],Receive_Data_Pr[index+8],Receive_Data_Pr[index+9],Receive_Data_Pr[index+10]);
-
-        return true;
-    }
-}
-
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
-    // rclcpp::spin(std::make_shared<originbot_driver>());
-    auto originbot_driver = std::make_shared<originbot_driver>();
-    originbot_driver->driver_loop();
+
+    rclcpp::spin(std::make_shared<OriginbotBase>("originbot_base"));
+    
     rclcpp::shutdown();
 
     return 0;

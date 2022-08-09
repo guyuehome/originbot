@@ -37,15 +37,15 @@ file(GLOB_RECURSE HEADERFILES
   ${PROJECT_SOURCE_DIR}/include/*.h
   )
 
-#add_executable(originbot_base src/originbot_base.cpp)
-#ament_target_dependencies(originbot_base rclcpp nav_msgs sensor_msgs geometry_msgs serial tf2_ros)
+add_executable(originbot_base src/originbot_base.cpp)
+ament_target_dependencies(originbot_base rclcpp nav_msgs sensor_msgs geometry_msgs serial tf2_ros)
 
-add_executable(serial_test src/serial_test.cpp)
-ament_target_dependencies(serial_test rclcpp serial)
+# add_executable(serial_test src/serial_test.cpp)
+# ament_target_dependencies(serial_test rclcpp serial)
 
 install(TARGETS
-  #originbot_base
-  serial_test
+  originbot_base
+  #serial_test
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
