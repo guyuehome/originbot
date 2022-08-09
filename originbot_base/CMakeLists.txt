@@ -27,6 +27,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(serial REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(originbot_msgs REQUIRED)
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/

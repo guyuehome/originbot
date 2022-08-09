@@ -12,6 +12,7 @@
 #include "geometry_msgs/msg/twist.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "sensor_msgs/msg/imu.hpp"
+#include "originbot_msgs/msg/originbot_status.hpp"
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/msg/transform_stamped.hpp>
@@ -91,6 +92,8 @@ private:
     rclcpp::TimerBase::SharedPtr imu_timer_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
+    rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr status_publisher_;
+
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 };

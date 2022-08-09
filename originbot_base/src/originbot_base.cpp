@@ -9,8 +9,9 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     printf("Loading parameters: \n - port name: %s\n", port_name.c_str()); 
 
     // 创建里程计、IMU的发布者、速度指令的订阅者和TF广播器
-    odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
-    imu_publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
+    odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
+    imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
+    status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
@@ -220,7 +221,12 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 {
     //RCLCPP_INFO(this->get_logger(), "Process sensor data");
 
-    frame = frame;
+    originbot_msgs::msg::OriginbotStatus status_msg;
+
+    status_msg.header.stamp = rclcpp::Time(stamp);
+    status_msg.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
+
+    status_publisher_->publish(status_msg);
 }
 
 void OriginbotBase::odom_publisher(float vx, float vth)
