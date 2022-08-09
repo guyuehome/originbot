@@ -15,7 +15,7 @@ def generate_launch_description():
     
     originbot_base_node = Node(
         package='originbot_base',
-        node_executable='originbot_base', 
+        executable='originbot_base', 
         output='screen',
         emulate_tty=True,
         parameters=[{
@@ -25,8 +25,7 @@ def generate_launch_description():
 
     originbot_imu_tf = Node(
         package='tf2_ros',
-        node_executable='static_transform_publisher', 
-
+        executable='static_transform_publisher', 
         emulate_tty=True,
         arguments="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /imu_link".split(
                 ' '))

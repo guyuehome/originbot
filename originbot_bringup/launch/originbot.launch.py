@@ -9,7 +9,7 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     ld = launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument(name='port_name',
-                                             default_value='ttyUSB0'),
+                                             default_value='ttyS3'),
         launch.actions.DeclareLaunchArgument(name='open_rviz',
                                              default_value='false'),
         launch_ros.actions.Node(
@@ -28,6 +28,7 @@ def generate_launch_description():
                 'port_name':
                 launch.substitutions.LaunchConfiguration('port_name')
             }.items()),
+
         launch.actions.IncludeLaunchDescription(
             launch.launch_description_sources.PythonLaunchDescriptionSource(
                 os.path.join(get_package_share_directory('originbot_bringup'),

@@ -42,8 +42,8 @@ ros2 launch originbot_bringup originbot.launch.py
 第二个终端（选择如下一项启动）：
 
 ```bash
-ros2 run originbot_navigation gmapping.launch.py
-ros2 run originbot_navigation cartographer.launch.py
+ros2 launch originbot_navigation gmapping.launch.py
+ros2 launch originbot_navigation cartographer.launch.py
 ```
 
 第三个终端：
