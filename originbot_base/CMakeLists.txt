@@ -30,6 +30,7 @@ find_package(tf2_ros REQUIRED)
 find_package(originbot_msgs REQUIRED)
 
 include_directories(
+  include
   ${PROJECT_SOURCE_DIR}/
   ${PROJECT_SOURCE_DIR}/include
   )
@@ -40,6 +41,11 @@ file(GLOB_RECURSE HEADERFILES
 
 add_executable(originbot_base src/originbot_base.cpp)
 ament_target_dependencies(originbot_base rclcpp nav_msgs sensor_msgs geometry_msgs serial tf2_ros)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
 install(TARGETS
   originbot_base
