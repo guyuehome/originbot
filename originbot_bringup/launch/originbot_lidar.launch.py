@@ -27,7 +27,12 @@ def generate_launch_description():
             launch_arguments={
                 'port_name':
                 launch.substitutions.LaunchConfiguration('port_name')
-            }.items())
+            }.items()),
+
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('originbot_bringup'),
+                             'launch','ydlidar.launch.py')))
     ])
     return ld
 

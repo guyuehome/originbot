@@ -115,7 +115,30 @@ source /opt/tros/setup.bash
 cp -r /opt/tros/lib/mono2d_body_detection/config/ .
 
 #启动launch文件
-ros2 launch originbot_body_tracking originbot_body_tracking_without_gesture.launch.py 
+ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py 
+```
+
+### 手势识别
+
+第一个终端：
+
+```bash
+ros2 launch originbot_bringup originbot.launch.py
+```
+
+第二终端：
+
+```bash
+# 配置TogetherROS环境
+source /opt/tros/setup.bash
+
+# 从TogetherROS的安装路径中拷贝出运行示例需要的配置文件。
+cp -r /opt/tros/lib/mono2d_body_detection/config/ .
+cp -r /opt/tros/lib/hand_lmk_detection/config/ .
+cp -r /opt/tros/lib/hand_gesture_detection/config/ .
+
+#启动launch文件
+ros2 launch gesture_control hobot_gesture_control.launch.py
 ```
 
 ## 参与贡献
