@@ -40,7 +40,7 @@ file(GLOB_RECURSE HEADERFILES
   )
 
 add_executable(originbot_base src/originbot_base.cpp)
-ament_target_dependencies(originbot_base rclcpp nav_msgs sensor_msgs geometry_msgs serial tf2_ros)
+ament_target_dependencies(originbot_base rclcpp nav_msgs sensor_msgs geometry_msgs serial tf2_ros originbot_msgs)
 
 install(
   DIRECTORY include/
