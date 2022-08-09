@@ -155,7 +155,7 @@ struct HwGpioCfg {
   uint8_t pin_g = 38;
   uint8_t pin_b = 36;
   uint8_t pin_gnd = 34;
-  std::string script_file_path = "install/lib/originbot_body_tracking/scripts/gpio.py";
+  std::string script_file_path = "install/lib/body_tracking/scripts/gpio.py";
   std::mutex mtx;
   std::string last_set{""};
 };

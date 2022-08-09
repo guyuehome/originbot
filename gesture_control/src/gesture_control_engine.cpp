@@ -34,7 +34,7 @@ GestureControlEngine::GestureControlEngine() {
   param_node_ = std::make_shared<ParametersClass>(&track_cfg_);
 
   gesture_control_node_ = std::make_shared<GestureControlNode>(
-      "originbot_gesture_control",
+      "gesture_control",
       std::bind(&GestureControlEngine::FeedSmart, this, std::placeholders::_1));
 
   if (!smart_process_task_) {

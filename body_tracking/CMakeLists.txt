@@ -13,7 +13,7 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.5)
-project(originbot_body_tracking)
+project(body_tracking)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)

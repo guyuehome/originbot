@@ -41,7 +41,7 @@ def generate_launch_description():
                 {"image_width": 960},
                 {"image_height": 544},
                 {"io_method": "shared_mem"},
-                {"video_device": "F37"}
+                {"video_device": "GC4663"}
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),
@@ -67,7 +67,6 @@ def generate_launch_description():
             executable='mono2d_body_detection',
             output='screen',
             parameters=[
-                {"ai_msg_pub_topic_name": "/hobot_mono2d_body_detection"}
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),
@@ -77,8 +76,6 @@ def generate_launch_description():
             executable='hand_lmk_detection',
             output='screen',
             parameters=[
-                {"ai_msg_sub_topic_name": "/hobot_mono2d_body_detection"},
-                {"ai_msg_pub_topic_name": "/hobot_hand_lmk_detection"}
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),
@@ -100,23 +97,22 @@ def generate_launch_description():
             executable='hand_gesture_detection',
             output='screen',
             parameters=[
-                {"ai_msg_sub_topic_name": "/hobot_hand_lmk_detection"},
-                {"ai_msg_pub_topic_name": "/hobot_hand_gesture_detection"}
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),
-        # 启动手势交互pkg
+        # 启动人体跟随pkg
         Node(
-            package='originbot_gesture_control',
-            executable='originbot_gesture_control',
+            package='body_tracking',
+            executable='body_tracking',
             output='screen',
             parameters=[
-                {"ai_msg_sub_topic_name": "/hobot_hand_gesture_detection"},
-                {"twist_pub_topic_name": "/cmd_vel"},
                 {"activate_wakeup_gesture": 0},
-                {"track_serial_lost_num_thr": 100},
+                {"img_width": 960},
+                {"img_height": 544},
+                {"track_serial_lost_num_thr": 30},
                 {"move_step": 0.5},
-                {"rotate_step": 0.5}
+                {"rotate_step": 0.5},
+                {"activate_robot_move_thr": 5}
             ],
             arguments=['--ros-args', '--log-level', 'info']
         )

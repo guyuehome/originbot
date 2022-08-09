@@ -10,8 +10,8 @@ from launch_ros.actions import Node
 def generate_launch_description():
     # use_sim_time_arg = DeclareLaunchArgument('use_sim_time', default_value='false',
     #                                          description='Use simulation clock if true')
-    port_name_arg = DeclareLaunchArgument('port_name', default_value='ttyUSB0',
-                                         description='usb bus name, e.g. ttyUSB0')
+    port_name_arg = DeclareLaunchArgument('port_name', default_value='ttyS3',
+                                         description='usb bus name, e.g. ttyS3')
     
     originbot_base_node = Node(
         package='originbot_base',

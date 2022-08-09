@@ -41,7 +41,7 @@ def generate_launch_description():
                 {"image_width": 960},
                 {"image_height": 544},
                 {"io_method": "shared_mem"},
-                {"video_device": "F37"}
+                {"video_device": "GC4663"}
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),
@@ -85,8 +85,8 @@ def generate_launch_description():
         ),
         # 启动人体跟随pkg
         Node(
-            package='originbot_body_tracking',
-            executable='originbot_body_tracking',
+            package='body_tracking',
+            executable='body_tracking',
             output='screen',
             parameters=[
                 {"ai_msg_sub_topic_name": "/hobot_mono2d_body_detection"},

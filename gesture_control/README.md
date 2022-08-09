@@ -1,6 +1,6 @@
 # 功能介绍
 
-originbot_gesture_control package功能为通过手势控制机器人运动。
+gesture_control package功能为通过手势控制机器人运动。
 
 订阅智能结果ai_msgs，运行策略，确定控制hand并根据手势控制机器人运动。
 
@@ -85,7 +85,7 @@ ai_msgs为自定义的消息格式，用于算法模型推理后，发布推理�
    - 已安装ROS2编译工具colcon，安装命令：`pip install -U colcon-common-extensions`
 2. 编译
 
-编译命令：`colcon build --packages-select originbot_gesture_control`
+编译命令：`colcon build --packages-select gesture_control`
 
 ### Docker交叉编译
 
@@ -102,7 +102,7 @@ export TARGET_ARCH=aarch64
 export TARGET_TRIPLE=aarch64-linux-gnu
 export CROSS_COMPILE=/usr/bin/$TARGET_TRIPLE-
 
-colcon build --packages-select originbot_gesture_control \
+colcon build --packages-select gesture_control \
    --merge-install \
    --cmake-force-configure \
    --cmake-args \
@@ -149,7 +149,7 @@ cp -r install/lib/mono2d_body_detection/config/ .
 cp -r install/lib/hand_lmk_detection/config/ .
 cp -r install/lib/hand_gesture_detection/config/ .
 
-ros2 launch install/share/originbot_gesture_control/launch/hobot_gesture_control.launch.py
+ros2 launch install/share/gesture_control/launch/hobot_gesture_control.launch.py
 ```
 
 ### **Linux**
@@ -178,7 +178,7 @@ cp -r install/lib/hand_gesture_detection/config/ .
 ./install/lib/hand_gesture_detection/hand_gesture_detection --log-level error &
 
 # 启动手势交互pkg
-./install/lib/originbot_gesture_control/originbot_gesture_control
+./install/lib/gesture_control/gesture_control
 ```
 
 ## 注意事项
@@ -197,15 +197,15 @@ cp -r install/lib/hand_gesture_detection/config/ .
 
 ```
 
-[originbot_gesture_control-7] [WARN] [1652965757.145607222] [GestureControlEngine]: Gesture contrl start!, track_id: 2, frame_ts_ms: 3698315325, tracking_sta(0:INITING, 1:TRACKING, 2:LOST): 1, gesture: 11
-[originbot_gesture_control-7] [WARN] [1652965757.159500951] [GestureControlEngine]: frame_ts_ms: 3698315358, track_id: 2, tracking_sta: 1, gesture: 14
-[originbot_gesture_control-7] [WARN] [1652965757.159660358] [GestureControlEngine]: do move, direction: 0, step: 0.500000
-[originbot_gesture_control-7] [WARN] [1652965757.211420964] [GestureControlEngine]: frame_ts_ms: 3698315425, track_id: 2, tracking_sta: 1, gesture: 14
-[originbot_gesture_control-7] [WARN] [1652965757.211624899] [GestureControlEngine]: do move, direction: 0, step: 0.500000
-[originbot_gesture_control-7] [WARN] [1652965757.232051230] [GestureControlEngine]: frame_ts_ms: 3698315457, track_id: 2, tracking_sta: 1, gesture: 14
-[originbot_gesture_control-7] [WARN] [1652965757.232207513] [GestureControlEngine]: do move, direction: 0, step: 0.500000
-[originbot_gesture_control-7] [WARN] [1652965757.595528850] [GestureControlEngine]: frame_ts_ms 3698315655, track id: 2 recved reset gesture: 5
-[originbot_gesture_control-7] [WARN] [1652965757.595700337] [GestureControlEngine]: cancel move
+[gesture_control-7] [WARN] [1652965757.145607222] [GestureControlEngine]: Gesture contrl start!, track_id: 2, frame_ts_ms: 3698315325, tracking_sta(0:INITING, 1:TRACKING, 2:LOST): 1, gesture: 11
+[gesture_control-7] [WARN] [1652965757.159500951] [GestureControlEngine]: frame_ts_ms: 3698315358, track_id: 2, tracking_sta: 1, gesture: 14
+[gesture_control-7] [WARN] [1652965757.159660358] [GestureControlEngine]: do move, direction: 0, step: 0.500000
+[gesture_control-7] [WARN] [1652965757.211420964] [GestureControlEngine]: frame_ts_ms: 3698315425, track_id: 2, tracking_sta: 1, gesture: 14
+[gesture_control-7] [WARN] [1652965757.211624899] [GestureControlEngine]: do move, direction: 0, step: 0.500000
+[gesture_control-7] [WARN] [1652965757.232051230] [GestureControlEngine]: frame_ts_ms: 3698315457, track_id: 2, tracking_sta: 1, gesture: 14
+[gesture_control-7] [WARN] [1652965757.232207513] [GestureControlEngine]: do move, direction: 0, step: 0.500000
+[gesture_control-7] [WARN] [1652965757.595528850] [GestureControlEngine]: frame_ts_ms 3698315655, track id: 2 recved reset gesture: 5
+[gesture_control-7] [WARN] [1652965757.595700337] [GestureControlEngine]: cancel move
 ```
 
 以上log截取了部分通过手势控制小车运动的处理结果。由于launch文件中配置启用了手势激活功能，在时间戳frame_ts_ms: 3698315325的帧中，通过OK手势（gesture: 11）激活了手势控制功能，从时间戳frame_ts_ms: 3698315358开始通过666手势（gesture: 14）控制小车以0.5m/s的速度前进运动（do move, direction: 0, step: 0.500000）。在时间戳frame_ts_ms 3698315655的帧中，通过手掌手势（gesture: 5）重置了小车运动控制功能，同时使小车停止运动（cancel move）。

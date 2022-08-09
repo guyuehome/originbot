@@ -1,6 +1,6 @@
 # 功能介绍
 
-originbot_body_tracking package功能为控制机器人跟随人体运动。
+body_tracking package功能为控制机器人跟随人体运动。
 
 订阅智能结果ai_msgs，运行策略，确定跟随track及移动目的位置。
 
@@ -75,7 +75,7 @@ ai_msgs为自定义的消息格式，用于算法模型推理后，发布推理�
    - 已安装ROS2编译工具colcon，安装命令：`pip install -U colcon-common-extensions`
 2. 编译
 
-编译命令：`colcon build --packages-select originbot_body_tracking`
+编译命令：`colcon build --packages-select body_tracking`
 
 ### Docker交叉编译
 
@@ -92,7 +92,7 @@ export TARGET_ARCH=aarch64
 export TARGET_TRIPLE=aarch64-linux-gnu
 export CROSS_COMPILE=/usr/bin/$TARGET_TRIPLE-
 
-colcon build --packages-select originbot_body_tracking \
+colcon build --packages-select body_tracking \
    --merge-install \
    --cmake-force-configure \
    --cmake-args \
@@ -142,7 +142,7 @@ cp -r install/lib/mono2d_body_detection/config/ .
 cp -r install/lib/hand_lmk_detection/config/ .
 cp -r install/lib/hand_gesture_detection/config/ .
 
-ros2 launch install/share/originbot_body_tracking/launch/hobot_body_tracking.launch.py
+ros2 launch install/share/body_tracking/launch/hobot_body_tracking.launch.py
 ```
 
 ### **Linux**
@@ -171,7 +171,7 @@ cp -r install/lib/hand_gesture_detection/config/ .
 ./install/lib/hand_gesture_detection/hand_gesture_detection --log-level error &
 
 # 启动人体跟随pkg
-./install/lib/originbot_body_tracking/originbot_body_tracking --ros-args -p activate_wakeup_gesture:=1 -p img_width:=960 -p img_height:=544 -p track_serial_lost_num_thr:=100 -p move_step:=0.1 -p rotate_step:=0.174 -p activate_robot_move_thr:=5
+./install/lib/body_tracking/body_tracking --ros-args -p activate_wakeup_gesture:=1 -p img_width:=960 -p img_height:=544 -p track_serial_lost_num_thr:=100 -p move_step:=0.1 -p rotate_step:=0.174 -p activate_robot_move_thr:=5
 ```
 
 ## 注意事项
@@ -189,21 +189,21 @@ cp -r install/lib/hand_gesture_detection/config/ .
 ## X3结果展示
 
 ```
-[originbot_body_tracking-7] [WARN] [1653430533.523069034] [ParametersClass]: TrackCfg param are
-[originbot_body_tracking-7] activate_wakeup_gesture: 0
-[originbot_body_tracking-7] track_serial_lost_num_thr: 100
-[originbot_body_tracking-7] activate_robot_rotate_thr: 45
-[originbot_body_tracking-7] activate_robot_move_thr: 5
-[originbot_body_tracking-7] move_step: 0.3
-[originbot_body_tracking-7] rotate_step: 0.5
-[originbot_body_tracking-7] img_width: 960
-[originbot_body_tracking-7] img_height: 544
-[originbot_body_tracking-7] 
-[originbot_body_tracking-7] [WARN] [1653430533.712812076] [TrackingManager]: update frame_ts 395787, 873
-[originbot_body_tracking-7] [WARN] [1653430533.713105576] [TrackingManager]: Tracking body start!, track_id: 1, frame_ts: 395787, tracking_sta(0:INITING, 1:TRACKING, 2:LOST): 1, gesture: 0
-[originbot_body_tracking-7] [WARN] [1653430535.018442618] [TrackingManager]: Do move! body_rect_width: 353, thr: 864, move_step_ratio: 1, body_rect_to_top: 20, img_height: 544, move_step: 0.3
-[originbot_body_tracking-7] [WARN] [1653430535.220268535] [TrackingManager]: Do rotate move, ts sec: 3397, nanosec: 387800000
-[originbot_body_tracking-7] [WARN] [1653430535.220408576] [RobotCmdVelNode]: RobotCtl, angular: 0 0 0, linear: 0.3 0 0, pub twist ts: 1653430535220394
+[body_tracking-7] [WARN] [1653430533.523069034] [ParametersClass]: TrackCfg param are
+[body_tracking-7] activate_wakeup_gesture: 0
+[body_tracking-7] track_serial_lost_num_thr: 100
+[body_tracking-7] activate_robot_rotate_thr: 45
+[body_tracking-7] activate_robot_move_thr: 5
+[body_tracking-7] move_step: 0.3
+[body_tracking-7] rotate_step: 0.5
+[body_tracking-7] img_width: 960
+[body_tracking-7] img_height: 544
+[body_tracking-7] 
+[body_tracking-7] [WARN] [1653430533.712812076] [TrackingManager]: update frame_ts 395787, 873
+[body_tracking-7] [WARN] [1653430533.713105576] [TrackingManager]: Tracking body start!, track_id: 1, frame_ts: 395787, tracking_sta(0:INITING, 1:TRACKING, 2:LOST): 1, gesture: 0
+[body_tracking-7] [WARN] [1653430535.018442618] [TrackingManager]: Do move! body_rect_width: 353, thr: 864, move_step_ratio: 1, body_rect_to_top: 20, img_height: 544, move_step: 0.3
+[body_tracking-7] [WARN] [1653430535.220268535] [TrackingManager]: Do rotate move, ts sec: 3397, nanosec: 387800000
+[body_tracking-7] [WARN] [1653430535.220408576] [RobotCmdVelNode]: RobotCtl, angular: 0 0 0, linear: 0.3 0 0, pub twist ts: 1653430535220394
 ```
 
 以上log截取了部分app通过launch文件启动后的输出。启动后先打印相关配置（TrackCfg param）。由于launch文件中配置不启用手势激活功能，检测到人体后小车就开始进入跟随状态（tracking_sta值为1），并以0.3m/s的速度前进运动（RobotCtl, angular: 0 0 0, linear: 0.3 0 0）靠近人体。
