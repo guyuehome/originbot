@@ -14,10 +14,10 @@ def generate_launch_description():
                                          description='usb bus name, e.g. ttyS3')
 
     correct_factor_vx_arg = DeclareLaunchArgument('correct_factor_vx', default_value='0.9',
-                                         description='usb bus name, e.g. 0.9')
+                                         description='correct factor vx, e.g. 0.9')
 
     correct_factor_vth_arg = DeclareLaunchArgument('correct_factor_vth', default_value='0.868',
-                                         description='usb bus name, e.g. 0.9')
+                                         description='correct factor vth, e.g. 0.9')
 
     originbot_base_node = Node(
         package='originbot_base',

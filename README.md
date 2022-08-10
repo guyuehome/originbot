@@ -259,7 +259,7 @@ $ ros2 run rviz2 rviz2
 ```
 
 Fixed Frame选择odom，添加tf显示，即可看到：
-
+![img](images/2022-08-10_23-30.png)
 
 
 
