@@ -49,7 +49,7 @@ def generate_launch_description():
         executable='static_transform_publisher',
         name='static_tf_pub_laser',
         arguments=[
-            '0', '0', '0.02', '0', '0', '0', '1', 'base_link', 'laser_frame'
+            '0', '0', '0.16', '0', '0', '0', '1', 'base_link', 'laser_frame'
         ],
     )
 

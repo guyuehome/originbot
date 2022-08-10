@@ -187,7 +187,7 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
     else if(odom_th_ < (-M_PI)) 
         odom_th_ += M_PI*2;
 
-    RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
+    // RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
 
     odom_publisher(vx, vth);    
 }
@@ -417,7 +417,7 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
         rightSpeed = x_linear + z_angular * ORIGINBOT_WHEEL_TRACK / 2.0;
     }
 
-    RCLCPP_INFO(this->get_logger(), "leftSpeed = '%f' rightSpeed = '%f'", leftSpeed * 100, rightSpeed * 100);
+    // RCLCPP_INFO(this->get_logger(), "leftSpeed = '%f' rightSpeed = '%f'", leftSpeed * 100, rightSpeed * 100);
 
     if (leftSpeed < 0)
         cmdFrame.data[0] = 0x00;
