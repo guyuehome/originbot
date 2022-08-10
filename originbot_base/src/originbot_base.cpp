@@ -12,10 +12,8 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, "1.0");//获取参数
     
     // 打印预加载的参数
-    printf("Loading parameters: \n 
-            - port name: %s\n 
-            - correct factor vx: %0.4f\n
-            - correct factor vth: %4f\n", port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
+    printf("Loading parameters: \n - port name: %s\n - correct factor vx: %0.4f\n - correct factor vth: %4f\n", 
+            port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
 
     // 创建里程计、IMU的发布者、速度指令的订阅者和TF广播器
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
