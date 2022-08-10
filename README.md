@@ -137,6 +137,13 @@ $ free
 15. 重启系统，确保以上配置生效
 
 
+### 系统镜像备份方法
+
+
+```bash
+$ sudo fdisk -l
+$ sudo dd if=/dev/sdb conv=sync,noerror bs=16M | gzip -c > backup.img.gz
+```
 
 ## 使用说明
 
