@@ -40,14 +40,14 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
             new std::thread(std::bind(&OriginbotBase::readRawData, this)));
     }
 
-    //IMU校准
+    //IMU初始化标定
     if(imu_calibration())
     {
-        _sleep(1000) //确保校准完成
-        RCLCPP_INFO(this->get_logger(), "IMU calibration ok ...");
+        usleep(200000);    //确保标定完成
+        RCLCPP_INFO(this->get_logger(), "IMU calibration ok.");
     }
 
-    RCLCPP_INFO(this->get_logger(), "originbot Start ...");
+    RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 }
 
 OriginbotBase::~OriginbotBase()
@@ -228,8 +228,6 @@ void OriginbotBase::processEulerData(DataFrame &frame)
 
 void OriginbotBase::processSensorData(DataFrame &frame)
 {
-    //RCLCPP_INFO(this->get_logger(), "Process sensor data");
-
     // originbot_msgs::msg::OriginbotStatus status_msg;
 
     // status_msg.header.stamp = this->get_clock()->now();
@@ -237,7 +235,7 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 
     // status_publisher_->publish(status_msg);
 
-    RCLCPP_INFO(this->get_logger(), "Battery Voltage: %0.2f", (float)frame.data[0] + ((float)frame.data[1]/100.0));
+    //RCLCPP_INFO(this->get_logger(), "Battery Voltage: %0.2f", (float)frame.data[0] + ((float)frame.data[1]/100.0));
 }
 
 void OriginbotBase::odom_publisher(float vx, float vth)
@@ -390,6 +388,8 @@ bool OriginbotBase::imu_calibration()
     {
         RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
     }
+
+    return true;
 }
 
 void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
