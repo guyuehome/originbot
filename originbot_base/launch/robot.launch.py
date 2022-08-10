@@ -12,7 +12,13 @@ def generate_launch_description():
     #                                          description='Use simulation clock if true')
     port_name_arg = DeclareLaunchArgument('port_name', default_value='ttyS3',
                                          description='usb bus name, e.g. ttyS3')
-    
+
+    correct_factor_vx_arg = DeclareLaunchArgument('correct_factor_vx', default_value='0.9',
+                                         description='usb bus name, e.g. 0.9')
+
+    correct_factor_vth_arg = DeclareLaunchArgument('correct_factor_vth', default_value='0.868',
+                                         description='usb bus name, e.g. 0.9')
+
     originbot_base_node = Node(
         package='originbot_base',
         executable='originbot_base', 
@@ -33,6 +39,8 @@ def generate_launch_description():
     return LaunchDescription([
         # use_sim_time_arg,
         port_name_arg,
+        correct_factor_vx_arg,
+        correct_factor_vth_arg,
         originbot_base_node,
         originbot_imu_tf
     ])

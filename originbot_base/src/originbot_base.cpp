@@ -6,7 +6,16 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     std::string port_name="ttyS3";    
     this->declare_parameter("port_name");   //声明参数
     this->get_parameter_or<std::string>("port_name", port_name, "ttyS3");//获取参数
-    printf("Loading parameters: \n - port name: %s\n", port_name.c_str()); 
+    this->declare_parameter("correct_factor_vx");   //声明参数
+    this->get_parameter_or<float>("correct_factor_vx", correct_factor_vx_, "1.0");//获取参数
+    this->declare_parameter("correct_factor_vth");   //声明参数
+    this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, "1.0");//获取参数
+    
+    // 打印预加载的参数
+    printf("Loading parameters: \n 
+            - port name: %s\n 
+            - correct factor vx: %0.4f\n
+            - correct factor vth: %4f\n", port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
 
     // 创建里程计、IMU的发布者、速度指令的订阅者和TF广播器
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
@@ -166,8 +175,8 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
         right_speed = speedTemp / 1000.0;
 
     // 通过两侧轮子的速度，计算机器人整体的线速度和角速度
-    vx  = CORRECTION_FACTOR_VX  * (left_speed  + right_speed) / 2;                    // m/s
-    vth = CORRECTION_FACTOR_VTH * (right_speed - left_speed) / ORIGINBOT_WHEEL_TRACK; // rad/s
+    vx  = correct_factor_vx_  * (left_speed  + right_speed) / 2;                    // m/s
+    vth = correct_factor_vth_ * (right_speed - left_speed) / ORIGINBOT_WHEEL_TRACK; // rad/s
 
     //RCLCPP_INFO(this->get_logger(), "dt=%f left_speed=%f right_speed=%f vx=%f vth=%f", dt, left_speed, right_speed, vx, vth);
 

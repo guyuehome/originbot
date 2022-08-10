@@ -25,8 +25,6 @@ using namespace std::chrono_literals;
 using std::placeholders::_1;
 
 #define ORIGINBOT_WHEEL_TRACK  (0.11)
-#define CORRECTION_FACTOR_VX   (0.900)
-#define CORRECTION_FACTOR_VTH  (0.868)
 
 // originbot protocol data format
 typedef struct {
@@ -91,6 +89,9 @@ private:
     serial::Serial serial_;
     rclcpp::Time current_time_;
     float odom_x_=0.0, odom_y_=0.0, odom_th_=0.0;
+
+    float correct_factor_vx_ = 1.0;
+    float correct_factor_vth_ = 1.0;    
     
     std::shared_ptr<std::thread> read_data_thread_;
     DataImu imuData_;
