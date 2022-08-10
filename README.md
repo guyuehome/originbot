@@ -131,8 +131,10 @@ $ free
 操作效果如下：
 ![img](images/20220810105929.png)
 
+14. 修改系统中调用的摄像头，改为对应的使用版本
 
-14. 重启系统，确保以上配置生效
+
+15. 重启系统，确保以上配置生效
 
 
 
@@ -143,13 +145,13 @@ $ free
 第一个终端：
 
 ```bash
-ros2 launch originbot_bringup originbot.launch.py
+$ ros2 launch originbot_bringup originbot.launch.py
 ```
 
 第二个终端：
 
 ```bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
 
@@ -158,24 +160,24 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 第一个终端：
 
 ```bash
-ros2 launch originbot_bringup originbot_lidar.launch.py
+$ ros2 launch originbot_bringup originbot_lidar.launch.py
 ```
 
 第二个终端：
 
 ```bash
-ros2 launch originbot_navigation gmapping.launch.py
+$ ros2 launch originbot_navigation gmapping.launch.py
 ```
 
 第三个终端：
 
 ```bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
 保存地图：
 ```bash
-ros2 run nav2_map_server map_saver_cli -f map
+$ ros2 run nav2_map_server map_saver_cli -f map
 ```
 
 ### SLAM地图构建（Cartographer）
@@ -183,24 +185,65 @@ ros2 run nav2_map_server map_saver_cli -f map
 第一个终端：
 
 ```bash
-ros2 launch originbot_bringup originbot_lidar.launch.py
+$ ros2 launch originbot_bringup originbot_lidar.launch.py
 ```
 
 第二个终端：
 
 ```bash
-ros2 launch originbot_navigation cartographer.launch.py
+$ ros2 launch originbot_navigation cartographer.launch.py
 ```
 
 第三个终端：
 
 ```bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
 保存地图：
 ```bash
-ros2 run nav2_map_server map_saver_cli -f ~/cartorapher --ros-args -p save_map_timeout:=10000
+$ ros2 run nav2_map_server map_saver_cli -f ~/cartorapher --ros-args -p save_map_timeout:=10000
+```
+
+### SLAM地图构建（slam_toolbox）
+
+第一个终端：
+
+```bash
+$ ros2 launch originbot_bringup originbot_lidar.launch.py
+```
+
+第二个终端：
+
+```bash
+$ ros2 launch originbot_navigation slam_sync.launch.py
+```
+
+第三个终端：
+
+```bash
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+保存地图：
+```bash
+$ ros2 run nav2_map_server map_saver_cli -f map
+```
+
+如果启动sync_slam_toolbox_node时报错：
+![img](images/20220810122558.jpg)
+
+解决方法如下(仅适用于桌面版本)：
+```bash
+$ sudo vi /etc/ld.so.conf
+
+#在其后增加：
+/usr/local/lib
+/usr/lib
+/opt/tros/lib
+
+#保存退出：
+$ sudo ldconfig
 ```
 
 ### 自主导航
@@ -208,33 +251,35 @@ ros2 run nav2_map_server map_saver_cli -f ~/cartorapher --ros-args -p save_map_t
 第一个终端：
 
 ```bash
-ros2 launch originbot_bringup originbot_lidar.launch.py
+$ ros2 launch originbot_bringup originbot_lidar.launch.py
 ```
 
 第二个终端：
 
 ```bash
-ros2 launch originbot_navigation nav_bringup.launch.py
+$ ros2 launch originbot_navigation nav_bringup.launch.py
 ```
+
 
 ### 人体跟踪
 
 第一个终端：
 
 ```bash
-ros2 launch originbot_bringup originbot.launch.py
+$ ros2 launch originbot_bringup originbot.launch.py
 ```
 
 第二终端：
 
 ```bash
-source /opt/tros/setup.bash
+$ source /opt/tros/setup.bash
 
-# 从TogetherROS的安装路径中拷贝出运行示例需要的配置文件。
-cp -r /opt/tros/lib/mono2d_body_detection/config/ .
+# 从TogetherROS的安装路径中拷贝出运行示例需要的配置文件
+$ cd /userdata/dev_ws
+$ cp -r /opt/tros/lib/mono2d_body_detection/config/ .
 
 #启动launch文件
-ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py 
+$ ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py 
 ```
 
 ### 手势识别
@@ -242,22 +287,23 @@ ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py
 第一个终端：
 
 ```bash
-ros2 launch originbot_bringup originbot.launch.py
+$ ros2 launch originbot_bringup originbot.launch.py
 ```
 
 第二终端：
 
 ```bash
 # 配置TogetherROS环境
-source /opt/tros/setup.bash
+$ source /opt/tros/setup.bash
 
-# 从TogetherROS的安装路径中拷贝出运行示例需要的配置文件。
-cp -r /opt/tros/lib/mono2d_body_detection/config/ .
-cp -r /opt/tros/lib/hand_lmk_detection/config/ .
-cp -r /opt/tros/lib/hand_gesture_detection/config/ .
+# 从TogetherROS的安装路径中拷贝出运行示例需要的配置文件
+$ cd /userdata/dev_ws
+$ cp -r /opt/tros/lib/mono2d_body_detection/config/ .
+$ cp -r /opt/tros/lib/hand_lmk_detection/config/ .
+$ cp -r /opt/tros/lib/hand_gesture_detection/config/ .
 
 #启动launch文件
-ros2 launch gesture_control hobot_gesture_control.launch.py
+$ ros2 launch gesture_control hobot_gesture_control.launch.py
 ```
 
 ## 参与贡献
