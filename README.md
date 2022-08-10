@@ -153,7 +153,7 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
 
-### SLAM地图构建
+### SLAM地图构建（Gmapping）
 
 第一个终端：
 
@@ -161,10 +161,34 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ros2 launch originbot_bringup originbot_lidar.launch.py
 ```
 
-第二个终端（选择如下一项启动）：
+第二个终端：
 
 ```bash
 ros2 launch originbot_navigation gmapping.launch.py
+```
+
+第三个终端：
+
+```bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+保存地图：
+```bash
+ros2 run nav2_map_server map_saver_cli -f map
+```
+
+### SLAM地图构建（Cartographer）
+
+第一个终端：
+
+```bash
+ros2 launch originbot_bringup originbot_lidar.launch.py
+```
+
+第二个终端（：
+
+```bash
 ros2 launch originbot_navigation cartographer.launch.py
 ```
 
@@ -175,12 +199,6 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
 保存地图：
-- Gmapping
-```bash
-ros2 run nav2_map_server map_saver_cli -f map
-```
-
-- Cartographer
 ```bash
 ros2 run nav2_map_server map_saver_cli -f ~/cartorapher --ros-args -p save_map_timeout:=10000
 ```
@@ -196,7 +214,7 @@ ros2 launch originbot_bringup originbot_lidar.launch.py
 第二个终端：
 
 ```bash
-ros2 run originbot_navigation nav_bringup.launch.py
+ros2 launch originbot_navigation nav_bringup.launch.py
 ```
 
 ### 人体跟踪

@@ -128,7 +128,7 @@ void OriginbotBase::processDataFrame(DataFrame &frame)
 
 void OriginbotBase::processVelocityData(DataFrame &frame)
 {
-    RCLCPP_INFO(this->get_logger(), "Process velocity data");
+    //RCLCPP_INFO(this->get_logger(), "Process velocity data");
 
     float left_speed = 0.0, right_speed = 0.0;
     float vx = 0.0, vth = 0.0;
@@ -315,6 +315,8 @@ void OriginbotBase::odom_publisher(float vx, float vth)
 
 void OriginbotBase::imu_publisher()
 {
+    //RCLCPP_INFO(this->get_logger(), "Imu Data Publish.");
+
     auto imu_msg = sensor_msgs::msg::Imu();
 
     imu_msg.header.frame_id = "imu_link";
@@ -342,7 +344,6 @@ void OriginbotBase::imu_publisher()
 
     imu_msg.orientation_covariance = {0.0025, 0.0000, 0.0000, 0.0000, 0.0025, 0.0000, 0.0000, 0.0000, 0.0025};
 
-    //RCLCPP_INFO(this->get_logger(), "Imu Data Publish.");
     imu_publisher_->publish(imu_msg);
 }
 
