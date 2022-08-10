@@ -7,9 +7,9 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->declare_parameter("port_name");   //声明参数
     this->get_parameter_or<std::string>("port_name", port_name, "ttyS3");//获取参数
     this->declare_parameter("correct_factor_vx");   //声明参数
-    this->get_parameter_or<float>("correct_factor_vx", correct_factor_vx_, "1.0");//获取参数
+    this->get_parameter_or<float>("correct_factor_vx", correct_factor_vx_, 1.0);//获取参数
     this->declare_parameter("correct_factor_vth");   //声明参数
-    this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, "1.0");//获取参数
+    this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, 1.0);//获取参数
     
     // 打印预加载的参数
     printf("Loading parameters: \n - port name: %s\n - correct factor vx: %0.4f\n - correct factor vth: %4f\n", 
