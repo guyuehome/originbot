@@ -3,9 +3,9 @@
 OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 {
     // 加载参数
-    std::string port_name="ttyUSB0";    
+    std::string port_name="ttyS3";    
     this->declare_parameter("port_name");   //声明参数
-    this->get_parameter_or<std::string>("port_name", port_name, "ttyUSB0");//获取参数
+    this->get_parameter_or<std::string>("port_name", port_name, "ttyS3");//获取参数
     printf("Loading parameters: \n - port name: %s\n", port_name.c_str()); 
 
     // 创建里程计、IMU的发布者、速度指令的订阅者和TF广播器
