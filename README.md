@@ -1,17 +1,21 @@
 # originbot
 OriginBot智能机器人开源套件
 
+
+
 ## 软件架构
+
 - originbot_base：机器人底盘驱动
 - originbot_bringup：机器人启动相关的脚本和文件
 - originbot_description：机器人模型及加载脚本
-- originbot_navigation：机器人定位与导航相关的脚本和配置文件
-- originbot_slam：机器人地图构建相关的脚本和配置文件
-- originbot_body_tracking：机器人人体跟随功能包
-- originbot_gesture_control：机器人手势控制功能包
+- originbot_navigation：机器人建图与导航相关的脚本和配置文件
+- body_tracking：机器人人体跟随功能包
+- gesture_control：机器人手势控制功能包
 
 
-## 安装教程
+
+## 系统配置
+
 ### 系统镜像配置过程
 1. 安装Ubuntu系统（推荐使用服务器server版本）：
 https://developer.horizon.ai/api/v1/fileData/documents_pi/Quick_Start/Quick_Start.html#id3
@@ -137,6 +141,7 @@ $ free
 15. 重启系统，确保以上配置生效
 
 
+
 ### 系统镜像备份方法
 
 
@@ -145,9 +150,91 @@ $ sudo fdisk -l
 $ sudo dd if=/dev/sdb conv=sync,noerror bs=16M | gzip -c > backup.img.gz
 ```
 
-## 使用说明
+
+
+## 操作说明
+
+
+### 查看机器人状态
+```bash
+$ ros2 topic echo /originbot_status
+```
+
+
+
+### 控制板载蜂鸣器
+
+```bash
+$ ros2 service call
+```
+
+
+
+### 控制板载LED灯
+
+```bash
+$ ros2 service call
+```
+
+
+
+### 查看雷达可视化信息
+
+#### 机器人端
+
+```bash
+$ ros2 launch originbot_bringup originbot_lidar.launch.py
+```
+
+
+
+#### pc端终端
+
+```bash
+$ ros2 run rviz2 rviz2
+```
+
+
+
+添加Laserscan之后，配置订阅的话题，即可看到可视化的雷达信息：
+![img](images/2022-08-10_18-01.png)
+
+
+
+### 查看IMU可视化数据
+
+#### 机器人端
+
+```bash
+$ ros2 launch originbot_bringup originbot.launch.py
+```
+
+
+
+#### PC端
+
+```bash
+$ ros2 run rviz2 rviz2
+```
+
+
+
+添加IMU之后，配置订阅的话题，即可看到可视化的IMU信息：
+![img](images/2022-08-10_18-04.png)
+
+
+
+如果Rviz中找不到imu插件，需要进行安装：
+
+```bash
+$ sudo apt install ros-foxy-rviz-imu-plugin
+```
+
+
 
 ### 键盘遥控
+
+#### 机器人端
 
 第一个终端：
 
@@ -155,65 +242,29 @@ $ sudo dd if=/dev/sdb conv=sync,noerror bs=16M | gzip -c > backup.img.gz
 $ ros2 launch originbot_bringup originbot.launch.py
 ```
 
-第二个终端：
+第二个终端（在PC端运行也可以）：
 
 ```bash
 $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
-### 查看机器人状态
-```bash
-$ ros2 topic echo /originbot_status
-```
 
-### 控制板载蜂鸣器
-```bash
-$ ros2 service
-```
 
-### 控制板载LED灯
-```bash
-$ ros2 service
-```
+#### PC端
 
-### 查看雷达可视化信息
-机器人终端：
-
-```bash
-$ ros2 launch originbot_bringup originbot_lidar.launch.py
-```
-
-pc端终端：
+如果想要查看机器人的动态运动效果，可以在PC端打开Rviz查看：
 
 ```bash
 $ ros2 run rviz2 rviz2
 ```
 
-添加Laserscan之后，配置订阅的话题，即可看到可视化的雷达信息：
-![img](images/2022-08-10_18-01.png)
+Fixed Frame选择odom，添加tf显示，即可看到：
 
-## 查看IMU可视化数据
-机器人终端：
 
-```bash
-$ ros2 launch originbot_bringup originbot.launch.py
-```
-
-pc端终端：
-
-```bash
-$ ros2 run rviz2 rviz2
-```
-
-添加IMU之后，配置订阅的话题，即可看到可视化的IMU信息：
-![img](images/2022-08-10_18-04.png)
-
-如果Rviz中找不到imu插件，需要进行安装：
-```bash
-$ sudo apt install ros-foxy-rviz-imu-plugin
-```
 
 ### SLAM地图构建（Gmapping）
+
+#### 机器人端
 
 第一个终端：
 
@@ -227,7 +278,7 @@ $ ros2 launch originbot_bringup originbot_lidar.launch.py
 $ ros2 launch originbot_navigation gmapping.launch.py
 ```
 
-第三个终端：
+第三个终端（在PC端运行也可以）：
 
 ```bash
 $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
@@ -238,7 +289,19 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 $ ros2 run nav2_map_server map_saver_cli -f map
 ```
 
+
+
+#### PC端
+
+```bash
+$ ros2 run rviz2 rviz2
+```
+
+
+
 ### SLAM地图构建（Cartographer）
+
+#### 机器人端
 
 第一个终端：
 
@@ -252,7 +315,7 @@ $ ros2 launch originbot_bringup originbot_lidar.launch.py
 $ ros2 launch originbot_navigation cartographer.launch.py
 ```
 
-第三个终端：
+第三个终端（在PC端运行也可以）：
 
 ```bash
 $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
@@ -263,48 +326,21 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 $ ros2 run nav2_map_server map_saver_cli -f map --ros-args -p save_map_timeout:=10000
 ```
 
-### SLAM地图构建（slam_toolbox）
 
-第一个终端：
 
-```bash
-$ ros2 launch originbot_bringup originbot_lidar.launch.py
-```
-
-第二个终端：
+#### PC端
 
 ```bash
-$ ros2 launch originbot_navigation slam_sync.launch.py
+$ ros2 run rviz2 rviz2
 ```
 
-第三个终端：
 
-```bash
-$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
-
-保存地图：
-```bash
-$ ros2 run nav2_map_server map_saver_cli -f map
-```
-
-如果启动sync_slam_toolbox_node时报错：
-![img](images/20220810122558.jpg)
-
-解决方法如下(仅适用于桌面版本)：
-```bash
-$ sudo vi /etc/ld.so.conf
-
-#在其后增加：
-/usr/local/lib
-/usr/lib
-/opt/tros/lib
-
-#保存退出：
-$ sudo ldconfig
-```
 
 ### 自主导航
+
+
+
+#### 机器人端
 
 第一个终端：
 
@@ -319,7 +355,18 @@ $ ros2 launch originbot_navigation nav_bringup.launch.py
 ```
 
 
+
+#### PC端
+
+```bash
+$ ros2 run rviz2 rviz2
+```
+
+
+
 ### 人体跟踪
+
+#### 机器人端
 
 第一个终端：
 
@@ -327,7 +374,7 @@ $ ros2 launch originbot_navigation nav_bringup.launch.py
 $ ros2 launch originbot_bringup originbot.launch.py
 ```
 
-第二终端：
+第二个终端：
 
 ```bash
 $ source /opt/tros/setup.bash
@@ -340,7 +387,11 @@ $ cp -r /opt/tros/lib/mono2d_body_detection/config/ .
 $ ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py 
 ```
 
+
+
 ### 手势识别
+
+#### 机器人端
 
 第一个终端：
 
@@ -348,7 +399,7 @@ $ ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py
 $ ros2 launch originbot_bringup originbot.launch.py
 ```
 
-第二终端：
+第二个终端：
 
 ```bash
 # 配置TogetherROS环境
@@ -363,6 +414,8 @@ $ cp -r /opt/tros/lib/hand_gesture_detection/config/ .
 #启动launch文件
 $ ros2 launch gesture_control hobot_gesture_control.launch.py
 ```
+
+
 
 ## 参与贡献
 
