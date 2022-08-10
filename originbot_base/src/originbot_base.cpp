@@ -235,7 +235,7 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 
     // status_publisher_->publish(status_msg);
 
-    //RCLCPP_INFO(this->get_logger(), "Battery Voltage: %0.2f", (float)frame.data[0] + ((float)frame.data[1]/100.0));
+    // RCLCPP_INFO(this->get_logger(), "Battery Voltage: %0.2f", (float)frame.data[0] + ((float)frame.data[1]/100.0));
 }
 
 void OriginbotBase::odom_publisher(float vx, float vth)

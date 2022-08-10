@@ -161,6 +161,23 @@ $ ros2 launch originbot_bringup originbot.launch.py
 $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
+### 查看机器人状态
+```bash
+$ ros2 topic echo /originbot_status
+```
+
+### 控制板载蜂鸣器
+```bash
+$ ros2 service
+```
+
+### 控制板载LED灯
+```bash
+$ ros2 service
+```
+
+### 键盘遥控
+
 
 ### SLAM地图构建（Gmapping）
 
