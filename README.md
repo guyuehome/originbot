@@ -186,7 +186,7 @@ ros2 run nav2_map_server map_saver_cli -f map
 ros2 launch originbot_bringup originbot_lidar.launch.py
 ```
 
-第二个终端（：
+第二个终端：
 
 ```bash
 ros2 launch originbot_navigation cartographer.launch.py
@@ -228,7 +228,6 @@ ros2 launch originbot_bringup originbot.launch.py
 第二终端：
 
 ```bash
-# 配置TogetherROS环境
 source /opt/tros/setup.bash
 
 # 从TogetherROS的安装路径中拷贝出运行示例需要的配置文件。
