@@ -26,7 +26,7 @@ using std::placeholders::_1;
 
 #define ORIGINBOT_WHEEL_TRACK  (0.11)
 #define CORRECTION_FACTOR_VX   (0.900)
-#define CORRECTION_FACTOR_VTH  (1)
+#define CORRECTION_FACTOR_VTH  (0.868)
 
 // originbot protocol data format
 typedef struct {
