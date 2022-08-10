@@ -176,8 +176,42 @@ $ ros2 service
 $ ros2 service
 ```
 
-### 键盘遥控
+### 查看雷达可视化信息
+机器人终端：
 
+```bash
+$ ros2 launch originbot_bringup originbot_lidar.launch.py
+```
+
+pc端终端：
+
+```bash
+$ ros2 run rviz2 rviz2
+```
+
+添加Laserscan之后，配置订阅的话题，即可看到可视化的雷达信息：
+![img](images/2022-08-10_18-01.png)
+
+## 查看IMU可视化数据
+机器人终端：
+
+```bash
+$ ros2 launch originbot_bringup originbot.launch.py
+```
+
+pc端终端：
+
+```bash
+$ ros2 run rviz2 rviz2
+```
+
+添加IMU之后，配置订阅的话题，即可看到可视化的IMU信息：
+![img](images/2022-08-10_18-04.png)
+
+如果Rviz中找不到imu插件，需要进行安装：
+```bash
+$ sudo apt install ros-foxy-rviz-imu-plugin
+```
 
 ### SLAM地图构建（Gmapping）
 
@@ -226,7 +260,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 
 保存地图：
 ```bash
-$ ros2 run nav2_map_server map_saver_cli -f ~/cartorapher --ros-args -p save_map_timeout:=10000
+$ ros2 run nav2_map_server map_saver_cli -f map --ros-args -p save_map_timeout:=10000
 ```
 
 ### SLAM地图构建（slam_toolbox）
