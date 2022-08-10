@@ -27,6 +27,8 @@ def generate_launch_description():
         parameters=[{
                 # 'use_sim_time': LaunchConfiguration('use_sim_time'),
                 'port_name': LaunchConfiguration('port_name'), 
+                'correct_factor_vx': LaunchConfiguration('correct_factor_vx'), 
+                'correct_factor_vth': LaunchConfiguration('correct_factor_vth'), 
         }])
 
     originbot_imu_tf = Node(
