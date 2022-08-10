@@ -74,6 +74,7 @@ private:
     void processSensorData(DataFrame &frame);
 
     double imu_conversion(uint8_t data_high, uint8_t data_low);
+    bool   imu_calibration();
     double degToRad(double deg);
 
     void odom_publisher(float vx, float vth);
@@ -88,11 +89,9 @@ private:
     std::shared_ptr<std::thread> read_data_thread_;
     DataImu imuData_;
 
-    rclcpp::TimerBase::SharedPtr odom_timer_;
-    rclcpp::TimerBase::SharedPtr imu_timer_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
-    rclcpp::Publisher<originbot_msgs::msg::OriginbotStatus>::SharedPtr status_publisher_;
+    //rclcpp::Publisher<originbot_msgs::msg::OriginbotStatus>::SharedPtr status_publisher_;
 
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;

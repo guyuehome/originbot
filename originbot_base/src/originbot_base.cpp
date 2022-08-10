@@ -11,7 +11,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     // 创建里程计、IMU的发布者、速度指令的订阅者和TF广播器
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
     imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
-    status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
+    //status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
 
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
     
@@ -38,6 +38,13 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 
         read_data_thread_ = std::shared_ptr<std::thread>(
             new std::thread(std::bind(&OriginbotBase::readRawData, this)));
+    }
+
+    //IMU校准
+    if(imu_calibration())
+    {
+        _sleep(1000) //确保校准完成
+        RCLCPP_INFO(this->get_logger(), "IMU calibration ok ...");
     }
 
     RCLCPP_INFO(this->get_logger(), "originbot Start ...");
@@ -223,12 +230,14 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 {
     //RCLCPP_INFO(this->get_logger(), "Process sensor data");
 
-    originbot_msgs::msg::OriginbotStatus status_msg;
+    // originbot_msgs::msg::OriginbotStatus status_msg;
 
-    status_msg.header.stamp = this->get_clock()->now();
-    status_msg.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
+    // status_msg.header.stamp = this->get_clock()->now();
+    // status_msg.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
 
-    status_publisher_->publish(status_msg);
+    // status_publisher_->publish(status_msg);
+
+    RCLCPP_INFO(this->get_logger(), "Battery Voltage: %0.2f", (float)frame.data[0] + ((float)frame.data[1]/100.0));
 }
 
 void OriginbotBase::odom_publisher(float vx, float vth)
@@ -353,6 +362,34 @@ void OriginbotBase::imu_publisher()
     imu_msg.orientation_covariance = {0.0025, 0.0000, 0.0000, 0.0000, 0.0025, 0.0000, 0.0000, 0.0000, 0.0025};
 
     imu_publisher_->publish(imu_msg);
+}
+
+bool OriginbotBase::imu_calibration()
+{
+    DataFrame configFrame;
+
+    configFrame.header = 0x55;
+    configFrame.id     = 0x07;
+    configFrame.length = 0x06;
+    configFrame.data[0]= 0x00;
+    configFrame.data[1]= 0x00;
+    configFrame.data[2]= 0x00;
+    configFrame.data[3]= 0x00;
+    configFrame.data[4]= 0x00;
+    configFrame.data[5]= 0xFF;
+    configFrame.check = (configFrame.data[0] + configFrame.data[1] + configFrame.data[2] + 
+                         configFrame.data[3] + configFrame.data[4] + configFrame.data[5]) & 0xff;
+    configFrame.tail   = 0xbb; 
+
+    try
+    {
+        serial_.write(&configFrame.header, sizeof(configFrame)); //向串口发数据
+    }
+
+    catch (serial::IOException &e)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+    }
 }
 
 void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
