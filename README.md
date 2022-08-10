@@ -17,13 +17,17 @@ OriginBot智能机器人开源套件
 https://developer.horizon.ai/api/v1/fileData/documents_pi/Quick_Start/Quick_Start.html#id3
 
 
-2. 配置网络：https://developer.horizon.ai/api/v1/fileData/documents_pi/System_Configuration/System_Configuration.html#id3
+2. 配置网络：
+https://developer.horizon.ai/api/v1/fileData/documents_pi/System_Configuration/System_Configuration.html#id3
 
-3. 更新系统：https://developer.horizon.ai/api/v1/fileData/documents_pi/System_Configuration/System_Configuration.html#id2
+3. 更新系统：
+https://developer.horizon.ai/api/v1/fileData/documents_pi/System_Configuration/System_Configuration.html#id2
 
-3. 安装TogetherROS：https://developer.horizon.ai/api/v1/fileData/TogetherROS/quick_start/install_tros.html
+3. 安装TogetherROS：
+https://developer.horizon.ai/api/v1/fileData/TogetherROS/quick_start/install_tros.html
 
-4. 安装ROS2：https://hhp.guyuehome.com/hhp/2.3_TogetherROS%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE/#ros2
+4. 安装ROS2：
+https://hhp.guyuehome.com/hhp/2.3_TogetherROS%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE/#ros2
     - 如遇到网络连接问，可参考：https://blog.51cto.com/u_11440114/5102048、https://guyuehome.com/37844
 
 5. 安装功能包：
@@ -34,6 +38,7 @@ $ sudo apt install ros-foxy-navigation              # 安装导航功能包
 $ sudo apt install ros-foxy-nav2-bringup            # 安装导航功能包
 $ sudo apt install ros-foxy-slam-toolbox            # 安装slam-toolbox
 $ sudo apt install ros-foxy-cartographer-ros        # 安装cartographer
+$ sudo apt install ros-foxy-teleop-twist-keyboard   # 安装键盘控制节点
 ```
 
 如遇到类似如下问题：
@@ -128,6 +133,8 @@ $ free
 
 
 14. 重启系统，确保以上配置生效
+
+
 
 ## 使用说明
 

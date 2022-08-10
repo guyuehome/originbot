@@ -9,7 +9,7 @@ def generate_launch_description():
         
     gmapping_node=Node(
     	package='slam_gmapping',
-    	node_executable='slam_gmapping', 
+    	executable='slam_gmapping', 
     	output='screen',
     	parameters=[{'use_sim_time':use_sim_time}])
     	

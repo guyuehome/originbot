@@ -15,7 +15,7 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package='rviz2',
             name='rviz2',
-            node_executable='rviz2',
+            executable='rviz2',
             on_exit=launch.actions.Shutdown(),
             condition=launch.conditions.IfCondition(
                 launch.substitutions.LaunchConfiguration('open_rviz'))),

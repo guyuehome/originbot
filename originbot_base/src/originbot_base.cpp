@@ -159,7 +159,7 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
     vx  = (left_speed  + right_speed) / 2;                    //m/s
     vth = (right_speed - left_speed) / ORIGINBOT_WHEEL_TRACK; //rad/s
 
-    RCLCPP_INFO(this->get_logger(), "dt=%f left_speed=%f right_speed=%f vx=%f vth=%f", dt, left_speed, right_speed, vx, vth);
+    //RCLCPP_INFO(this->get_logger(), "dt=%f left_speed=%f right_speed=%f vx=%f vth=%f", dt, left_speed, right_speed, vx, vth);
 
     // 里程计的微分量计算
     delta_x = vx * cos(odom_th_) * dt;
@@ -177,7 +177,7 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
     else if(odom_th_ < (-M_PI)) 
         odom_th_ += M_PI*2;
 
-    RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
+    //RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
 
     odom_publisher(vx, vth);    
 }
@@ -189,7 +189,7 @@ double OriginbotBase::degToRad(double deg)
 
 void OriginbotBase::processAccelerationData(DataFrame &frame)
 {
-    RCLCPP_INFO(this->get_logger(), "Process acceleration data");
+    //RCLCPP_INFO(this->get_logger(), "Process acceleration data");
 
     imuData_.acceleration_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * 16 * 9.8;
     imuData_.acceleration_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * 16 * 9.8;
@@ -198,7 +198,7 @@ void OriginbotBase::processAccelerationData(DataFrame &frame)
 
 void OriginbotBase::processAngularData(DataFrame &frame)
 {
-    RCLCPP_INFO(this->get_logger(), "Process angular data");
+    //RCLCPP_INFO(this->get_logger(), "Process angular data");
 
     imuData_.angular_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(2000);
     imuData_.angular_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(2000);
@@ -207,7 +207,7 @@ void OriginbotBase::processAngularData(DataFrame &frame)
 
 void OriginbotBase::processEulerData(DataFrame &frame)
 {
-    RCLCPP_INFO(this->get_logger(), "Process euler data");
+    //RCLCPP_INFO(this->get_logger(), "Process euler data");
 
     imuData_.roll  = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(180);
     imuData_.pitch = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(180);
@@ -218,7 +218,7 @@ void OriginbotBase::processEulerData(DataFrame &frame)
 
 void OriginbotBase::processSensorData(DataFrame &frame)
 {
-    RCLCPP_INFO(this->get_logger(), "Process sensor data");
+    //RCLCPP_INFO(this->get_logger(), "Process sensor data");
 
     frame = frame;
 }
@@ -342,7 +342,7 @@ void OriginbotBase::imu_publisher()
 
     imu_msg.orientation_covariance = {0.0025, 0.0000, 0.0000, 0.0000, 0.0025, 0.0000, 0.0000, 0.0000, 0.0025};
 
-    RCLCPP_INFO(this->get_logger(), "Imu Data Publish.");
+    //RCLCPP_INFO(this->get_logger(), "Imu Data Publish.");
     imu_publisher_->publish(imu_msg);
 }
 

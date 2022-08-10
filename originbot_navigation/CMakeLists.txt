@@ -19,7 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(nav2_bringup REQUIRED)
 install(
-  DIRECTORY launch param maps
+  DIRECTORY launch param maps config rviz
   DESTINATION share/${PROJECT_NAME}
 )
 if(BUILD_TESTING)
