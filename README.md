@@ -323,7 +323,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 
 保存地图：
 ```bash
-$ ros2 run nav2_map_server map_saver_cli -f map --ros-args -p save_map_timeout:=10000
+$ ros2 run nav2_map_server map_saver_cli -f my_map --ros-args -p save_map_timeout:=10000
 ```
 
 
@@ -387,6 +387,11 @@ $ cp -r /opt/tros/lib/mono2d_body_detection/config/ .
 $ ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py 
 ```
 
+#### PC端
+
+打开浏览器，访问机器人的ip地址，即可看到视觉识别的实时效果。
+![img](images/2022-08-10_23-09.png)
+
 
 
 ### 手势识别
@@ -415,7 +420,10 @@ $ cp -r /opt/tros/lib/hand_gesture_detection/config/ .
 $ ros2 launch gesture_control hobot_gesture_control.launch.py
 ```
 
+### PC端
 
+打开浏览器，访问机器人的ip地址，即可看到视觉识别的实时效果。
+![img](images/2022-08-10_23-09.png)
 
 ## 参与贡献
 
