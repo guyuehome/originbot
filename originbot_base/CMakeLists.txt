@@ -31,13 +31,8 @@ find_package(originbot_msgs REQUIRED)
 
 include_directories(
   include
-  ${PROJECT_SOURCE_DIR}/
-  ${PROJECT_SOURCE_DIR}/include
   )
 
-file(GLOB_RECURSE HEADERFILES
-  ${PROJECT_SOURCE_DIR}/include/*.h
-  )
 
 add_executable(originbot_base src/originbot_base.cpp)
 ament_target_dependencies(originbot_base rclcpp nav_msgs sensor_msgs geometry_msgs serial tf2_ros originbot_msgs)
@@ -68,3 +63,4 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
+ament_export_include_directories(include)

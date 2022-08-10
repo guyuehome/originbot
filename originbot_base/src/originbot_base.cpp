@@ -1,4 +1,4 @@
-#include "originbot_base.h"
+#include "originbot_base/originbot_base.h"
 
 OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 {
@@ -12,7 +12,9 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
     imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
     status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
+
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
+    
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
     // 控制器与扩展驱动板卡的串口配置与通信
@@ -223,7 +225,7 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 
     originbot_msgs::msg::OriginbotStatus status_msg;
 
-    status_msg.header.stamp = rclcpp::Time(stamp);
+    status_msg.header.stamp = this->get_clock()->now();
     status_msg.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
 
     status_publisher_->publish(status_msg);
