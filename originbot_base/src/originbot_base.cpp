@@ -15,13 +15,19 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     printf("Loading parameters: \n - port name: %s\n - correct factor vx: %0.4f\n - correct factor vth: %4f\n", 
             port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
 
-    // 创建里程计、IMU的发布者、速度指令的订阅者和TF广播器
+    // 创建里程计、IMU、机器人状态的发布者
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
     imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
     //status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
 
+    // 创建速度指令的订阅者
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
     
+    // 创建控制蜂鸣器和LED的服务
+    buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", &buzzer_callback);
+    led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", &led_callback);
+
+    // 创建TF广播器
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
     // 控制器与扩展驱动板卡的串口配置与通信
@@ -204,41 +210,56 @@ double OriginbotBase::degToRad(double deg)
     return deg / 180.0 * M_PI;
 }
 
+double OriginbotBase::imu_conversion(uint8_t data_high, uint8_t data_low)
+{
+    short transition_16;
+    
+    transition_16 = 0;
+    transition_16 |= data_high << 8;
+    transition_16 |= data_low;
+
+    return transition_16;
+}
+
 void OriginbotBase::processAccelerationData(DataFrame &frame)
 {
     //RCLCPP_INFO(this->get_logger(), "Process acceleration data");
 
-    imuData_.acceleration_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * 16 * 9.8;
-    imuData_.acceleration_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * 16 * 9.8;
-    imuData_.acceleration_z = imu_conversion(frame.data[5], frame.data[4]) / 32768 * 16 * 9.8;
+    imu_data_.acceleration_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * 16 * 9.8;
+    imu_data_.acceleration_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * 16 * 9.8;
+    imu_data_.acceleration_z = imu_conversion(frame.data[5], frame.data[4]) / 32768 * 16 * 9.8;
 }
 
 void OriginbotBase::processAngularData(DataFrame &frame)
 {
     //RCLCPP_INFO(this->get_logger(), "Process angular data");
 
-    imuData_.angular_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(2000);
-    imuData_.angular_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(2000);
-    imuData_.angular_z = imu_conversion(frame.data[5], frame.data[4]) / 32768 * degToRad(2000);
+    imu_data_.angular_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(2000);
+    imu_data_.angular_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(2000);
+    imu_data_.angular_z = imu_conversion(frame.data[5], frame.data[4]) / 32768 * degToRad(2000);
 }
 
 void OriginbotBase::processEulerData(DataFrame &frame)
 {
     //RCLCPP_INFO(this->get_logger(), "Process euler data");
 
-    imuData_.roll  = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(180);
-    imuData_.pitch = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(180);
-    imuData_.yaw   = imu_conversion(frame.data[5], frame.data[4]) / 32768 * degToRad(180);
+    imu_data_.roll  = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(180);
+    imu_data_.pitch = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(180);
+    imu_data_.yaw   = imu_conversion(frame.data[5], frame.data[4]) / 32768 * degToRad(180);
 
     imu_publisher();
 }
 
 void OriginbotBase::processSensorData(DataFrame &frame)
 {
+    robot_status_.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
+
     // originbot_msgs::msg::OriginbotStatus status_msg;
 
     // status_msg.header.stamp = this->get_clock()->now();
-    // status_msg.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
+    // status_msg.battery_voltage = robot_status_.battery_voltage;
+    // status_msg.buzzer_on = robot_status_.buzzer_on;
+    // status_msg.led_on = robot_status_.led_on;
 
     // status_publisher_->publish(status_msg);
 
@@ -344,16 +365,16 @@ void OriginbotBase::imu_publisher()
     imu_msg.header.frame_id = "imu_link";
     imu_msg.header.stamp = this->get_clock()->now();
 
-    imu_msg.linear_acceleration.x = imuData_.acceleration_x;
-    imu_msg.linear_acceleration.y = imuData_.acceleration_y;
-    imu_msg.linear_acceleration.z = imuData_.acceleration_z;
+    imu_msg.linear_acceleration.x = imu_data_.acceleration_x;
+    imu_msg.linear_acceleration.y = imu_data_.acceleration_y;
+    imu_msg.linear_acceleration.z = imu_data_.acceleration_z;
 
-    imu_msg.angular_velocity.x = imuData_.angular_x;
-    imu_msg.angular_velocity.y = imuData_.angular_y;
-    imu_msg.angular_velocity.z = imuData_.angular_z;
+    imu_msg.angular_velocity.x = imu_data_.angular_x;
+    imu_msg.angular_velocity.y = imu_data_.angular_y;
+    imu_msg.angular_velocity.z = imu_data_.angular_z;
 
     tf2::Quaternion q;
-    q.setRPY(imuData_.roll, imuData_.pitch, imuData_.yaw);
+    q.setRPY(imu_data_.roll, imu_data_.pitch, imu_data_.yaw);
 
     imu_msg.orientation.x = q[0];
     imu_msg.orientation.y = q[1];
@@ -459,16 +480,85 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
     }
 }
 
-double OriginbotBase::imu_conversion(uint8_t data_high, uint8_t data_low)
+void OriginbotBase::buzzer_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request>  request,
+                                          std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response)
 {
-    short transition_16;
-    
-    transition_16 = 0;
-    transition_16 |= data_high << 8;
-    transition_16 |= data_low;
+    robot_status_.buzzer_on = request->on;
 
-    return transition_16;
+    DataFrame configFrame;
+
+    configFrame.header = 0x55;
+    configFrame.id     = 0x07;
+    configFrame.length = 0x06;
+    configFrame.data[0]= 0x00;
+    configFrame.data[1]= 0x00;
+    configFrame.data[2]= 0x00;
+
+    if(robot_status_.buzzer_on)
+        configFrame.data[3]= 0xFF;
+    else
+        configFrame.data[3]= 0x00;
+
+    configFrame.data[4]= 0x00;
+    configFrame.data[5]= 0x00;
+    configFrame.check = (configFrame.data[0] + configFrame.data[1] + configFrame.data[2] + 
+                         configFrame.data[3] + configFrame.data[4] + configFrame.data[5]) & 0xff;
+    configFrame.tail   = 0xbb; 
+
+    try
+    {
+        serial_.write(&configFrame.header, sizeof(configFrame)); //向串口发数据
+    }
+
+    catch (serial::IOException &e)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+    }
+
+    RCLCPP_INFO(this->get_logger(), "Set Buzzer state to %d'", robot_status_.buzzer_on);
+
+    response->result = true;
 }
+
+void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotLed::Request>  request,
+                                       std::shared_ptr<originbot_msgs::srv::OriginbotLed::Response> response)
+{
+    robot_status_.led_on = request->on;
+
+    DataFrame configFrame;
+
+    configFrame.header = 0x55;
+    configFrame.id     = 0x07;
+    configFrame.length = 0x06;
+    configFrame.data[0]= 0x00;
+
+    if(robot_status_.led_on)
+        configFrame.data[1]= 0xFF;
+    else
+        configFrame.data[1]= 0x00;
+
+    configFrame.data[2]= 0x00;
+    configFrame.data[3]= 0x00;
+    configFrame.data[4]= 0x00;
+    configFrame.data[5]= 0x00;
+    configFrame.check = (configFrame.data[0] + configFrame.data[1] + configFrame.data[2] + 
+                         configFrame.data[3] + configFrame.data[4] + configFrame.data[5]) & 0xff;
+    configFrame.tail   = 0xbb; 
+
+    try
+    {
+        serial_.write(&configFrame.header, sizeof(configFrame)); //向串口发数据
+    }
+
+    catch (serial::IOException &e)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+    }
+
+    RCLCPP_INFO(this->get_logger(), "Set Led state to %d'", robot_status_.led_on);
+
+    response->result = true;
+}                                    
 
 int main(int argc, char *argv[])
 {

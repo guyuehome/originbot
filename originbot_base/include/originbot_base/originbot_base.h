@@ -48,6 +48,12 @@ typedef struct {
     float yaw;
 } DataImu;
 
+typedef struct {
+    float battery_voltage;
+    bool buzzer_on;
+    bool led_on;
+} RobotStatus;
+
 enum {
     FRAME_ID_MOTION       = 0x01,
     FRAME_ID_VELOCITY     = 0x02,
@@ -83,8 +89,12 @@ private:
 
     void odom_publisher(float vx, float vth);
     void imu_publisher();
-    void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
 
+    void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
+    void buzzer_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request>  request,
+                               std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response);
+    void led_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotLed::Request>  request,
+                            std::shared_ptr<originbot_msgs::srv::OriginbotLed::Response> response);
 private:
     serial::Serial serial_;
     rclcpp::Time current_time_;
@@ -94,13 +104,17 @@ private:
     float correct_factor_vth_ = 1.0;    
     
     std::shared_ptr<std::thread> read_data_thread_;
-    DataImu imuData_;
+    DataImu imu_data_;
+    RobotStatus robot_status_;
 
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;
     //rclcpp::Publisher<originbot_msgs::msg::OriginbotStatus>::SharedPtr status_publisher_;
 
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
+   
+    rclcpp::Service<originbot_msgs::srv::OriginbotBuzzer>::SharedPtr buzzer_service_;
+    rclcpp::Service<originbot_msgs::srv::OriginbotLed>::SharedPtr led_service_;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 };
