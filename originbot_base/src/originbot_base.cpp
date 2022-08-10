@@ -166,8 +166,8 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
         right_speed = speedTemp / 1000.0;
 
     // 通过两侧轮子的速度，计算机器人整体的线速度和角速度
-    vx  = (left_speed  + right_speed) / 2;                    //m/s
-    vth = (right_speed - left_speed) / ORIGINBOT_WHEEL_TRACK; //rad/s
+    vx  = CORRECTION_FACTOR_VX  * (left_speed  + right_speed) / 2;                    // m/s
+    vth = CORRECTION_FACTOR_VTH * (right_speed - left_speed) / ORIGINBOT_WHEEL_TRACK; // rad/s
 
     //RCLCPP_INFO(this->get_logger(), "dt=%f left_speed=%f right_speed=%f vx=%f vth=%f", dt, left_speed, right_speed, vx, vth);
 
@@ -175,7 +175,7 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
     delta_x = vx * cos(odom_th_) * dt;
     delta_y = vx * sin(odom_th_) * dt;
     delta_th = vth * dt;
-
+    
     // 里程积分计算
     odom_x_  += delta_x;
     odom_y_  += delta_y;
@@ -187,7 +187,7 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
     else if(odom_th_ < (-M_PI)) 
         odom_th_ += M_PI*2;
 
-    //RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
+    RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
 
     odom_publisher(vx, vth);    
 }

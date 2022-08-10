@@ -24,7 +24,9 @@
 using namespace std::chrono_literals;
 using std::placeholders::_1;
 
-#define ORIGINBOT_WHEEL_TRACK (0.1)
+#define ORIGINBOT_WHEEL_TRACK  (0.1)
+#define CORRECTION_FACTOR_VX   (0.9)
+#define CORRECTION_FACTOR_VTH  (1)
 
 // originbot protocol data format
 typedef struct {
