@@ -20,6 +20,7 @@
 #include "originbot_msgs/msg/originbot_status.hpp"
 #include "originbot_msgs/srv/originbot_led.hpp"
 #include "originbot_msgs/srv/originbot_buzzer.hpp"
+#include "originbot_msgs/srv/originbot_pid.hpp"
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
@@ -96,6 +97,8 @@ private:
                                std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response);
     void led_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotLed::Request>  request,
                             std::shared_ptr<originbot_msgs::srv::OriginbotLed::Response> response);
+    void pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
+                            std::shared_ptr<originbot_msgs::srv::OriginbotPID::Response> response);
 private:
     serial::Serial serial_;
     rclcpp::Time current_time_;
@@ -116,6 +119,7 @@ private:
    
     rclcpp::Service<originbot_msgs::srv::OriginbotBuzzer>::SharedPtr buzzer_service_;
     rclcpp::Service<originbot_msgs::srv::OriginbotLed>::SharedPtr led_service_;
+    rclcpp::Service<originbot_msgs::srv::OriginbotPID>::SharedPtr pid_service_;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 };

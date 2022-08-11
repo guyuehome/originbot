@@ -333,7 +333,7 @@ $ ros2 run nav2_map_server map_saver_cli -f map
 ```bash
 $ ros2 run rviz2 rviz2
 ```
-
+添加map、tf、laserscan等显示插件后，可以看到slam的过程
 
 
 ### SLAM地图构建（Cartographer）
@@ -370,6 +370,7 @@ $ ros2 run nav2_map_server map_saver_cli -f my_map --ros-args -p save_map_timeou
 ```bash
 $ ros2 run rviz2 rviz2
 ```
+添加map、tf、laserscan等显示插件后，可以看到slam的过程
 
 
 
@@ -461,6 +462,11 @@ $ ros2 launch gesture_control hobot_gesture_control.launch.py
 
 打开浏览器，访问机器人的ip地址，即可看到视觉识别的实时效果。
 ![img](images/2022-08-10_23-09.png)
+
+
+## 常见问题
+1. 当电池电压较低时，会影响雷达供电，导致雷达频率降低，请及时充电；
+
 
 ## 参与贡献
 
