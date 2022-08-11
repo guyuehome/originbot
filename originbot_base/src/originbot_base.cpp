@@ -256,7 +256,6 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 
     originbot_msgs::msg::OriginbotStatus status_msg;
 
-    status_msg.header.stamp = this->get_clock()->now();
     status_msg.battery_voltage = robot_status_.battery_voltage;
     status_msg.buzzer_on = robot_status_.buzzer_on;
     status_msg.led_on = robot_status_.led_on;
