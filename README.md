@@ -154,11 +154,7 @@ $ free
 
 ### 系统镜像备份方法
 
-
-```bash
-$ sudo fdisk -l
-$ sudo dd if=/dev/sdb conv=sync,noerror bs=16M | gzip -c > backup.img.gz
-```
+参考：https://www.elecfans.com/d/comp-4395939-136407485203429933056.html
 
 
 
