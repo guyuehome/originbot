@@ -16,7 +16,16 @@ OriginBot智能机器人开源套件
 
 ## 系统配置
 
-### 系统镜像配置过程
+### 安装系统镜像
+
+#### 使用配置好的系统镜像
+
+使用win32disk或者rufus工具，将提供的sd卡镜像文件烧写到配套的SD卡中。
+
+
+
+
+#### 纯净系统的完整配置过程
 1. 安装Ubuntu系统（推荐使用服务器server版本）：
 https://developer.horizon.ai/api/v1/fileData/documents_pi/Quick_Start/Quick_Start.html#id3
 
