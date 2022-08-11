@@ -18,14 +18,14 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     // 创建里程计、IMU、机器人状态的发布者
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
     imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
-    //status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
+    status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
 
     // 创建速度指令的订阅者
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
     
     // 创建控制蜂鸣器和LED的服务
-    buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", &buzzer_callback);
-    led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", &led_callback);
+    buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", &OriginbotBase::buzzer_callback);
+    led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", &OriginbotBase::led_callback);
 
     // 创建TF广播器
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -254,14 +254,14 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 {
     robot_status_.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
 
-    // originbot_msgs::msg::OriginbotStatus status_msg;
+    originbot_msgs::msg::OriginbotStatus status_msg;
 
-    // status_msg.header.stamp = this->get_clock()->now();
-    // status_msg.battery_voltage = robot_status_.battery_voltage;
-    // status_msg.buzzer_on = robot_status_.buzzer_on;
-    // status_msg.led_on = robot_status_.led_on;
+    status_msg.header.stamp = this->get_clock()->now();
+    status_msg.battery_voltage = robot_status_.battery_voltage;
+    status_msg.buzzer_on = robot_status_.buzzer_on;
+    status_msg.led_on = robot_status_.led_on;
 
-    // status_publisher_->publish(status_msg);
+    status_publisher_->publish(status_msg);
 
     // RCLCPP_INFO(this->get_logger(), "Battery Voltage: %0.2f", (float)frame.data[0] + ((float)frame.data[1]/100.0));
 }
