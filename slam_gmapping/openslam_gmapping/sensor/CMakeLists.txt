@@ -1,8 +1,0 @@
-add_subdirectory(sensor_base)
-ament_export_libraries(sensor_base)
-
-add_subdirectory(sensor_odometry)
-ament_export_libraries(sensor_odometry)
-
-add_subdirectory(sensor_range)
-ament_export_libraries(sensor_range)
