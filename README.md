@@ -308,44 +308,7 @@ Fixed Frame选择odom，添加tf显示，即可看到：
 
 
 
-### SLAM地图构建（Gmapping）
-
-#### 机器人端
-
-第一个终端：
-
-```bash
-$ ros2 launch originbot_bringup originbot_lidar.launch.py
-```
-
-第二个终端：
-
-```bash
-$ ros2 launch originbot_navigation gmapping.launch.py
-```
-
-第三个终端（在PC端运行也可以）：
-
-```bash
-$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
-
-保存地图：
-```bash
-$ ros2 run nav2_map_server map_saver_cli -f map
-```
-
-
-
-#### PC端
-
-```bash
-$ ros2 run rviz2 rviz2
-```
-添加map、tf、laserscan等显示插件后，可以看到slam的过程
-
-
-### SLAM地图构建（Cartographer）
+### SLAM地图构建
 
 #### 机器人端
 
