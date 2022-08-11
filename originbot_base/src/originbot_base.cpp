@@ -592,8 +592,8 @@ void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::Orig
         RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
     }
 
-    RCLCPP_INFO(this->get_logger(), "Set motor pid parameters to [%0.4f %0.4f %0.4f]'", request->p, request->p, request->p);
-    
+    RCLCPP_INFO(this->get_logger(), "Set motor pid parameters to [%0.4f %0.4f %0.4f]'", request->p, request->i, request->d);
+
     printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
             pidFrame.header, pidFrame.id, pidFrame.length, pidFrame.data[0], pidFrame.data[1], pidFrame.data[2], 
             pidFrame.data[3], pidFrame.data[4], pidFrame.data[5], pidFrame.check, pidFrame.tail);

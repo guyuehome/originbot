@@ -184,6 +184,15 @@ $ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"
 
 
 
+### 设置电机PID参数
+
+```bash
+$ ros2 service call /originbot_pid originbot_msgs/srv/OriginbotPID "{p: 0.1, i: 0.0, d: 4.0}" 
+```
+![img](images/20220811103849.png)
+
+
+
 ### 查看雷达可视化信息
 
 #### 机器人端
