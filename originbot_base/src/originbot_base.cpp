@@ -4,14 +4,14 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 {
     // 加载参数
     std::string port_name="ttyS3";    
-    this->declare_parameter("port_name");   //声明参数
-    this->get_parameter_or<std::string>("port_name", port_name, "ttyS3");//获取参数
-    this->declare_parameter("correct_factor_vx");   //声明参数
-    this->get_parameter_or<float>("correct_factor_vx", correct_factor_vx_, 1.0);//获取参数
-    this->declare_parameter("correct_factor_vth");   //声明参数
-    this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, 1.0);//获取参数
+    this->declare_parameter("port_name");           //声明及获取串口号参数
+    this->get_parameter_or<std::string>("port_name", port_name, "ttyS3");
+    this->declare_parameter("correct_factor_vx");   //声明及获取线速度校正参数
+    this->get_parameter_or<float>("correct_factor_vx", correct_factor_vx_, 1.0);
+    this->declare_parameter("correct_factor_vth");  //声明及获取角速度校正参数
+    this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, 1.0);
     
-    // 打印预加载的参数
+    // 打印加载的参数值
     printf("Loading parameters: \n - port name: %s\n - correct factor vx: %0.4f\n - correct factor vth: %4f\n", 
             port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
 
@@ -50,6 +50,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     {
         RCLCPP_INFO(this->get_logger(), "originbot serial port opened"); //串口开启成功提示
 
+        // 启动一个新线程读取并处理串口数据
         read_data_thread_ = std::shared_ptr<std::thread>(
             new std::thread(std::bind(&OriginbotBase::readRawData, this)));
     }
@@ -76,11 +77,12 @@ void OriginbotBase::readRawData()
 
     while (rclcpp::ok()) 
     {
+        // 读取一个字节数据，寻找帧头
         auto len = serial_.read(&rx_data, 1);
         if (len < 1)
             continue;
         
-        // 发现帧头
+        // 发现帧头后开始处理数据帧
         if(rx_data == 0x55)
         {
             // 读取完整的数据帧
@@ -98,7 +100,7 @@ void OriginbotBase::readRawData()
 
             frame.header = 0x55;
             
-            //帧校验
+            // 帧校验
             if(checkDataFrame(frame))
             {
                 // printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
@@ -127,6 +129,7 @@ bool OriginbotBase::checkDataFrame(DataFrame &frame)
 
 void OriginbotBase::processDataFrame(DataFrame &frame)
 {
+    // 根据数据帧的ID，对应处理帧数据
     switch(frame.id)
     {
     case FRAME_ID_VELOCITY:
@@ -158,13 +161,14 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
     float vx = 0.0, vth = 0.0;
     float delta_th = 0.0, delta_x = 0.0, delta_y = 0.0;
 
+    // 计算两个周期之间的时间差
     static rclcpp::Time last_time_ = this->now();
     current_time_ = this->now();
 
     float dt = (current_time_.seconds() - last_time_.seconds());
     last_time_ = current_time_;    
 
-    // 获取机器人两侧轮子的速度，单位mm/s --> m/s
+    // 获取机器人两侧轮子的速度，完成单位转换mm/s --> m/s
     uint16_t dataTemp = frame.data[2];
     float speedTemp = (float)((dataTemp << 8) | frame.data[1]);
     if (frame.data[0] == 0)
@@ -179,18 +183,18 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
     else
         right_speed = speedTemp / 1000.0;
 
-    // 通过两侧轮子的速度，计算机器人整体的线速度和角速度
+    // 通过两侧轮子的速度，计算机器人整体的线速度和角速度，通过校正参数做校准
     vx  = correct_factor_vx_  * (left_speed  + right_speed) / 2;                    // m/s
     vth = correct_factor_vth_ * (right_speed - left_speed) / ORIGINBOT_WHEEL_TRACK; // rad/s
 
     //RCLCPP_INFO(this->get_logger(), "dt=%f left_speed=%f right_speed=%f vx=%f vth=%f", dt, left_speed, right_speed, vx, vth);
 
-    // 里程计的微分量计算
+    // 计算里程计单周期内的姿态
     delta_x = vx * cos(odom_th_) * dt;
     delta_y = vx * sin(odom_th_) * dt;
     delta_th = vth * dt;
     
-    // 里程积分计算
+    // 计算里程计的累积姿态
     odom_x_  += delta_x;
     odom_y_  += delta_y;
     odom_th_ += delta_th;
@@ -203,6 +207,7 @@ void OriginbotBase::processVelocityData(DataFrame &frame)
 
     // RCLCPP_INFO(this->get_logger(), "x=%f y=%f th=%f delta_x=%f delta_y=%f,delta_th=%f", odom_x_, odom_y_, odom_th_, delta_x, delta_y, delta_th);
 
+    // 发布里程计话题，完成TF广播
     odom_publisher(vx, vth);    
 }
 
@@ -336,6 +341,7 @@ void OriginbotBase::odom_publisher(float vx, float vth)
         memcpy(&odom_msg.pose.covariance, odom_pose_covariance, sizeof(odom_pose_covariance)),
             memcpy(&odom_msg.twist.covariance, odom_twist_covariance, sizeof(odom_twist_covariance));
 
+    // 发布里程计话题
     odom_publisher_->publish(odom_msg);
 
     geometry_msgs::msg::TransformStamped t;
@@ -353,6 +359,7 @@ void OriginbotBase::odom_publisher(float vx, float vth)
     t.transform.rotation.z = q[2];
     t.transform.rotation.w = q[3];
 
+    // 广播里程计TF
     tf_broadcaster_->sendTransform(t);
 }
 
@@ -360,6 +367,7 @@ void OriginbotBase::imu_publisher()
 {
     //RCLCPP_INFO(this->get_logger(), "Imu Data Publish.");
 
+    // 封装IMU的话题消息
     auto imu_msg = sensor_msgs::msg::Imu();
 
     imu_msg.header.frame_id = "imu_link";
@@ -387,6 +395,7 @@ void OriginbotBase::imu_publisher()
 
     imu_msg.orientation_covariance = {0.0025, 0.0000, 0.0000, 0.0000, 0.0025, 0.0000, 0.0000, 0.0000, 0.0025};
 
+    // 发布IMU话题
     imu_publisher_->publish(imu_msg);
 }
 
@@ -394,6 +403,7 @@ bool OriginbotBase::imu_calibration()
 {
     DataFrame configFrame;
 
+    // 封装IMU校准命令的数据帧
     configFrame.header = 0x55;
     configFrame.id     = 0x07;
     configFrame.length = 0x06;
@@ -464,7 +474,7 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
     cmdFrame.check = (cmdFrame.data[0] + cmdFrame.data[1] + cmdFrame.data[2] + 
                       cmdFrame.data[3] + cmdFrame.data[4] + cmdFrame.data[5]) & 0xff;
 
-    //一组数据
+    // 封装速度命令的数据帧
     cmdFrame.header = 0x55;
     cmdFrame.id     = 0x01;
     cmdFrame.length = 0x06;
@@ -491,6 +501,7 @@ void OriginbotBase::buzzer_callback(const std::shared_ptr<originbot_msgs::srv::O
 
     DataFrame configFrame;
 
+    // 封装蜂鸣器指令的数据帧
     configFrame.header = 0x55;
     configFrame.id     = 0x07;
     configFrame.length = 0x06;
@@ -531,6 +542,7 @@ void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::Orig
 
     DataFrame configFrame;
 
+    // 封装控制LED指令的数据帧
     configFrame.header = 0x55;
     configFrame.id     = 0x07;
     configFrame.length = 0x06;
@@ -573,6 +585,7 @@ void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::Orig
 
     DataFrame pidFrame;
 
+    // 封装PID参数的数据帧
     pidFrame.header = 0x55;
     pidFrame.id     = 0x08;
     pidFrame.length = 0x06;
@@ -607,8 +620,10 @@ void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::Orig
 
 int main(int argc, char *argv[])
 {
+    // 初始化ROS节点
     rclcpp::init(argc, argv);
 
+    // 创建机器人底盘类，通过spin不断查询订阅话题
     rclcpp::spin(std::make_shared<OriginbotBase>("originbot_base"));
     
     rclcpp::shutdown();
