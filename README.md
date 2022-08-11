@@ -53,6 +53,7 @@ $ sudo apt install ros-foxy-slam-toolbox            # 安装slam-toolbox
 $ sudo apt install ros-foxy-cartographer-ros        # 安装cartographer
 $ sudo apt install ros-foxy-teleop-twist-keyboard   # 安装键盘控制节点
 $ sudo apt install ros-foxy-robot-localization      # 安装定位功能包
+$ sudo apt install cloud-utils                      # 安装磁盘工具
 ```
 
 如遇到类似如下问题：
