@@ -17,9 +17,9 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 
-#include "originbot_msgs/msg/originbot_status.h"
-#include "originbot_msgs/srv/originbot_led.h"
-#include "originbot_msgs/srv/originbot_buzzer.h"
+#include "originbot_msgs/msg/originbot_status.hpp"
+#include "originbot_msgs/srv/originbot_led.hpp"
+#include "originbot_msgs/srv/originbot_buzzer.hpp"
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
