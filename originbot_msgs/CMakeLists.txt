@@ -26,7 +26,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/OriginbotStatus.msg"
   "srv/OriginbotBuzzer.srv"
   "srv/OriginbotLed.srv"
-  "srv/OriginbotPID.srv")
+  "srv/OriginbotPID.srv"
+  DEPENDENCIES )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
