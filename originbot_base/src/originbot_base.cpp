@@ -16,9 +16,9 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
             port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
 
     // 创建里程计、IMU、机器人状态的发布者
-    odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 50);
+    odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
     imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
-    status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 50);
+    status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 10);
 
     // 创建速度指令的订阅者
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
