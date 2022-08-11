@@ -23,6 +23,7 @@
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
+using std::placeholders::_2;
 
 #define ORIGINBOT_WHEEL_TRACK  (0.11)
 

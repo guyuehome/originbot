@@ -24,8 +24,8 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
     
     // 创建控制蜂鸣器和LED的服务
-    buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", std::bind(&OriginbotBase::buzzer_callback, this, _1));
-    led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", std::bind(&OriginbotBase::led_callback, this, _1));
+    buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", std::bind(&OriginbotBase::buzzer_callback, this, _1, _2));
+    led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", std::bind(&OriginbotBase::led_callback, this, _1, _2));
 
     // 创建TF广播器
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
