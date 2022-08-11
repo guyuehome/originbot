@@ -160,22 +160,27 @@ $ sudo dd if=/dev/sdb conv=sync,noerror bs=16M | gzip -c > backup.img.gz
 ```bash
 $ ros2 topic echo /originbot_status
 ```
+![img](images/20220811102658.png)
 
 
 
 ### 控制板载蜂鸣器
 
 ```bash
-$ ros2 service call
+$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': true"     ## 打开蜂鸣器
+$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': false"    ## 关闭蜂鸣器
 ```
+![img](images/20220811103849.png)
 
 
 
 ### 控制板载LED灯
 
 ```bash
-$ ros2 service call
+$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': true"      ## 打开LED
+$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"     ## 关闭LED
 ```
+![img](images/20220811102658.png)
 
 
 
