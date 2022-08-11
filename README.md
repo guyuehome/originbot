@@ -354,6 +354,8 @@ $ ros2 run rviz2 rviz2
 添加map、tf、laserscan等显示插件后，可以看到slam的过程
 
 
+![img](images/2022-08-11_20-47.png)
+
 
 ### 自主导航
 
@@ -372,7 +374,7 @@ $ ros2 launch originbot_bringup originbot_lidar.launch.py
 ```bash
 $ ros2 launch originbot_navigation nav_bringup.launch.py
 ```
-
+启动成功后，会在终端中看到不断输出的信息，这是因为没有设置机器人初始位姿的缘故，后续启动Rviz之后会进行设置，暂时可以忽略。
 
 
 #### PC端
@@ -381,6 +383,11 @@ $ ros2 launch originbot_navigation nav_bringup.launch.py
 $ ros2 run rviz2 rviz2
 ```
 
+在打开的Rviz中配置好显示项目，点击工具栏中的初始状态估计按钮，在地图中选择机器人的初始位姿，此时此前终端中的警告也会停止，然后点击目标位置选择的按钮，在地图上选择导航目标点，即可开始自主导航。
+
+![img](images/2022-08-11_20-57.png)
+
+注意：如果在配置好的Rviz中没看到静态地图，可以尝试关闭运行导航的终端，重新打开Rviz之后，再启动Rivz。
 
 
 ### 人体跟踪
