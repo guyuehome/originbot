@@ -323,32 +323,7 @@ $ ros2 service call /originbot_pid originbot_msgs/srv/OriginbotPID "{p: 0.1, i: 
 
 
 ### 机器人里程计校准
-
-#### 机器人端
-
-第一个终端：
-
-```bash
-$ ros2 launch originbot_bringup originbot.launch.py
-```
-
-第二个终端（在PC端运行也可以）：
-
-```bash
-$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
-
-
-
-#### PC端
-
-如果想要查看机器人的动态运动效果，可以在PC端打开Rviz查看：
-
-```bash
-$ ros2 run rviz2 rviz2
-```
-
-Fixed Frame选择odom，添加tf显示，即可看到：
+（待补充）
 
 
 
