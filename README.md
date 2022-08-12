@@ -162,34 +162,6 @@ $ free
 ## 操作说明
 
 
-### 查看机器人状态
-```bash
-$ ros2 topic echo /originbot_status
-```
-![img](images/20220811102658.png)
-
-
-
-### 控制板载蜂鸣器
-
-```bash
-$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': true"     ## 打开蜂鸣器
-$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': false"    ## 关闭蜂鸣器
-```
-![img](images/20220811103849.png)
-
-
-
-### 控制板载LED灯
-
-```bash
-$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': true"      ## 打开LED
-$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"     ## 关闭LED
-```
-![img](images/20220811102658.png)
-
-
-
 ### 确认相机运行正常
 
 ```bash
@@ -297,6 +269,7 @@ $ ros2 launch originbot_bringup originbot.launch.py
 $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
+注意：键盘点击后，机器人会一直运动，直到点击“k”才会停止。
 
 
 #### PC端
@@ -310,6 +283,33 @@ $ ros2 run rviz2 rviz2
 Fixed Frame选择odom，添加tf显示，即可看到：
 ![img](images/2022-08-10_23-30.png)
 
+
+
+### 查看机器人状态
+```bash
+$ ros2 topic echo /originbot_status
+```
+![img](images/20220811102658.png)
+
+
+
+### 控制板载蜂鸣器
+
+```bash
+$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': true"     ## 打开蜂鸣器
+$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': false"    ## 关闭蜂鸣器
+```
+![img](images/20220811103849.png)
+
+
+
+### 控制板载LED灯
+
+```bash
+$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': true"      ## 打开LED
+$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"     ## 关闭LED
+```
+![img](images/20220811102658.png)
 
 
 
