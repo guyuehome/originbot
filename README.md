@@ -215,16 +215,14 @@ $ ros2 launch websocket hobot_websocket.launch.py
 $ ros2 launch originbot_bringup camera.launch.py
 ```
 
-运行成功后，在同一网络中的PC机上，打开浏览器，访问机器人的IP地址，如顺利看到相机图像，则说明相机运行正常。
-
-![img](images/2022-08-12092248.png)
-
-如果运行失败，请确认如下路径中相机型号是“GC4663”，如果不是，请修改好重新运行。
-
+运行成功后，可在机器人端或同网络下的PC端使用如下命令，确认图像话题已经正常发布。
 ```bash
-/opt/tros/share/websocket/launch/hobot_websocket.launch.py
+$ ros2 topic list
 ```
-![img](images/20220812091950.png)
+![img](images/20220812093211.png)
+
+
+在同一网络中的PC机上，使用rviz订阅图像话题，即可看到图像。
 
 
 
