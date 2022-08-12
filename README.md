@@ -190,12 +190,42 @@ $ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"
 
 
 
-### 设置电机PID参数
+### 确认相机运行正常
 
 ```bash
-$ ros2 service call /originbot_pid originbot_msgs/srv/OriginbotPID "{p: 0.1, i: 0.0, d: 4.0}" 
+$ ros2 launch websocket hobot_websocket.launch.py
 ```
-![img](images/20220811103849.png)
+
+运行成功后，在同一网络中的PC机上，打开浏览器，访问机器人的IP地址，如顺利看到相机图像，则说明相机运行正常。
+
+![img](images/2022-08-12092248.png)
+
+如果运行失败，请确认如下路径中相机型号是“GC4663”，如果不是，请修改好重新运行。
+
+```bash
+/opt/tros/share/websocket/launch/hobot_websocket.launch.py
+```
+![img](images/20220812091950.png)
+
+
+
+### 启动相机并发布ROS2话题
+
+```bash
+$ ros2 launch originbot_bringup camera.launch.py
+```
+
+运行成功后，在同一网络中的PC机上，打开浏览器，访问机器人的IP地址，如顺利看到相机图像，则说明相机运行正常。
+
+![img](images/2022-08-12092248.png)
+
+如果运行失败，请确认如下路径中相机型号是“GC4663”，如果不是，请修改好重新运行。
+
+```bash
+/opt/tros/share/websocket/launch/hobot_websocket.launch.py
+```
+![img](images/20220812091950.png)
+
 
 
 
@@ -281,6 +311,16 @@ $ ros2 run rviz2 rviz2
 
 Fixed Frame选择odom，添加tf显示，即可看到：
 ![img](images/2022-08-10_23-30.png)
+
+
+
+
+### 调整电机PID参数
+
+```bash
+$ ros2 service call /originbot_pid originbot_msgs/srv/OriginbotPID "{p: 0.1, i: 0.0, d: 4.0}" 
+```
+![img](images/20220811103849.png)
 
 
 
@@ -450,7 +490,7 @@ $ ros2 launch gesture_control hobot_gesture_control.launch.py
 
 
 ## 常见问题
-1. 当电池电压较低时，会影响雷达供电，导致雷达频率降低，请及时充电；
+1. 古月居提供的系统镜像已经完成常用ROS2功能包的安装，如有新安装的ROS2包，安装后需要完成和tros的软链接，才能使用；
 
 
 ## 参与贡献
