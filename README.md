@@ -18,7 +18,7 @@ OriginBot智能机器人开源套件
 
 ### 扩展板接口说明
 
-![1280X1280](C:\Users\hcx19\Desktop\1280X1280.PNG)
+![1280X1280](images/mcu_board.png)
 
 
 
