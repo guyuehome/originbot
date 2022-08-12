@@ -175,6 +175,14 @@ $ free
 参考：https://www.elecfans.com/d/comp-4395939-136407485203429933056.html
 
 
+## 开发环境搭建
+
+### PC端VSCode远程调试
+https://blog.csdn.net/zhaxun/article/details/120568402
+
+![img](images/2022-08-13_01-34.png)
+
+
 
 ## 操作说明
 
