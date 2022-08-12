@@ -178,7 +178,7 @@ $ free
 
 ## 操作说明
 
-### 启动机器人
+### 上电启动机器人
 
 - 确认硬件连线完毕
 - 打开电源总开关
@@ -189,40 +189,6 @@ $ free
 - 启动成功
 
 
-
-
-### 查看机器人状态
-```bash
-$ ros2 topic echo /originbot_status
-```
-![img](images/20220811102658.png)
-
-
-
-### 控制板载蜂鸣器
-
-```bash
-$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': true"     ## 打开蜂鸣器
-$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': false"    ## 关闭蜂鸣器
-```
-![img](images/20220811103849.png)
-
-
-
-### 控制板载LED灯
-
-```bash
-$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': true"      ## 打开LED
-$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"     ## 关闭LED
-```
-![img](images/20220811102658.png)
-
-
-### 查看CPU和BPU的频率与温度
-```bash
-hrut_somstatus
-```
-![img](images/20220812222045.png)
 
 
 
@@ -267,13 +233,15 @@ $ ros2 topic list
 
 #### 机器人端
 
+启动机器人底盘及雷达驱动：
+
 ```bash
 $ ros2 launch originbot_bringup originbot_lidar.launch.py
 ```
 
 
 
-#### pc端终端
+#### PC端
 
 ```bash
 $ ros2 run rviz2 rviz2
@@ -289,6 +257,8 @@ $ ros2 run rviz2 rviz2
 ### 查看IMU可视化数据
 
 #### 机器人端
+
+启动机器人底盘驱动：
 
 ```bash
 $ ros2 launch originbot_bringup originbot.launch.py
@@ -321,7 +291,7 @@ $ sudo apt install ros-foxy-rviz-imu-plugin
 
 #### 机器人端
 
-第一个终端：
+第一个终端，启动机器人底盘驱动：
 
 ```bash
 $ ros2 launch originbot_bringup originbot.launch.py
@@ -348,8 +318,9 @@ Fixed Frame选择odom，添加tf显示，即可看到：
 
 
 
-
 ### 调整电机PID参数
+
+在以上启动机器人驱动节点的情况下：
 
 ```bash
 $ ros2 service call /originbot_pid originbot_msgs/srv/OriginbotPID "{p: 0.1, i: 0.0, d: 4.0}" 
@@ -360,6 +331,54 @@ $ ros2 service call /originbot_pid originbot_msgs/srv/OriginbotPID "{p: 0.1, i: 
 
 ### 机器人里程计校准
 （待补充）
+
+
+
+### 查看机器人状态
+
+在以上启动机器人驱动节点的情况下：
+
+```bash
+$ ros2 topic echo /originbot_status
+```
+
+![img](images/20220811102658.png)
+
+
+
+### 控制板载蜂鸣器
+
+在以上启动机器人驱动节点的情况下：
+
+```bash
+$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': true"     ## 打开蜂鸣器
+$ ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': false"    ## 关闭蜂鸣器
+```
+
+![img](images/20220811103849.png)
+
+
+
+### 控制板载LED灯
+
+在以上启动机器人驱动节点的情况下：
+
+```bash
+$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': true"      ## 打开LED
+$ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"     ## 关闭LED
+```
+
+![img](images/20220811102658.png)
+
+
+
+### 查看CPU和BPU的频率与温度
+
+```bash
+hrut_somstatus
+```
+
+![img](images/20220812222045.png)
 
 
 
@@ -436,7 +455,9 @@ $ ros2 run rviz2 rviz2
 注意：如果在配置好的Rviz中没看到静态地图，可以尝试关闭运行导航的终端，重新打开Rviz之后，再启动Rivz。
 
 
-### 人体跟踪
+
+
+### 人体跟随
 
 #### 机器人端
 
@@ -466,7 +487,7 @@ $ ros2 launch body_tracking hobot_body_tracking_without_gesture.launch.py
 
 
 
-### 手势识别
+### 手势控制
 
 #### 机器人端
 
@@ -498,8 +519,11 @@ $ ros2 launch gesture_control hobot_gesture_control.launch.py
 ![img](images/2022-08-10_23-09.png)
 
 
+
 ## 常见问题
+
 1. 古月居提供的系统镜像已经完成常用ROS2功能包的安装，如有新安装的ROS2包，安装后需要完成和tros的软链接，才能使用；
+
 
 
 ## 参与贡献
