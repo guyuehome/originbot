@@ -14,6 +14,23 @@ OriginBot智能机器人开源套件
 
 
 
+## 硬件接口
+
+### 扩展板接口说明
+
+![1280X1280](C:\Users\hcx19\Desktop\1280X1280.PNG)
+
+
+
+### 硬件连接
+
+1. 扩展板USB旭日派供电口 --> 旭日派TypeC电源口
+2. 电池DC头 --> 扩展板12V电池接口
+3. 扩展板上位机通信端口 --> 旭日派40PIN扩展口中的UART3（rx、tx、gnd）
+
+
+
+
 ## 系统配置
 
 ### 安装系统镜像
@@ -161,6 +178,18 @@ $ free
 
 ## 操作说明
 
+### 启动机器人
+
+- 确认硬件连线完毕
+- 打开电源总开关
+- 扩展板电源灯点亮
+- 旭日派启动
+- 雷达开始旋转
+- 通过网线或者串口线连接并登陆旭日派
+- 启动成功
+
+
+
 
 ### 查看机器人状态
 ```bash
@@ -187,6 +216,13 @@ $ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': true" 
 $ ros2 service call /originbot_led originbot_msgs/srv/OriginbotLed "'on': false"     ## 关闭LED
 ```
 ![img](images/20220811102658.png)
+
+
+### 查看CPU和BPU的频率与温度
+```bash
+hrut_somstatus
+```
+![img](images/20220812222045.png)
 
 
 
