@@ -242,7 +242,8 @@ https://developer.horizon.ai/api/v1/fileData/TogetherROS/FAQs/FAQs.html#rqt-imag
 ```bash
 $ sudo apt install ros-foxy-rmw-cyclonedds-cpp
 $ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-$ export CYCLONEDDS_URI='<CycloneDDS><Domain><General><NetworkInterfaceAddress>wlan0</NetworkInterfaceAddress></General></Domain></CycloneDDS>'  # 用于选择输出传输的网卡，按照实际需要，修改为eth0或者wlan0
+$ export CYCLONEDDS_URI='<CycloneDDS><Domain><General><NetworkInterfaceAddress>wlan0</NetworkInterfaceAddress></General></Domain></CycloneDDS>'  # 用于选择数据传输的网卡，按照实际需要，修改为eth0或者wlan0，http://www.robotandchisel.com/2020/08/12/cyclonedds/
+$ ros2 doctor --report | grep middleware # 确定切换DDS是否成功，需要等待10几秒钟
 $ ros2 launch originbot_bringup camera.launch.py
 ```
 
