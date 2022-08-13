@@ -252,6 +252,8 @@ https://developer.horizon.ai/api/v1/fileData/TogetherROS/FAQs/FAQs.html#rqt-imag
 ```bash
 $ sudo apt install ros-foxy-rmw-cyclonedds-cpp
 $ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+$ export CYCLONEDDS_URI='<CycloneDDS><Domain><General><NetworkInterfaceAddress>wlan0</NetworkInterfaceAddress></General></Domain></CycloneDDS>'  # 用于选择数据传输的网卡，按照实际需要，修改为eth0或者wlan0，http://www.robotandchisel.com/2020/08/12/cyclonedds/
+$ ros2 doctor --report | grep middleware # 确定切换DDS是否成功，需要等待10几秒钟
 $ ros2 launch originbot_bringup camera.launch.py
 ```
 
@@ -475,12 +477,20 @@ $ ros2 launch originbot_navigation nav_bringup.launch.py
 ```bash
 $ ros2 run rviz2 rviz2
 ```
+注意：如果在配置好的Rviz中没看到静态地图，可以尝试关闭运行导航的终端，重新打开Rviz之后，再启动Rivz。
 
+
+- 单目目标点导航
 在打开的Rviz中配置好显示项目，点击工具栏中的初始状态估计按钮，在地图中选择机器人的初始位姿，此时此前终端中的警告也会停止，然后点击目标位置选择的按钮，在地图上选择导航目标点，即可开始自主导航。
 
 ![img](images/202208111147062.png)
 
-注意：如果在配置好的Rviz中没看到静态地图，可以尝试关闭运行导航的终端，重新打开Rviz之后，再启动Rivz。
+- 多目标点导航
+在打开的Rviz中配置好显示项目，点击工具栏中的初始状态估计按钮，在地图中选择机器人的初始位姿，此时此前终端中的警告也会停止，然后点击目标位置选择的按钮，在地图上选择导航目标点，即可开始自主导航。
+
+![img](images/2022-08-13_16-16.png)
+![img](images/2022-08-13_16-17.png)
+![img](images/2022-08-13_16-23.png)
 
 
 
