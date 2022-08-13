@@ -242,6 +242,7 @@ https://developer.horizon.ai/api/v1/fileData/TogetherROS/FAQs/FAQs.html#rqt-imag
 ```bash
 $ sudo apt install ros-foxy-rmw-cyclonedds-cpp
 $ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+$ export CYCLONEDDS_URI='<CycloneDDS><Domain><General><NetworkInterfaceAddress>wlan0</NetworkInterfaceAddress></General></Domain></CycloneDDS>'  # 用于选择输出传输的网卡，按照实际需要，修改为eth0或者wlan0
 $ ros2 launch originbot_bringup camera.launch.py
 ```
 
