@@ -71,6 +71,8 @@ $ sudo apt install ros-foxy-cartographer-ros        # 安装cartographer
 $ sudo apt install ros-foxy-teleop-twist-keyboard   # 安装键盘控制节点
 $ sudo apt install ros-foxy-robot-localization      # 安装定位功能包
 $ sudo apt install cloud-utils                      # 安装磁盘工具
+$ sudo apt install ros-foxy-rmw-cyclonedds-cpp      # 安装Cyclone DDS
+
 ```
 
 如遇到类似如下问题：
@@ -234,6 +236,14 @@ $ ros2 topic list
 
 在同一网络中的PC机上，使用rviz订阅图像话题，即可看到图像。
 
+注意：如果出现图像卡顿或延迟，可以将使用的DDS切换为cyclonedds
+https://developer.horizon.ai/api/v1/fileData/TogetherROS/FAQs/FAQs.html#rqt-image-viewx3rgb888-raw
+
+```bash
+$ sudo apt install ros-foxy-rmw-cyclonedds-cpp
+$ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+$ ros2 launch originbot_bringup camera.launch.py
+```
 
 
 
