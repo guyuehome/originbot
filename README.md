@@ -82,7 +82,8 @@ $ sudo apt install ros-foxy-teleop-twist-keyboard   # 安装键盘控制节点
 $ sudo apt install ros-foxy-robot-localization      # 安装定位功能包
 $ sudo apt install cloud-utils                      # 安装磁盘工具
 $ sudo apt install ros-foxy-rmw-cyclonedds-cpp      # 安装Cyclone DDS
-
+$ sudo apt install ros-foxy-teleop-twist-joy        # 安装手柄的驱动包
+$ sudo apt install ros-foxy-joy-linux               # 安装手柄的驱动包
 ```
 
 如遇到类似如下问题：
@@ -345,6 +346,37 @@ $ ros2 run rviz2 rviz2
 
 Fixed Frame选择odom，添加tf显示，即可看到：
 ![img](images/2022-08-10_23-30.png)
+
+
+### 手柄遥控
+
+#### 手柄连接
+- 有线手柄；将手柄的usb接口插入旭日X3派或电脑端的的USB接口
+- 无线手柄；将手柄的无线接收器插入旭日X3派或电脑端的的USB接口
+
+请确认以下功能包在连接手柄的主机中已经安装完成：
+```bash
+$ sudo apt install ros-foxy-teleop-twist-joy        # 安装手柄的驱动包
+$ sudo apt install ros-foxy-joy-linux               # 安装手柄的驱动包
+```
+
+
+#### 机器人端
+
+第一个终端，启动机器人底盘驱动：
+
+```bash
+$ ros2 launch originbot_bringup originbot.launch.py
+```
+
+第二个终端（在PC端运行也可以）：
+
+```bash
+$ ros2 launch originbot_bringup joy_teleop.launch.py
+```
+
+- 常速运行：按住L1，拨动手柄左侧摇杆，控制机器人运动
+- 快速运行：按住R1，拨动手柄左侧摇杆，控制机器人运动
 
 
 

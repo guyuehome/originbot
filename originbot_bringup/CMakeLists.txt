@@ -26,9 +26,11 @@ find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(joy_linux REQUIRED)
+find_package(teleop_twist_joy REQUIRED)
 
 install(
-  DIRECTORY launch param
+  DIRECTORY launch param config
   DESTINATION share/${PROJECT_NAME}
 )
 
