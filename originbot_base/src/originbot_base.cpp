@@ -411,7 +411,7 @@ bool OriginbotBase::imu_calibration()
     configFrame.data[1]= 0x00;
     configFrame.data[2]= 0x00;
     configFrame.data[3]= 0x00;
-    configFrame.data[4]= 0x00;
+    configFrame.data[4]= 0xFF;
     configFrame.data[5]= 0xFF;
     configFrame.check = (configFrame.data[0] + configFrame.data[1] + configFrame.data[2] + 
                          configFrame.data[3] + configFrame.data[4] + configFrame.data[5]) & 0xff;
@@ -507,7 +507,7 @@ void OriginbotBase::buzzer_callback(const std::shared_ptr<originbot_msgs::srv::O
     configFrame.length = 0x06;
     configFrame.data[0]= 0x00;
     configFrame.data[1]= 0x00;
-    configFrame.data[2]= 0x00;
+    configFrame.data[2]= 0xFF;
 
     if(robot_status_.buzzer_on)
         configFrame.data[3]= 0xFF;
@@ -546,7 +546,7 @@ void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::Orig
     configFrame.header = 0x55;
     configFrame.id     = 0x07;
     configFrame.length = 0x06;
-    configFrame.data[0]= 0x00;
+    configFrame.data[0]= 0xFF;
 
     if(robot_status_.led_on)
         configFrame.data[1]= 0xFF;
