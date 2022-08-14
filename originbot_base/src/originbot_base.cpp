@@ -55,12 +55,15 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
             new std::thread(std::bind(&OriginbotBase::readRawData, this)));
     }
 
-    //IMU初始化标定
+    // IMU初始化标定
     if(imu_calibration())
     {
         usleep(200000);    //确保标定完成
         RCLCPP_INFO(this->get_logger(), "IMU calibration ok.");
     }
+
+    // 设置LED灯的初始状态
+    robot_status_.led_on = true;
 
     RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 }
