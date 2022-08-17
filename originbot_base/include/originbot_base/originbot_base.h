@@ -115,8 +115,8 @@ private:
     RobotStatus robot_status_;
 
     rclcpp::TimerBase::SharedPtr timer_100ms_;
-    bool need_smooth_stop_=true;
-    unsigned int smooth_stop_count_=0;
+    bool auto_stop_on_=true;
+    unsigned int auto_stop_count_=0;
 
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;

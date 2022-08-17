@@ -19,6 +19,9 @@ def generate_launch_description():
     correct_factor_vth_arg = DeclareLaunchArgument('correct_factor_vth', default_value='0.868',
                                          description='correct factor vth, e.g. 0.9')
 
+    auto_stop_on_arg = DeclareLaunchArgument('auto_stop_on', default_value='true',
+                                         description='auto stop if no cmd received, true or false')
+
     originbot_base_node = Node(
         package='originbot_base',
         executable='originbot_base', 
@@ -29,6 +32,7 @@ def generate_launch_description():
                 'port_name': LaunchConfiguration('port_name'), 
                 'correct_factor_vx': LaunchConfiguration('correct_factor_vx'), 
                 'correct_factor_vth': LaunchConfiguration('correct_factor_vth'), 
+                'auto_stop_on': LaunchConfiguration('auto_stop_on'), 
         }])
 
     originbot_imu_tf = Node(
@@ -43,6 +47,7 @@ def generate_launch_description():
         port_name_arg,
         correct_factor_vx_arg,
         correct_factor_vth_arg,
+        auto_stop_on_arg,
         originbot_base_node,
         originbot_imu_tf
     ])

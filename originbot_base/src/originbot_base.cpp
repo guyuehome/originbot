@@ -10,7 +10,9 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->get_parameter_or<float>("correct_factor_vx", correct_factor_vx_, 1.0);
     this->declare_parameter("correct_factor_vth");  //声明及获取角速度校正参数
     this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, 1.0);
-    
+    this->declare_parameter("auto_stop_on");        //声明及获取自动停车功能的开关值
+    this->get_parameter_or<bool>("auto_stop_on", auto_stop_on_, true);
+
     // 打印加载的参数值
     printf("Loading parameters: \n - port name: %s\n - correct factor vx: %0.4f\n - correct factor vth: %4f\n", 
             port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
@@ -485,7 +487,7 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
 
     // 考虑平稳停车的计数值
     if((fabs(x_linear)<0.0001) || (fabs(z_angular)<0.0001))
-        smooth_stop_count_ = 0;
+        auto_stop_count_ = 0;
 
     // printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
     //         cmdFrame.header, cmdFrame.id, cmdFrame.length, cmdFrame.data[0], cmdFrame.data[1], cmdFrame.data[2], 
@@ -618,15 +620,15 @@ void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::Orig
 
 void OriginbotBase::timer_100ms_callback()
 {
-    // 是否开启无指令情况下的自动停车
-    if(need_smooth_stop_ && smooth_stop_count_<20)
+    // 是否开启自动停车，且出发自动停车的条件
+    if(auto_stop_on_ && auto_stop_count_<20)
     {
-        smooth_stop_count_ ++;
+        auto_stop_count_ ++;
 
-         // 准备停车
-        if(smooth_stop_count_ > 10)
+         // 1秒之内没有收到指令的话，就自动停车
+        if(auto_stop_count_ > 10)
         {
-            smooth_stop_count_ = 255;
+            auto_stop_count_ = 255;
 
             DataFrame cmdFrame;
             cmdFrame.data[0] = 0x00;
