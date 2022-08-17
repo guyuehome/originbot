@@ -616,7 +616,7 @@ void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::Orig
     response->result = true;
 }                       
 
-void timer_100ms_callback()
+void OriginbotBase::timer_100ms_callback()
 {
     // 是否开启无指令情况下的自动停车
     if(need_smooth_stop_ && smooth_stop_count_<20)
