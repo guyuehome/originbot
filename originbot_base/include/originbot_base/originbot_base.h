@@ -99,6 +99,9 @@ private:
                             std::shared_ptr<originbot_msgs::srv::OriginbotLed::Response> response);
     void pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
                             std::shared_ptr<originbot_msgs::srv::OriginbotPID::Response> response);
+
+    void timer_100ms_callback();
+
 private:
     serial::Serial serial_;
     rclcpp::Time current_time_;
@@ -110,6 +113,10 @@ private:
     std::shared_ptr<std::thread> read_data_thread_;
     DataImu imu_data_;
     RobotStatus robot_status_;
+
+    rclcpp::TimerBase::SharedPtr timer_100ms_;
+    bool need_smooth_stop_=false;
+    unsigned int smooth_stop_count_=0;
 
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher_;

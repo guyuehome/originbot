@@ -65,6 +65,10 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     // 设置LED灯的初始状态
     robot_status_.led_on = true;
 
+    // 启动一个100ms的定时器，处理订阅者之外的其他信息
+    timer_100ms_ = this->create_wall_timer(
+      100ms, std::bind(&OriginbotBase::timer_100ms_callback, this));
+
     RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 }
 
@@ -438,25 +442,12 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
     DataFrame cmdFrame;
     float leftSpeed = 0.0, rightSpeed = 0.0;
 
-    float x_linear = msg->linear.x;
+    float x_linear = msg->linear.x; 
     float z_angular = msg->angular.z;
 
-    //差分轮运动学模型求解，三种情况
-    if (x_linear == 0)
-    {
-        rightSpeed = z_angular * ORIGINBOT_WHEEL_TRACK / 2.0;
-        leftSpeed = (-1) * rightSpeed;
-    }
-    else if (z_angular == 0)
-    {
-        leftSpeed = x_linear;
-        rightSpeed = x_linear;
-    }
-    else
-    {
-        leftSpeed = x_linear - z_angular * ORIGINBOT_WHEEL_TRACK / 2.0;
-        rightSpeed = x_linear + z_angular * ORIGINBOT_WHEEL_TRACK / 2.0;
-    }
+    //差分轮运动学模型求解
+    leftSpeed  = x_linear - z_angular * ORIGINBOT_WHEEL_TRACK / 2.0;
+    rightSpeed = x_linear + z_angular * ORIGINBOT_WHEEL_TRACK / 2.0;
 
     // RCLCPP_INFO(this->get_logger(), "leftSpeed = '%f' rightSpeed = '%f'", leftSpeed * 100, rightSpeed * 100);
 
@@ -491,6 +482,10 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
     {
         RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
     }
+
+    // 考虑平稳停车的计数值
+    if((fabs(x_linear)<0.0001) || (fabs(z_angular)<0.0001))
+        smooth_stop_count_ = 0;
 
     // printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
     //         cmdFrame.header, cmdFrame.id, cmdFrame.length, cmdFrame.data[0], cmdFrame.data[1], cmdFrame.data[2], 
@@ -620,6 +615,48 @@ void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::Orig
 
     response->result = true;
 }                       
+
+void timer_100ms_callback()
+{
+    // 是否开启无指令情况下的自动停车
+    if(need_smooth_stop_ && smooth_stop_count_<20)
+    {
+        smooth_stop_count_ ++;
+
+         // 准备停车
+        if(smooth_stop_count_ > 10)
+        {
+            smooth_stop_count_ = 255;
+
+            DataFrame cmdFrame;
+            cmdFrame.data[0] = 0x00;
+            cmdFrame.data[1] = 0x00;         
+            cmdFrame.data[2] = 0x00;
+            cmdFrame.data[3] = 0x00;
+            cmdFrame.data[4] = 0x00; 
+            cmdFrame.data[5] = 0x00;
+            cmdFrame.check = (cmdFrame.data[0] + cmdFrame.data[1] + cmdFrame.data[2] + 
+                            cmdFrame.data[3] + cmdFrame.data[4] + cmdFrame.data[5]) & 0xff;
+
+            // 封装速度命令的数据帧
+            cmdFrame.header = 0x55;
+            cmdFrame.id     = 0x01;
+            cmdFrame.length = 0x06;
+            cmdFrame.tail   = 0xbb;
+            try
+            {
+                serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
+            }
+
+            catch (serial::IOException &e)
+            {
+                RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+            }           
+        }
+    }
+
+
+}
 
 int main(int argc, char *argv[])
 {
