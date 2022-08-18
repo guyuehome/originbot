@@ -269,14 +269,6 @@ void OriginbotBase::processSensorData(DataFrame &frame)
 {
     robot_status_.battery_voltage = (float)frame.data[0] + ((float)frame.data[1]/100.0);
 
-    originbot_msgs::msg::OriginbotStatus status_msg;
-
-    status_msg.battery_voltage = robot_status_.battery_voltage;
-    status_msg.buzzer_on = robot_status_.buzzer_on;
-    status_msg.led_on = robot_status_.led_on;
-
-    status_publisher_->publish(status_msg);
-
     // RCLCPP_INFO(this->get_logger(), "Battery Voltage: %0.2f", (float)frame.data[0] + ((float)frame.data[1]/100.0));
 }
 
@@ -625,8 +617,8 @@ void OriginbotBase::timer_100ms_callback()
     {
         auto_stop_count_ ++;
 
-         // 1秒之内没有收到指令的话，就自动停车
-        if(auto_stop_count_ > 10)
+         // 0.5之内没有收到指令的话，就自动停车
+        if(auto_stop_count_ > 5)
         {
             auto_stop_count_ = 255;
 
@@ -657,7 +649,14 @@ void OriginbotBase::timer_100ms_callback()
         }
     }
 
+    // 发布机器人的状态信息
+    originbot_msgs::msg::OriginbotStatus status_msg;
 
+    status_msg.battery_voltage = robot_status_.battery_voltage;
+    status_msg.buzzer_on = robot_status_.buzzer_on;
+    status_msg.led_on = robot_status_.led_on;
+
+    status_publisher_->publish(status_msg);
 }
 
 int main(int argc, char *argv[])
