@@ -640,7 +640,7 @@ void OriginbotBase::timer_100ms_callback()
             try
             {
                 serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
-                RCLCPP_INFO(this->get_logger(), "Execute auto stop");
+                RCLCPP_DEBUG(this->get_logger(), "Execute auto stop");
             }
 
             catch (serial::IOException &e)
