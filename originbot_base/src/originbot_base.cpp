@@ -478,7 +478,7 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
     }
 
     // 考虑平稳停车的计数值
-    if((fabs(x_linear)<0.0001) || (fabs(z_angular)<0.0001))
+    if((fabs(x_linear)>0.0001) || (fabs(z_angular)>0.0001))
         auto_stop_count_ = 0;
 
     // printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
@@ -640,6 +640,7 @@ void OriginbotBase::timer_100ms_callback()
             try
             {
                 serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
+                RCLCPP_INFO(this->get_logger(), "Execute auto stop");
             }
 
             catch (serial::IOException &e)
