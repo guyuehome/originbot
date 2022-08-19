@@ -590,6 +590,41 @@ $ ros2 launch gesture_control hobot_gesture_control.launch.py
 
 
 
+### 视觉巡线
+
+#### 机器人端
+
+第一个终端：
+
+```bash
+$ ros2 launch originbot_bringup originbot.launch.py
+```
+
+第二个终端：
+
+```bash
+$ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+$ ros2 launch originbot_bringup camera.launch.py
+```
+
+第三个终端：
+
+```bash
+$ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+$ ros2 run originbot_linefollower follower
+```
+
+### PC端
+
+```bash
+ros2 run rqt_image_view rqt_image_view
+```
+订阅/camera/process_image话题，即可看到动态识别的图像效果。
+
+
+
+
+
 ## 常见问题
 
 1. 古月居提供的系统镜像已经完成常用ROS2功能包的安装，如有新安装的ROS2包，安装后需要完成和tros的软链接，才能使用；
