@@ -188,6 +188,58 @@ $ free
 参考：https://www.elecfans.com/d/comp-4395939-136407485203429933056.html
 
 
+#### 备份
+
+备份在电脑端Ubuntu系统中完成，为减少镜像大小，这里使用gparted软件压缩SD卡的磁盘空间。
+
+将SD卡插入运行的电脑中，安装并启动gparted软件：
+
+```bash
+$ sudo apt-get install gparted
+$ sudo gparted
+```
+
+在右上角选择SD卡：
+![img](images/2022-08-19_18-13.png)
+
+卸载SD卡的挂载：
+![img](images/2022-08-19_18-27.png)
+
+右键选择重新设置SD卡的空间大小：
+![img](images/2022-08-19_18-27_1.png)
+
+拖拽空间划分条右侧的尺度调整，压缩空间，黄色是占用的分区，白色是空闲的分区，注意保留一点白色空闲分区即可。
+![img](images/2022-08-19_18-28.png)
+
+确认后点击软件中的执行按钮，开始进行压缩操作。
+![img](images/2022-08-19_18-28_1.png)
+
+
+压缩完成后，即可关闭gparted软件，打开终端，使用fdisk命令查看当前磁盘情况。
+```bash
+$ sudo fdisk -u -l
+```
+![img](images/2022-08-19_18-23.png)
+
+图中/dev/sdb就是SD卡的磁盘编号，继续使用如下命令查看SD卡分区信息：
+```bash
+$ sudo fdisk -u -l /dev/sdb
+```
+![img](images/2022-08-19_18-23_1.png)
+
+现在就可以使用dd命令，来备份SD卡到img文件中了。
+```bash
+$ sudo dd bs=512 count=[fdisk命令中最大的end数+1] if=/dev/sdb of=originbot_backup.img
+```
+![img](images/2022-08-19_18-25.png)
+
+此时终端中并没有提示信息，但是备份已经开始，时间较长，请耐心等待。
+
+完成备份后，终端指令会自动跳出，当前路径下得到img镜像备份文件。
+![img](images/2022-08-19_18-32.png)
+
+
+
 ## 开发环境搭建
 
 ### PC端VSCode远程调试
