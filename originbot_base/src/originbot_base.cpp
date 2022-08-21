@@ -32,12 +32,12 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->get_parameter_or<bool>("use_imu", use_imu_, false);
     
     // 打印加载的参数值
-    printf("Loading parameters: \n 
-            - port name: %s\n 
-            - correct factor vx: %0.4f\n 
-            - correct factor vth: %0.4f\n
-            - auto stop on: %d\n
-            - use imu: %d\n", 
+    printf("Loading parameters: \n         \
+            - port name: %s\n              \
+            - correct factor vx: %0.4f\n   \
+            - correct factor vth: %0.4f\n  \
+            - auto stop on: %d\n           \
+            - use imu: %d\n",              \
             port_name.c_str(), correct_factor_vx_, correct_factor_vth_, auto_stop_on_, use_imu); 
 
     // 创建里程计、IMU、机器人状态的发布者
