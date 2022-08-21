@@ -40,9 +40,8 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
             - use imu: %d\n",\
             port_name.c_str(), correct_factor_vx_, correct_factor_vth_, auto_stop_on_, use_imu_); 
 
-    // 创建里程计、IMU、机器人状态的发布者
+    // 创建里程计、机器人状态的发布者
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
-    imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
     status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 10);
 
     // 创建速度指令的订阅者
@@ -80,11 +79,17 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
             new std::thread(std::bind(&OriginbotBase::readRawData, this)));
     }
 
-    // IMU初始化标定
-    if(imu_calibration())
+    if(use_imu_)
     {
-        usleep(200000);    //确保标定完成
-        RCLCPP_INFO(this->get_logger(), "IMU calibration ok.");
+        // 创建IMU的话题发布者
+        imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
+
+        // IMU初始化标定
+        if(imu_calibration())
+        {
+            usleep(200000);    //确保标定完成
+            RCLCPP_INFO(this->get_logger(), "IMU calibration ok.");
+        }
     }
 
     // 设置LED灯的初始状态
@@ -285,7 +290,8 @@ void OriginbotBase::processEulerData(DataFrame &frame)
     imu_data_.pitch = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(180);
     imu_data_.yaw   = imu_conversion(frame.data[5], frame.data[4]) / 32768 * degToRad(180);
 
-    imu_publisher();
+    if(use_imu_)
+        imu_publisher();
 }
 
 void OriginbotBase::processSensorData(DataFrame &frame)
