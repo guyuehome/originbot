@@ -23,8 +23,8 @@ from geometry_msgs.msg import Twist
 class Follower(Node):
     def __init__(self):
         super().__init__('line_follower')
+        self.get_logger().info("Start line follower.")
 
-        # cv2.namedWindow("window", 1)
         self.bridge = cv_bridge.CvBridge()
 
         self.image_sub = self.create_subscription(Image, '/image_bgr8', self.image_callback, 10)
@@ -52,19 +52,16 @@ class Follower(Node):
             cy = int(M['m01']/M['m00'])
             cv2.circle(image, (cx, cy), 20, (0,0,255), -1)
 
-            # BEGIN CONTROL
+            # 基于检测的目标中心点，计算机器人的控制参数
             err = cx - w/2
             self.twist.linear.x = 0.1
             self.twist.angular.z = -float(err) / 100
             self.cmd_vel_pub.publish(self.twist)
-            # END CONTROL
-
-        # cv2.imshow("window", image)
-        # cv2.waitKey(3)
+            
         self.pub.publish(self.bridge.cv2_to_imgmsg(image, 'bgr8'))
 
 def main(args=None):
-    rclpy.init(args=args)
+    rclpy.init(args=args)    
     follower = Follower()
     rclpy.spin(follower)
     follower.destroy_node()
