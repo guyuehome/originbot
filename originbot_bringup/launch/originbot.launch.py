@@ -15,17 +15,18 @@
 # limitations under the License.
 
 import os
-import sys
-
 import launch
 import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    ld = launch.LaunchDescription([                                                                               
-        launch.actions.DeclareLaunchArgument(name='open_rviz',
-                                             default_value='false'),
+    ld = launch.LaunchDescription([
+        launch.actions.DeclareLaunchArgument(name='open_rviz', default_value='false'),
+        launch.actions.DeclareLaunchArgument(name='use_lidar', default_value='false'),
+        launch.actions.DeclareLaunchArgument(name='use_imu', default_value='false'),
+        launch.actions.DeclareLaunchArgument(name='use_camera', default_value='false'),
+
         launch_ros.actions.Node(
             package='rviz2',
             name='rviz2',
@@ -38,7 +39,21 @@ def generate_launch_description():
             launch.launch_description_sources.PythonLaunchDescriptionSource(
                 os.path.join(get_package_share_directory('originbot_base'),
                              'launch/robot.launch.py')),
-            )
+            ),
+
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('originbot_bringup'),
+                             'launch','ydlidar.launch.py')),
+                condition=launch.conditions.IfCondition(
+                    launch.substitutions.LaunchConfiguration('use_lidar'))),
+
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('originbot_bringup'),
+                             'launch','camera.launch.py')),
+                condition=launch.conditions.IfCondition(
+                    launch.substitutions.LaunchConfiguration('use_camera')))
     ])
     return ld
 
