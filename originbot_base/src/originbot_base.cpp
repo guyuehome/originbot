@@ -38,7 +38,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
             - correct factor vth: %0.4f\n  \
             - auto stop on: %d\n           \
             - use imu: %d\n",              \
-            port_name.c_str(), correct_factor_vx_, correct_factor_vth_, auto_stop_on_, use_imu); 
+            port_name.c_str(), correct_factor_vx_, correct_factor_vth_, auto_stop_on_, use_imu_); 
 
     // 创建里程计、IMU、机器人状态的发布者
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
