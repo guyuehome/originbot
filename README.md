@@ -84,6 +84,7 @@ $ sudo apt install cloud-utils                      # 安装磁盘工具
 $ sudo apt install ros-foxy-rmw-cyclonedds-cpp      # 安装Cyclone DDS
 $ sudo apt install ros-foxy-teleop-twist-joy        # 安装手柄的驱动包
 $ sudo apt install ros-foxy-joy-linux               # 安装手柄的驱动包
+$ sudo apt install ros-foxy-cv-bridge               # 安装图像处理包
 ```
 
 如遇到类似如下问题：
@@ -673,7 +674,7 @@ ros2 run rqt_image_view rqt_image_view
 ```
 订阅/camera/process_image话题，即可看到动态识别的图像效果。
 
-
+![img](images/2022-08-21_15-15.png)
 
 
 
