@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 优化
 - 不同传感器的启动脚本都集成在originbot.launch.py中，通过参数来设置
 - 调试视觉巡线功能，基于HSV模型识别制定区域内的某种颜色中心，从而转化成控制指令
-
+- 旭日派中ROS启动成功时，蜂鸣器响0.5s
 
 
 ## [v0.1] - 2022-8-19
