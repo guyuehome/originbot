@@ -320,7 +320,7 @@ $ ros2 launch originbot_bringup camera.launch.py
 启动机器人底盘及雷达驱动：
 
 ```bash
-$ ros2 launch originbot_bringup originbot_lidar.launch.py
+$ ros2 launch originbot_bringup originbot.launch.py use_lidar:=true
 ```
 
 
@@ -345,7 +345,7 @@ $ ros2 run rviz2 rviz2
 启动机器人底盘驱动：
 
 ```bash
-$ ros2 launch originbot_bringup originbot.launch.py
+$ ros2 launch originbot_bringup originbot.launch.py use_imu:=true
 ```
 
 
@@ -504,7 +504,7 @@ hrut_somstatus
 第一个终端：
 
 ```bash
-$ ros2 launch originbot_bringup originbot_lidar.launch.py
+$ ros2 launch originbot_bringup originbot.launch.py use_lidar:=true
 ```
 
 第二个终端：
@@ -546,7 +546,7 @@ $ ros2 run rviz2 rviz2
 第一个终端：
 
 ```bash
-$ ros2 launch originbot_bringup originbot_lidar.launch.py
+$ ros2 launch originbot_bringup originbot.launch.py use_lidar:=true
 ```
 
 第二个终端：
@@ -650,17 +650,11 @@ $ ros2 launch gesture_control hobot_gesture_control.launch.py
 第一个终端：
 
 ```bash
-$ ros2 launch originbot_bringup originbot.launch.py
+$ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+$ ros2 launch originbot_bringup originbot.launch.py use_camera:=true
 ```
 
 第二个终端：
-
-```bash
-$ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-$ ros2 launch originbot_bringup camera.launch.py
-```
-
-第三个终端：
 
 ```bash
 $ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp

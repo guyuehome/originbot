@@ -39,6 +39,9 @@ def generate_launch_description():
     auto_stop_on_arg = DeclareLaunchArgument('auto_stop_on', default_value='true',
                                          description='auto stop if no cmd received, true or false')
 
+    use_imu_arg = DeclareLaunchArgument('use_imu', default_value='false',
+                                         description='if has imu sensor to drive')
+
     originbot_base_node = Node(
         package='originbot_base',
         executable='originbot_base', 
@@ -50,14 +53,14 @@ def generate_launch_description():
                 'correct_factor_vx': LaunchConfiguration('correct_factor_vx'), 
                 'correct_factor_vth': LaunchConfiguration('correct_factor_vth'), 
                 'auto_stop_on': LaunchConfiguration('auto_stop_on'), 
+                'use_imu': LaunchConfiguration('use_imu'), 
         }])
 
     originbot_imu_tf = Node(
         package='tf2_ros',
         executable='static_transform_publisher', 
         emulate_tty=True,
-        arguments="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /imu_link".split(
-                ' '))
+        arguments="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /imu_link".split(' '))
         
     return LaunchDescription([
         # use_sim_time_arg,

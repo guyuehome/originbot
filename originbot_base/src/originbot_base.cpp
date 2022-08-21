@@ -28,10 +28,17 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, 1.0);
     this->declare_parameter("auto_stop_on");        //声明及获取自动停车功能的开关值
     this->get_parameter_or<bool>("auto_stop_on", auto_stop_on_, true);
-
+    this->declare_parameter("use_imu");             //声明是否使用imu
+    this->get_parameter_or<bool>("use_imu", use_imu_, false);
+    
     // 打印加载的参数值
-    printf("Loading parameters: \n - port name: %s\n - correct factor vx: %0.4f\n - correct factor vth: %4f\n", 
-            port_name.c_str(), correct_factor_vx_, correct_factor_vth_); 
+    printf("Loading parameters: \n 
+            - port name: %s\n 
+            - correct factor vx: %0.4f\n 
+            - correct factor vth: %0.4f\n
+            - auto stop on: %d\n
+            - use imu: %d\n", 
+            port_name.c_str(), correct_factor_vx_, correct_factor_vth_, auto_stop_on_, use_imu); 
 
     // 创建里程计、IMU、机器人状态的发布者
     odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
