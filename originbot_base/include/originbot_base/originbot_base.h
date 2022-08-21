@@ -22,6 +22,7 @@ limitations under the License.
 #include <cmath>
 #include <thread>
 #include <algorithm>
+#include <stdlib.h>
 #include <serial/serial.h>
 
 #include "rclcpp/rclcpp.hpp"

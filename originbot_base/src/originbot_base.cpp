@@ -99,6 +99,10 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     timer_100ms_ = this->create_wall_timer(
       100ms, std::bind(&OriginbotBase::timer_100ms_callback, this));
 
+    // 初始化完成，蜂鸣器响1s，并输出日志
+    system("ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': true"");
+    usleep(500000);
+    system("ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer "'on': false"");
     RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 }
 
