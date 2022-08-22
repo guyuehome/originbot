@@ -114,7 +114,7 @@ void OriginbotBase::readRawData()
     std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request> request;
     std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response;
 
-    request->buzzer_on = true;
+    request->on = true;
     buzzer_callback(request, response);
     usleep(500000);
     request->buzzer_on = false;
