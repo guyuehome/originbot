@@ -111,9 +111,14 @@ void OriginbotBase::readRawData()
     DataFrame frame;
 
     // 初始化完成，蜂鸣器响1s，并输出日志
-    system("ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer \"'on': true\"");
+    std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request> request;
+    std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response;
+
+    request->buzzer_on = true;
+    buzzer_callback(request, response);
     usleep(500000);
-    system("ros2 service call /originbot_buzzer originbot_msgs/srv/OriginbotBuzzer \"'on': false\"");
+    request->buzzer_on = false;
+    buzzer_callback(request, response);
     RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 
     while (rclcpp::ok()) 
