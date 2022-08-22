@@ -98,6 +98,13 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     // 启动一个100ms的定时器，处理订阅者之外的其他信息
     timer_100ms_ = this->create_wall_timer(
       100ms, std::bind(&OriginbotBase::timer_100ms_callback, this));
+
+    // 初始化完成，蜂鸣器响1s，并输出日志
+    buzzer_control(true);
+    usleep(500000);
+    buzzer_control(false);
+
+    RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 }
 
 OriginbotBase::~OriginbotBase()
@@ -109,17 +116,6 @@ void OriginbotBase::readRawData()
 {
     uint8_t rx_data = 0;
     DataFrame frame;
-
-    // 初始化完成，蜂鸣器响1s，并输出日志
-    std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request> request;
-    std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response;
-
-    request->on = true;
-    buzzer_callback(request, response);
-    usleep(500000);
-    request->on = false;
-    buzzer_callback(request, response);
-    RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 
     while (rclcpp::ok()) 
     {
@@ -524,11 +520,8 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
     //         cmdFrame.data[3], cmdFrame.data[4], cmdFrame.data[5], cmdFrame.check, cmdFrame.tail);
 }
 
-void OriginbotBase::buzzer_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request>  request,
-                                          std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response)
+bool OriginbotBase::buzzer_control(bool on)
 {
-    robot_status_.buzzer_on = request->on;
-
     DataFrame configFrame;
 
     // 封装蜂鸣器指令的数据帧
@@ -539,7 +532,7 @@ void OriginbotBase::buzzer_callback(const std::shared_ptr<originbot_msgs::srv::O
     configFrame.data[1]= 0x00;
     configFrame.data[2]= 0xFF;
 
-    if(robot_status_.buzzer_on)
+    if(on)
         configFrame.data[3]= 0xFF;
     else
         configFrame.data[3]= 0x00;
@@ -560,16 +553,28 @@ void OriginbotBase::buzzer_callback(const std::shared_ptr<originbot_msgs::srv::O
         RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
     }
 
-    RCLCPP_INFO(this->get_logger(), "Set Buzzer state to %d", robot_status_.buzzer_on);
-
-    response->result = true;
+    return true;
 }
 
-void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotLed::Request>  request,
-                                       std::shared_ptr<originbot_msgs::srv::OriginbotLed::Response> response)
+void OriginbotBase::buzzer_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request>  request,
+                                          std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response)
 {
-    robot_status_.led_on = request->on;
+    robot_status_.buzzer_on = request->on;
 
+    if(buzzer_control(robot_status_.buzzer_on))
+    {
+        RCLCPP_INFO(this->get_logger(), "Set Buzzer state to %d", robot_status_.buzzer_on);
+        response->result = true;
+    }
+    else
+    {
+        RCLCPP_WARN(this->get_logger(), "Set Buzzer state error [%d]", robot_status_.buzzer_on);
+        response->result = false;        
+    }
+}
+
+bool OriginbotBase::led_control(bool on)
+{
     DataFrame configFrame;
 
     // 封装控制LED指令的数据帧
@@ -578,7 +583,7 @@ void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::Orig
     configFrame.length = 0x06;
     configFrame.data[0]= 0xFF;
 
-    if(robot_status_.led_on)
+    if(on)
         configFrame.data[1]= 0xFF;
     else
         configFrame.data[1]= 0x00;
@@ -601,9 +606,23 @@ void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::Orig
         RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
     }
 
-    RCLCPP_INFO(this->get_logger(), "Set Led state to %d", robot_status_.led_on);
+}
 
-    response->result = true;
+void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotLed::Request>  request,
+                                       std::shared_ptr<originbot_msgs::srv::OriginbotLed::Response> response)
+{
+    robot_status_.led_on = request->on;
+
+    if(led_control(robot_status_.led_on))
+    {
+        RCLCPP_INFO(this->get_logger(), "Set Led state to %d", robot_status_.led_on);
+        response->result = true;
+    }
+    else
+    {
+        RCLCPP_INFO(this->get_logger(), "Set Led state error [%d]", robot_status_.led_on);
+        response->result = false;        
+    }
 }                              
 
 void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,

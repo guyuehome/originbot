@@ -109,6 +109,9 @@ private:
     void odom_publisher(float vx, float vth);
     void imu_publisher();
 
+    bool buzzer_control(bool on);
+    bool led_control(bool on);
+
     void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
     void buzzer_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Request>  request,
                                std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response);
