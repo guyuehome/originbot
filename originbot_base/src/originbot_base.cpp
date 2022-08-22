@@ -101,7 +101,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 
     // 初始化完成，蜂鸣器响1s，并输出日志
     buzzer_control(true);
-    usleep(500000);
+    usleep(1000000);
     buzzer_control(false);
 
     RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
@@ -606,6 +606,7 @@ bool OriginbotBase::led_control(bool on)
         RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
     }
 
+    return true;
 }
 
 void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotLed::Request>  request,
