@@ -101,7 +101,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 
     // 初始化完成，蜂鸣器响1s，并输出日志
     buzzer_control(true);
-    usleep(1000000);
+    usleep(500000);
     buzzer_control(false);
 
     RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
