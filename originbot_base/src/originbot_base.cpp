@@ -117,7 +117,7 @@ void OriginbotBase::readRawData()
     request->on = true;
     buzzer_callback(request, response);
     usleep(500000);
-    request->buzzer_on = false;
+    request->on = false;
     buzzer_callback(request, response);
     RCLCPP_INFO(this->get_logger(), "OriginBot Start, enjoy it.");
 
