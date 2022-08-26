@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.2] - 2022-8-25
 ### 新增
-
+- 基于深度学习的视觉巡线功能
 
 ### 优化
 - 不同传感器的启动脚本都集成在originbot.launch.py中，通过参数来设置
