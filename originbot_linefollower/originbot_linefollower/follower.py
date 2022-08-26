@@ -36,7 +36,7 @@ class Follower(Node):
     def image_callback(self, msg):
         image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        lower_yellow = numpy.array([ 10,  10, 130])
+        lower_yellow = numpy.array([ 10,  70, 30])
         upper_yellow = numpy.array([255, 255, 250])
         mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
 
@@ -55,7 +55,7 @@ class Follower(Node):
             # 基于检测的目标中心点，计算机器人的控制参数
             err = cx - w/2
             self.twist.linear.x = 0.1
-            self.twist.angular.z = -float(err) / 100
+            self.twist.angular.z = -float(err) / 400
             self.cmd_vel_pub.publish(self.twist)
             
         self.pub.publish(self.bridge.cv2_to_imgmsg(image, 'bgr8'))
