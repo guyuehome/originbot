@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.3] - 2022-9-3
+### 新增
+- OriginBot的URDF可视化模型
+
+### 优化
+- 机器人各坐标系通过URDF进行描述：base_link、laser_link、imu_link、camera_link
+
 
 ## [v0.2] - 2022-8-25
 ### 新增
