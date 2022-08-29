@@ -1,0 +1,20 @@
+running egg_info
+writing build/line_follower_model/line_follower_model.egg-info/PKG-INFO
+writing dependency_links to build/line_follower_model/line_follower_model.egg-info/dependency_links.txt
+writing entry points to build/line_follower_model/line_follower_model.egg-info/entry_points.txt
+writing requirements to build/line_follower_model/line_follower_model.egg-info/requires.txt
+writing top-level names to build/line_follower_model/line_follower_model.egg-info/top_level.txt
+reading manifest file 'build/line_follower_model/line_follower_model.egg-info/SOURCES.txt'
+writing manifest file 'build/line_follower_model/line_follower_model.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+running install_egg_info
+removing '/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model-0.0.0-py3.8.egg-info' (and everything under it)
+Copying build/line_follower_model/line_follower_model.egg-info to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model-0.0.0-py3.8.egg-info
+running install_scripts
+Installing annotation script to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/line_follower_model
+Installing line_follower_model script to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/line_follower_model
+writing list of installed files to '/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/install.log'

@@ -1,0 +1,38 @@
+running egg_info
+creating build/line_follower_model/line_follower_model.egg-info
+writing build/line_follower_model/line_follower_model.egg-info/PKG-INFO
+writing dependency_links to build/line_follower_model/line_follower_model.egg-info/dependency_links.txt
+writing entry points to build/line_follower_model/line_follower_model.egg-info/entry_points.txt
+writing requirements to build/line_follower_model/line_follower_model.egg-info/requires.txt
+writing top-level names to build/line_follower_model/line_follower_model.egg-info/top_level.txt
+writing manifest file 'build/line_follower_model/line_follower_model.egg-info/SOURCES.txt'
+reading manifest file 'build/line_follower_model/line_follower_model.egg-info/SOURCES.txt'
+writing manifest file 'build/line_follower_model/line_follower_model.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build
+creating /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib
+creating /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib/line_follower_model
+copying line_follower_model/annotation_member_function.py -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib/line_follower_model
+copying line_follower_model/line_follower_model.py -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib/line_follower_model
+copying line_follower_model/__init__.py -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib/line_follower_model
+running install
+running install_lib
+creating /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model
+copying /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib/line_follower_model/annotation_member_function.py -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model
+copying /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib/line_follower_model/line_follower_model.py -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model
+copying /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build/lib/line_follower_model/__init__.py -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model
+byte-compiling /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model/annotation_member_function.py to annotation_member_function.cpython-38.pyc
+byte-compiling /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model/line_follower_model.py to line_follower_model.cpython-38.pyc
+byte-compiling /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model/__init__.py to __init__.cpython-38.pyc
+running install_data
+creating /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/share/ament_index
+creating /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/share/ament_index/resource_index
+creating /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/share/ament_index/resource_index/packages
+copying resource/line_follower_model -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/share/ament_index/resource_index/packages
+copying package.xml -> /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/share/line_follower_model
+running install_egg_info
+Copying build/line_follower_model/line_follower_model.egg-info to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model-0.0.0-py3.8.egg-info
+running install_scripts
+Installing line_follower_model = line_follower_model.line_follower_model:mainannotation script to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/line_follower_model
+writing list of installed files to '/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/install.log'

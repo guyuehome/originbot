@@ -1,0 +1,22 @@
+[0.480s] Invoking command in '/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model': PYTHONPATH=/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 setup.py egg_info --egg-base build/line_follower_model build --build-base /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build install --prefix /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model --record /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/install.log --single-version-externally-managed
+[0.640s] running egg_info
+[0.640s] writing build/line_follower_model/line_follower_model.egg-info/PKG-INFO
+[0.640s] writing dependency_links to build/line_follower_model/line_follower_model.egg-info/dependency_links.txt
+[0.640s] writing entry points to build/line_follower_model/line_follower_model.egg-info/entry_points.txt
+[0.640s] writing requirements to build/line_follower_model/line_follower_model.egg-info/requires.txt
+[0.640s] writing top-level names to build/line_follower_model/line_follower_model.egg-info/top_level.txt
+[0.664s] reading manifest file 'build/line_follower_model/line_follower_model.egg-info/SOURCES.txt'
+[0.665s] writing manifest file 'build/line_follower_model/line_follower_model.egg-info/SOURCES.txt'
+[0.665s] running build
+[0.665s] running build_py
+[0.665s] running install
+[0.666s] running install_lib
+[0.667s] running install_data
+[0.667s] running install_egg_info
+[0.668s] removing '/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model-0.0.0-py3.8.egg-info' (and everything under it)
+[0.668s] Copying build/line_follower_model/line_follower_model.egg-info to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages/line_follower_model-0.0.0-py3.8.egg-info
+[0.669s] running install_scripts
+[0.680s] Installing annotation script to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/line_follower_model
+[0.680s] Installing line_follower_model script to /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/line_follower_model
+[0.681s] writing list of installed files to '/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/install.log'
+[0.695s] Invoked command in '/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model' returned '0': PYTHONPATH=/home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model/lib/python3.8/site-packages:${PYTHONPATH} _=/usr/bin/env /usr/bin/python3 setup.py egg_info --egg-base build/line_follower_model build --build-base /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/build install --prefix /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/install/line_follower_model --record /home/kairui/cc_ws_dev/tros_ws/src/app/line_follower/line_follower_model/build/line_follower_model/install.log --single-version-externally-managed

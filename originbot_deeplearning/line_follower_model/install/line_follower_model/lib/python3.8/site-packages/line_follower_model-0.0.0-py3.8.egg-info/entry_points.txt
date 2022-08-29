@@ -1,0 +1,4 @@
+[console_scripts]
+annotation = line_follower_model.annotation_member_function:main
+line_follower_model = line_follower_model.line_follower_model:main
+
