@@ -85,6 +85,10 @@ $ sudo apt install ros-foxy-rmw-cyclonedds-cpp      # 安装Cyclone DDS
 $ sudo apt install ros-foxy-teleop-twist-joy        # 安装手柄的驱动包
 $ sudo apt install ros-foxy-joy-linux               # 安装手柄的驱动包
 $ sudo apt install ros-foxy-cv-bridge               # 安装图像处理包
+$ sudo apt install ros-foxy-xacro                   # 安装模型解析包
+$ sudo apt install ros-foxy-robot-state-publisher   # 安装机器人状态发布者包
+$ sudo apt install ros-foxy-joint-state-publisher   # 安装关节状态发布者包
+$ sudo apt install ros-foxy-joint-state-publisher-gui   # 安装关节状态发布者包
 ```
 
 如遇到类似如下问题：
@@ -310,6 +314,16 @@ $ export CYCLONEDDS_URI='<CycloneDDS><Domain><General><NetworkInterfaceAddress>w
 $ ros2 doctor --report | grep middleware # 确定切换DDS是否成功，需要等待10几秒钟
 $ ros2 launch originbot_bringup camera.launch.py
 ```
+
+
+### 查看机器人可视化模型
+
+#### PC端
+
+```bash
+$ ros2 launch originbot_description display.launch.py
+```
+![img](images/2022-08-30_13-57.png)
 
 
 

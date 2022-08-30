@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="originbot_description">
+	
+	<link
+    name="base_footprint">
+  </link>
+ 
+  <joint
+    name="base_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0.05325"
+      rpy="0 0 0" />
+    <parent link="base_footprint" />
+    <child link="base_link" />
+  </joint>
+      
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.00399634844340349 -0.000650527547766478 0.00381140746673057"
+        rpy="0 0 0" />
+      <mass
+        value="0.236859061418076" />
+      <inertia
+        ixx="6.84831903258766E-05"
+        ixy="1.63324829601983E-07"
+        ixz="-2.66259409240242E-07"
+        iyy="0.000165939871835843"
+        iyz="-8.15626369838594E-10"
+        izz="0.000211891844456702" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.341176470588235 0.0901960784313725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="left_wheel_link">
+    <inertial>
+      <origin
+        xyz="2.0607868149447E-07 0.000965704141897915 -9.57608029414359E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0467086060854941" />
+      <inertia
+        ixx="2.09829197901363E-05"
+        ixy="-3.60942780697087E-11"
+        ixz="2.33719089311653E-10"
+        iyy="3.72912801499854E-05"
+        iyz="1.67967163248966E-10"
+        izz="2.09822204724271E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/left_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/left_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0.018413 0.0539 -0.019"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="right_wheel_link">
+    <inertial>
+      <origin
+        xyz="7.39130195197973E-07 -0.000965703480956627 -6.42517347358013E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0467086081593908" />
+      <inertia
+        ixx="2.09825817238739E-05"
+        ixy="1.2976964303983E-10"
+        ixz="4.20450885198543E-10"
+        iyy="3.72912801748024E-05"
+        iyz="-1.12794928134702E-10"
+        izz="2.09825601200846E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/right_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/right_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0.018413 -0.0539 -0.019"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="laser_link">
+    <inertial>
+      <origin
+        xyz="0.0109421175506109 3.00841528269968E-05 -0.017474264011641"
+        rpy="0 0 0" />
+      <mass
+        value="0.0646741884187739" />
+      <inertia
+        ixx="2.04409829581278E-05"
+        ixy="-1.64635804660803E-07"
+        ixz="1.05988971669207E-07"
+        iyy="3.06510427047651E-05"
+        iyz="3.85223718426068E-08"
+        izz="4.96686607454108E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/laser_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.843137254901961 0.372549019607843 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/laser_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="laser_joint"
+    type="fixed">
+    <origin
+      xyz="-0.0093963 -0.00079002 0.099001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="laser_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="camera_link">
+    <inertial>
+      <origin
+        xyz="-0.0130203400983315 -4.43862997806289E-16 -0.00247433520658521"
+        rpy="0 0 0" />
+      <mass
+        value="0.00821173598054999" />
+      <inertia
+        ixx="6.88574419869532E-07"
+        ixy="-9.8147806737073E-23"
+        ixz="5.58354995913257E-10"
+        iyy="4.82925286329623E-07"
+        iyz="3.06441668645145E-23"
+        izz="6.85742375900637E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/camera_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.0549019607843137 0.0549019607843137 0.0549019607843137 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://originbot_description/meshes/camera_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera_joint"
+    type="fixed">
+    <origin
+      xyz="0.10946 0 0.024159"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="camera_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>
