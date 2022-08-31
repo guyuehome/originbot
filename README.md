@@ -698,6 +698,40 @@ $ sudo apt install ros-foxy-ros2-controllers
 
 ```
 
+#### 运行仿真环境
+```bash
+$ ros2 launch originbot_gazebo originbot_gazebo.launch.py
+```
+![img](images/2022-08-31_23-42.png)
+
+
+#### 查看仿真话题列表
+
+```bash
+$ ros2 topic list
+```
+![img](images/2022-08-31_23-43.png)
+
+
+#### 控制机器人运动
+```bash
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+
+#### 查看相机与雷达可视化数据
+在仿真环境中放入一下障碍物：
+![img](images/2022-08-31_23-47.png)
+
+
+
+```bash
+$ ros2 run rviz2 rviz2
+```
+![img](images/2022-08-31_23-46.png)
+
+
+
 ## 常见问题
 
 1. 古月居提供的系统镜像已经完成常用ROS2功能包的安装，如有新安装的ROS2包，安装后需要完成和tros的软链接，才能使用；
