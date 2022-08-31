@@ -686,6 +686,18 @@ ros2 run rqt_image_view rqt_image_view
 
 
 
+### 虚拟仿真
+
+#### PC端依赖安装
+```bash
+$ sudo apt install ros-foxy-gazebo-ros
+$ sudo apt install ros-foxy-gazebo-ros2-control
+$ sudo apt install ros-foxy-gazebo-plugins
+$ sudo apt install ros-foxy-ros2-control
+$ sudo apt install ros-foxy-ros2-controllers
+
+```
+
 ## 常见问题
 
 1. 古月居提供的系统镜像已经完成常用ROS2功能包的安装，如有新安装的ROS2包，安装后需要完成和tros的软链接，才能使用；
