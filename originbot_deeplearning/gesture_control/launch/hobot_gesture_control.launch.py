@@ -116,7 +116,7 @@ def generate_launch_description():
                 {"activate_wakeup_gesture": 0},
                 {"track_serial_lost_num_thr": 100},
                 {"move_step": 0.3},
-                {"rotate_step": 0.3}
+                {"rotate_step": 0.4}
             ],
             arguments=['--ros-args', '--log-level', 'info']
         )

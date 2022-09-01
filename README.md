@@ -726,7 +726,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 
 
 #### 查看相机与雷达可视化数据
-在仿真环境中放入一下障碍物：
+在仿真环境中放入一些障碍物：
 ![img](images/2022-08-31_23-47.png)
 
 
