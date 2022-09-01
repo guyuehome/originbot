@@ -36,7 +36,7 @@ def generate_launch_description():
     correct_factor_vth_arg = DeclareLaunchArgument('correct_factor_vth', default_value='0.868',
                                          description='correct factor vth, e.g. 0.9')
 
-    auto_stop_on_arg = DeclareLaunchArgument('auto_stop_on', default_value='true',
+    auto_stop_on_arg = DeclareLaunchArgument('auto_stop_on', default_value='false',
                                          description='auto stop if no cmd received, true or false')
 
     use_imu_arg = DeclareLaunchArgument('use_imu', default_value='false',
