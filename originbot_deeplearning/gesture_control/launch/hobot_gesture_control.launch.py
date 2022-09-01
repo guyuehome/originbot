@@ -115,8 +115,8 @@ def generate_launch_description():
                 {"twist_pub_topic_name": "/cmd_vel"},
                 {"activate_wakeup_gesture": 0},
                 {"track_serial_lost_num_thr": 100},
-                {"move_step": 0.5},
-                {"rotate_step": 0.5}
+                {"move_step": 0.3},
+                {"rotate_step": 0.3}
             ],
             arguments=['--ros-args', '--log-level', 'info']
         )

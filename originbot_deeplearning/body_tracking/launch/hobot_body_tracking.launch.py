@@ -110,8 +110,8 @@ def generate_launch_description():
                 {"img_width": 960},
                 {"img_height": 544},
                 {"track_serial_lost_num_thr": 30},
-                {"move_step": 0.5},
-                {"rotate_step": 0.5},
+                {"move_step": 0.2},
+                {"rotate_step": 0.2},
                 {"activate_robot_move_thr": 5}
             ],
             arguments=['--ros-args', '--log-level', 'info']
