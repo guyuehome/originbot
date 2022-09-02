@@ -512,7 +512,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 - 将校准参数填入robot.launch.py中，线速度校准完毕
 ![img](images/2022-09-02_10-43.png)
 
-为提高校准精度，可以重复以上步骤3~5次，计算得到的系数局平均值
+为提高校准精度，可以重复以上步骤3~5次，计算得到的系数取平均值
 
 
 #### 角速度校准
@@ -567,7 +567,7 @@ https://quaternions.online/
 - 将校准参数填入robot.launch.py中，角速度校准完毕
 ![img](images/2022-09-02_11-09.png)
 
-为提高校准精度，可以重复以上步骤3~5次，计算得到的系数局平均值
+为提高校准精度，可以重复以上步骤3~5次，计算得到的系数取平均值
 
 
 
