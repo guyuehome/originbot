@@ -4,11 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.5] - 2022-9-9
+### 新增
+- 新增originbot_desktop仓库，放置电脑端运行的功能包，避免机器人端的代码编译错误
+
+### 优化
+- 
+
+
 ## [v0.4] - 2022-9-3
 
 ### 优化
 - 修复机器人底盘use_imu参数没有调用的问题
-- 调整人体跟踪与收拾识别的旋转速度
+- 调整人体跟踪与手势识别的旋转速度
 - 自动停车功能默认关闭
 - 优化文件夹结构
 - 删除电脑端运行使用的功能包，避免在机器人端编译出错

@@ -9,8 +9,8 @@ OriginBot智能机器人开源套件
 - originbot_driver：机器人设备驱动
     - serial_ros2：串口驱动包
     - ydlidar_ros2_driver：雷达驱动包
+- originbot_msgs： OriginBot自定义通信接口
 - originbot_bringup：机器人启动相关的脚本和文件
-- originbot_description：机器人模型及加载脚本
 - originbot_linefollower：机器人视觉巡线功能包
 - originbot_navigation：机器人建图与导航相关的脚本和配置文件
 - originbot_deeplearning：机器人深度学习功能
