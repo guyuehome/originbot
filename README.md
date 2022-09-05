@@ -322,17 +322,6 @@ $ ros2 launch originbot_bringup camera.launch.py
 ```
 
 
-### 查看机器人可视化模型
-
-#### PC端
-
-```bash
-$ ros2 launch originbot_description display.launch.py
-```
-![img](images/2022-08-30_13-57.png)
-
-
-
 ### 查看雷达可视化信息
 
 #### 机器人端
@@ -348,12 +337,10 @@ $ ros2 launch originbot_bringup originbot.launch.py use_lidar:=true
 #### PC端
 
 ```bash
-$ ros2 run rviz2 rviz2
+$ ros2 launch originbot_viz display_lidar.launch.py
 ```
 
-
-
-添加Laserscan之后，配置订阅的话题，即可看到可视化的雷达信息：
+即可看到可视化的雷达信息：
 ![img](images/2022-08-10_18-01.png)
 
 
@@ -373,12 +360,11 @@ $ ros2 launch originbot_bringup originbot.launch.py use_imu:=true
 #### PC端
 
 ```bash
-$ ros2 run rviz2 rviz2
+$ ros2 launch originbot_viz display_imu.launch.py
 ```
 
 
-
-添加IMU之后，配置订阅的话题，即可看到可视化的IMU信息：
+即可看到可视化的IMU信息：
 ![img](images/2022-08-10_18-04.png)
 
 
@@ -414,7 +400,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 如果想要查看机器人的动态运动效果，可以在PC端打开Rviz查看：
 
 ```bash
-$ ros2 run rviz2 rviz2
+$ ros2 launch originbot_viz display_robot_tf.launch.py
 ```
 
 Fixed Frame选择odom，添加tf显示，即可看到：
@@ -651,7 +637,7 @@ $ ros2 run nav2_map_server map_saver_cli -f my_map --ros-args -p save_map_timeou
 #### PC端
 
 ```bash
-$ ros2 run rviz2 rviz2
+$ ros2 launch originbot_viz display_slam.launch.py
 ```
 添加map、tf、laserscan等显示插件后，可以看到slam的过程
 
@@ -682,7 +668,7 @@ $ ros2 launch originbot_navigation nav_bringup.launch.py
 #### PC端
 
 ```bash
-$ ros2 run rviz2 rviz2
+$ ros2 launch originbot_viz display_navigation.launch.py
 ```
 注意：如果在配置好的Rviz中没看到静态地图，可以尝试关闭运行导航的终端，重新打开Rviz之后，再启动Rivz。
 
@@ -791,52 +777,6 @@ ros2 run rqt_image_view rqt_image_view
 订阅/camera/process_image话题，即可看到动态识别的图像效果。
 
 ![img](images/2022-08-21_15-15.png)
-
-
-
-### 虚拟仿真
-
-#### PC端依赖安装
-```bash
-$ sudo apt install ros-foxy-gazebo-ros
-$ sudo apt install ros-foxy-gazebo-ros2-control
-$ sudo apt install ros-foxy-gazebo-plugins
-$ sudo apt install ros-foxy-ros2-control
-$ sudo apt install ros-foxy-ros2-controllers
-
-```
-
-#### 运行仿真环境
-```bash
-$ ros2 launch originbot_gazebo originbot_gazebo.launch.py
-```
-![img](images/2022-08-31_23-42.png)
-
-
-#### 查看仿真话题列表
-
-```bash
-$ ros2 topic list
-```
-![img](images/2022-08-31_23-43.png)
-
-
-#### 控制机器人运动
-```bash
-$ ros2 run teleop_twist_keyboard teleop_twist_keyboard
-```
-
-
-#### 查看相机与雷达可视化数据
-在仿真环境中放入一些障碍物：
-![img](images/2022-08-31_23-47.png)
-
-
-
-```bash
-$ ros2 run rviz2 rviz2
-```
-![img](images/2022-08-31_23-46.png)
 
 
 
