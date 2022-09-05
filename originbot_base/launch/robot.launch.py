@@ -56,7 +56,13 @@ def generate_launch_description():
                 'use_imu': LaunchConfiguration('use_imu'), 
         }])
 
-    originbot_imu_tf = Node(
+    base_footprint_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher', 
+        emulate_tty=True,
+        arguments="0.0 0.0 0.05325 0.0 0.0 0.0 /base_footprint /base_link".split(' '))
+
+    imu_tf = Node(
         package='tf2_ros',
         executable='static_transform_publisher', 
         emulate_tty=True,
@@ -70,5 +76,6 @@ def generate_launch_description():
         auto_stop_on_arg,
         use_imu_arg,
         originbot_base_node,
-        originbot_imu_tf
+        base_footprint_tf,
+        imu_tf
     ])

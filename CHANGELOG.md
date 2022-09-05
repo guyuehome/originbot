@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 新增originbot_desktop仓库，放置电脑端运行的功能包，避免机器人端的代码编译错误
 
 ### 优化
-- 
+- 优化坐标系结构，新增base_footprint坐标系，保持与URDF模型的一致
 
 
 ## [v0.4] - 2022-9-3
