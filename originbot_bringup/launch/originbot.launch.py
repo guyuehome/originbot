@@ -22,18 +22,9 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     ld = launch.LaunchDescription([
-        launch.actions.DeclareLaunchArgument(name='open_rviz', default_value='false'),
         launch.actions.DeclareLaunchArgument(name='use_lidar', default_value='false'),
         launch.actions.DeclareLaunchArgument(name='use_camera', default_value='false'),
         launch.actions.DeclareLaunchArgument(name='use_imu', default_value='false'),
-
-        launch_ros.actions.Node(
-            package='rviz2',
-            name='rviz2',
-            executable='rviz2',
-            on_exit=launch.actions.Shutdown(),
-            condition=launch.conditions.IfCondition(
-                launch.substitutions.LaunchConfiguration('open_rviz'))),
 
         launch.actions.IncludeLaunchDescription(
             launch.launch_description_sources.PythonLaunchDescriptionSource(
