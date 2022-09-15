@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.5] - 2022-9-9
+## [v0.5] - 2022-9-16
 ### 新增
 - 新增originbot_desktop仓库，放置电脑端运行的功能包，避免机器人端的代码编译错误
 
 ### 优化
 - 优化坐标系结构，新增base_footprint坐标系，保持与URDF模型的一致
 - 优化上位机可视化显示过程，添加常用功能的rviz2配置脚本 [originbot_desktop]
+- 优化手柄遥控运动机器人功能
 
 
 ## [v0.4] - 2022-9-3
