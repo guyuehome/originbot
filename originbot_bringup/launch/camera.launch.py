@@ -24,6 +24,7 @@ def generate_launch_description():
             executable='mipi_cam',
             output='screen',
             parameters=[
+                {"camera_calibration_file_path": "/opt/tros/lib/mipi_cam/config/GC4663_calibration.yaml"},
                 {"out_format": "bgr8"},
                 {"image_width": 960},
                 {"image_height": 544},
