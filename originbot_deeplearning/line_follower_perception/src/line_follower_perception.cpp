@@ -167,9 +167,6 @@ int LineFollowerPerceptionNode::PostProcess(
   message.angular.y = 0.0;
   message.angular.z = angular_z;
   publisher_->publish(message);
-  // cv::circle(image_bgr_, cv::Point(int(x), int(y)), 3, cv::Scalar(0,0,255), 3);
-  // static int i = 0;
-  // cv::imwrite(std::to_string(i++) + ".jpg", image_bgr_);
   return 0;
 }
 
@@ -193,23 +190,6 @@ void LineFollowerPerceptionNode::subscription_callback(
     RCLCPP_ERROR(rclcpp::get_logger("LineFollowerPerceptionNode"), "Invalid model");
     return;
   }
-
-  // int image_size = 960 * 544 * 3 / 2;
-  // static int cnt;
-  // cv::Mat image_nv12;
-  // image_nv12.create(544 * 3 / 2, 960, CV_8UC1);
-  // memcpy(image_nv12.data, reinterpret_cast<const char*>(msg->data.data()), image_size);
-  // cv::cvtColor(image_nv12, image_bgr_, cv::COLOR_YUV2BGRA_NV12);
-  // int buffer_size = 960*223*3/2;
-  // char buffer[960*223*3/2];
-  // memset(buffer, buffer_size, 0);
-  // // 读入nv12图片
-  // std::ifstream file("./out.nv12", std::ios::out | std::ios::binary);
-  // if (!file) {
-  //   RCLCPP_ERROR(rclcpp::get_logger("LineFollowerPerceptionNode"), "Error read nv12 file");
-  // }
-  // file.read(reinterpret_cast<char *>(buffer), sizeof (buffer));
-
 
   hbDNNRoi roi;
   roi.left = 0;
@@ -340,6 +320,6 @@ int main(int argc, char* argv[]) {
 
   rclcpp::shutdown();
 
-  RCLCPP_WARN(rclcpp::get_logger("hand lmk det pkg"), "Pkg exit.");
+  RCLCPP_WARN(rclcpp::get_logger("LineFollowerPerceptionNode"), "Pkg exit.");
   return 0;
 }
