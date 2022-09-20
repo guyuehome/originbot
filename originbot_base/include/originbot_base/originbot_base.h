@@ -22,9 +22,9 @@ limitations under the License.
 #include <cmath>
 #include <thread>
 #include <algorithm>
+#include <csignal>
 #include <stdlib.h>
 #include <serial/serial.h>
-#include <signal.h>
 
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -102,8 +102,6 @@ private:
     void processAccelerationData(DataFrame &frame);
     void processEulerData(DataFrame &frame);
     void processSensorData(DataFrame &frame);
-
-    void sigintHandler(int sig);
 
     double imu_conversion(uint8_t data_high, uint8_t data_low);
     bool   imu_calibration();

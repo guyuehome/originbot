@@ -31,9 +31,6 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->declare_parameter("use_imu");             //声明是否使用imu
     this->get_parameter_or<bool>("use_imu", use_imu_, false);
     
-    // 创建信号处理函数
-    signal(SIGINT, sigintHandler);
-
     // 打印加载的参数值
     printf("Loading parameters: \n \
             - port name: %s\n \
@@ -113,36 +110,6 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 OriginbotBase::~OriginbotBase()
 {
     serial_.close();
-}
-
-void OriginbotBase::sigintHandler(int sig)
-{
-    // 程序退出时自动停车
-    DataFrame cmdFrame;
-    cmdFrame.data[0] = 0x00;
-    cmdFrame.data[1] = 0x00;         
-    cmdFrame.data[2] = 0x00;
-    cmdFrame.data[3] = 0x00;
-    cmdFrame.data[4] = 0x00; 
-    cmdFrame.data[5] = 0x00;
-    cmdFrame.check = (cmdFrame.data[0] + cmdFrame.data[1] + cmdFrame.data[2] + 
-                    cmdFrame.data[3] + cmdFrame.data[4] + cmdFrame.data[5]) & 0xff;
-
-    // 封装速度命令的数据帧
-    cmdFrame.header = 0x55;
-    cmdFrame.id     = 0x01;
-    cmdFrame.length = 0x06;
-    cmdFrame.tail   = 0xbb;
-    try
-    {
-        serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
-        RCLCPP_DEBUG(this->get_logger(), "Execute auto stop");
-    }
-
-    catch (serial::IOException &e)
-    {
-        RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
-    }           
 }
 
 void OriginbotBase::readRawData()
@@ -751,14 +718,61 @@ void OriginbotBase::timer_100ms_callback()
     status_publisher_->publish(status_msg);
 }
 
+void sigintHandler(int sig)
+{
+    serial::Serial serial;
+    serial.setPort("/dev/" + port_name);                            //选择要开启的串口号
+    serial.setBaudrate(115200);                                     //设置波特率
+    serial::Timeout timeOut = serial::Timeout::simpleTimeout(2000); //超时等待
+    serial.setTimeout(timeOut);                                     
+    serial.open();                                                  //开启串口
+
+    // 如果串口打开，则驱动读取数据的线程
+    if (serial.isOpen())
+    {
+        // 程序退出时自动停车
+        DataFrame cmdFrame;
+        cmdFrame.data[0] = 0x00;
+        cmdFrame.data[1] = 0x00;         
+        cmdFrame.data[2] = 0x00;
+        cmdFrame.data[3] = 0x00;
+        cmdFrame.data[4] = 0x00; 
+        cmdFrame.data[5] = 0x00;
+        cmdFrame.check = (cmdFrame.data[0] + cmdFrame.data[1] + cmdFrame.data[2] + 
+                        cmdFrame.data[3] + cmdFrame.data[4] + cmdFrame.data[5]) & 0xff;
+
+        // 封装速度命令的数据帧
+        cmdFrame.header = 0x55;
+        cmdFrame.id     = 0x01;
+        cmdFrame.length = 0x06;
+        cmdFrame.tail   = 0xbb;
+        try
+        {
+            serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
+            printf("Execute auto stop");
+        }
+        catch (serial::IOException &e)
+        {
+            printf("Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+        }           
+    }
+
+    // 关闭ROS2接口，清除资源
+    rclcpp::shutdown();
+}
+
 int main(int argc, char *argv[])
 {
     // 初始化ROS节点
     rclcpp::init(argc, argv);
 
+    // 创建信号处理函数
+    signal(SIGINT, sigintHandler);
+
     // 创建机器人底盘类，通过spin不断查询订阅话题
     rclcpp::spin(std::make_shared<OriginbotBase>("originbot_base"));
     
+    // 关闭ROS2接口，清除资源
     rclcpp::shutdown();
 
     return 0;
