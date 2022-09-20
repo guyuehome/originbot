@@ -720,8 +720,12 @@ void OriginbotBase::timer_100ms_callback()
 
 void sigintHandler(int sig)
 {
+    sig = sig;
+    
+    printf("OriginBot shutdown...");
+
     serial::Serial serial;
-    serial.setPort("/dev/" + port_name);                            //选择要开启的串口号
+    serial.setPort("/dev/ttyS3");                                   //选择要开启的串口号
     serial.setBaudrate(115200);                                     //设置波特率
     serial::Timeout timeOut = serial::Timeout::simpleTimeout(2000); //超时等待
     serial.setTimeout(timeOut);                                     
@@ -746,9 +750,10 @@ void sigintHandler(int sig)
         cmdFrame.id     = 0x01;
         cmdFrame.length = 0x06;
         cmdFrame.tail   = 0xbb;
+
         try
         {
-            serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
+            serial.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
             printf("Execute auto stop");
         }
         catch (serial::IOException &e)
