@@ -31,6 +31,9 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->declare_parameter("use_imu");             //声明是否使用imu
     this->get_parameter_or<bool>("use_imu", use_imu_, false);
     
+    // 创建信号处理函数
+    signal(SIGINT, sigintHandler);
+
     // 打印加载的参数值
     printf("Loading parameters: \n \
             - port name: %s\n \
@@ -110,6 +113,36 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 OriginbotBase::~OriginbotBase()
 {
     serial_.close();
+}
+
+void OriginbotBase::sigintHandler(int sig)
+{
+    // 程序退出时自动停车
+    DataFrame cmdFrame;
+    cmdFrame.data[0] = 0x00;
+    cmdFrame.data[1] = 0x00;         
+    cmdFrame.data[2] = 0x00;
+    cmdFrame.data[3] = 0x00;
+    cmdFrame.data[4] = 0x00; 
+    cmdFrame.data[5] = 0x00;
+    cmdFrame.check = (cmdFrame.data[0] + cmdFrame.data[1] + cmdFrame.data[2] + 
+                    cmdFrame.data[3] + cmdFrame.data[4] + cmdFrame.data[5]) & 0xff;
+
+    // 封装速度命令的数据帧
+    cmdFrame.header = 0x55;
+    cmdFrame.id     = 0x01;
+    cmdFrame.length = 0x06;
+    cmdFrame.tail   = 0xbb;
+    try
+    {
+        serial_.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
+        RCLCPP_DEBUG(this->get_logger(), "Execute auto stop");
+    }
+
+    catch (serial::IOException &e)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+    }           
 }
 
 void OriginbotBase::readRawData()
