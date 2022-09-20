@@ -6,13 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.5] - 2022-9-16
 ### 新增
-- 新增originbot_desktop仓库，放置电脑端运行的功能包，避免机器人端的代码编译错误
+- 新增[originbot_desktop](https://gitee.com/guyuehome/originbot_desktop)仓库，放置电脑端运行的功能包，避免机器人端的代码编译错误
 
 ### 优化
-- 优化坐标系结构，新增base_footprint坐标系，保持与URDF模型的一致
-- 优化上位机可视化显示过程，添加常用功能的rviz2配置脚本 [originbot_desktop]
+- 优化坐标系结构，新增base_footprint坐标系，保持与URDF模型一致
 - 优化手柄遥控运动机器人功能
 - 优化AI视觉跟踪应用的效果
+- 优化AI视觉巡线功能，增加训练使用的数据集和训练好的模型
+- 优化Ctrl+C关闭小车ROS驱动时，机器人自动停止运动
+- [originbot_desktop](https://gitee.com/guyuehome/originbot_desktop)：优化上位机可视化显示过程，添加常用功能的rviz2配置脚本 
 
 
 ## [v0.4] - 2022-9-3

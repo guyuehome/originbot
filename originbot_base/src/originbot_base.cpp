@@ -722,7 +722,7 @@ void sigintHandler(int sig)
 {
     sig = sig;
     
-    printf("OriginBot shutdown...");
+    printf("OriginBot shutdown...\n");
 
     serial::Serial serial;
     serial.setPort("/dev/ttyS3");                                   //选择要开启的串口号
@@ -754,11 +754,11 @@ void sigintHandler(int sig)
         try
         {
             serial.write(&cmdFrame.header, sizeof(cmdFrame)); //向串口发数据
-            printf("Execute auto stop");
+            printf("Execute auto stop\n");
         }
         catch (serial::IOException &e)
         {
-            printf("Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+            printf("Unable to send data through serial port\n"); //如果发送数据失败,打印错误信息
         }           
     }
 
