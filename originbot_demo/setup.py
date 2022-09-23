@@ -14,7 +14,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='GuYueHome',
-    maintainer_email='support@guyuehome.com',
+    maintainer_email='support@ps-micro.com',
     description='OriginBot Demo',
     license='Apache 2.0',
     tests_require=['pytest'],

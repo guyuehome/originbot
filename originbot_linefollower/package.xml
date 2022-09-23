@@ -4,7 +4,7 @@
   <name>originbot_linefollower</name>
   <version>0.0.0</version>
   <description>originbot linefollower</description>
-  <maintainer email="support@guyuehome.com">GuYueHome</maintainer>
+  <maintainer email="support@ps-micro.com">GuYueHome</maintainer>
   <license>Apache 2.0</license>
 
   <test_depend>ament_copyright</test_depend>

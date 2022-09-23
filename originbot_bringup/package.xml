@@ -4,7 +4,7 @@
   <name>originbot_bringup</name>
   <version>0.0.0</version>
   <description>OriginBot bringup scripts</description>
-  <maintainer email="support@guyuehome.com">GuYueHome</maintainer>
+  <maintainer email="support@ps-micro.com">GuYueHome</maintainer>
   <license>Apache 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
