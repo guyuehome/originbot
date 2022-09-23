@@ -36,8 +36,8 @@ class PublisherNode(Node):
         
     def timer_callback(self):                                     # 创建定时器周期执行的回调函数
         twist = Twist()                                           # 创建一个Twist类型的消息对象
-        twist.linear.x  = 0.1                                     # 填充消息对象中的线速度
-        twist.angular.z = 1.0                                     # 填充消息对象中的角速度
+        twist.linear.x  = 0.2                                     # 填充消息对象中的线速度
+        twist.angular.z = 0.8                                     # 填充消息对象中的角速度
         self.pub.publish(twist)                                   # 发布话题消息
         self.get_logger().info('Publishing: "linear: %0.2f, angular: %0.2f"' % (twist.linear.x, twist.angular.z))  
         
