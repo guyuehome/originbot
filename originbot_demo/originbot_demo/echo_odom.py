@@ -35,7 +35,8 @@ class SubscriberNode(Node):
             Odometry, "odom", self.listener_callback, 10)         # 创建订阅者对象（消息类型、话题名、订阅者回调函数、队列长度）
 
     def listener_callback(self, msg):                             # 创建回调函数，执行收到话题消息后对数据的处理
-        self.get_logger().info('Robot Position: "%0.2f, %0.2f"' % (msg.pose.pose.position.x, msg.pose.pose.position.y)) 
+        self.get_logger().info('Robot Position: "%0.2f, %0.2f"' \
+            % (msg.pose.pose.position.x, msg.pose.pose.position.y)) 
 
 def main(args=None):                                 # ROS2节点主入口main函数
     rclpy.init(args=args)                            # ROS2 Python接口初始化

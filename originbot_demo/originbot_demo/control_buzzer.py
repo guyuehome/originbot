@@ -19,6 +19,7 @@
 @作者: 古月居(www.guyuehome.com)
 @说明: 发送控制蜂鸣器的请求, 完成对蜂鸣器的控制
 """
+
 import time
 import rclpy                                                                      # ROS2 Python接口库
 from rclpy.node   import Node                                                     # ROS2 节点类
