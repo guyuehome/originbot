@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0-rc1] - 2022-9-23
+### 新增
+- 新增originbot_demo文件夹，放置基础功能的编程示例
+
 ## [v0.5] - 2022-9-20
 ### 新增
 - 新增[originbot_desktop](https://gitee.com/guyuehome/originbot_desktop)仓库，放置电脑端运行的功能包，避免机器人端的代码编译错误
