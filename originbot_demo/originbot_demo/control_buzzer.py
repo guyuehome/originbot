@@ -32,7 +32,7 @@ class serverClient(Node):
             self.get_logger().info('service not available, waiting again...') 
         self.request = OriginbotBuzzer.Request()                                  # 创建服务请求的数据对象
                     
-    def send_request(bool buzzer_on):                                             # 创建一个发送服务请求的函数
+    def send_request(buzzer_on):                                                  # 创建一个发送服务请求的函数
         self.request.on = buzzer_on
         self.future = self.client.call_async(self.request)                        # 异步方式发送服务请求
 
