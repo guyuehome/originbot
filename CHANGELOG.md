@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.0] - 2022-10-09
+### 优化
+- 优化网站内容，完成首发套件各项功能测试
+
 ## [v0.6/v1.0-rc1] - 2022-9-23
 ### 新增
 - 新增originbot_demo文件夹，放置基础功能的编程示例
