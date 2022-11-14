@@ -87,7 +87,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
         // IMU初始化标定
         if(imu_calibration())
         {
-            usleep(200000);    //确保标定完成
+            usleep(500000);    //确保标定完成
             RCLCPP_INFO(this->get_logger(), "IMU calibration ok.");
         }
     }
