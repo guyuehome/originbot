@@ -25,13 +25,16 @@ def generate_launch_description():
         launch.actions.DeclareLaunchArgument(name='use_lidar', default_value='false'),
         launch.actions.DeclareLaunchArgument(name='use_camera', default_value='false'),
         launch.actions.DeclareLaunchArgument(name='use_imu', default_value='false'),
+        launch.actions.DeclareLaunchArgument(name='pub_odom', default_value='false'),
 
         launch.actions.IncludeLaunchDescription(
             launch.launch_description_sources.PythonLaunchDescriptionSource(
                 os.path.join(get_package_share_directory('originbot_base'),
                              'launch/robot.launch.py')),
                 launch_arguments={
-                'use_imu': launch.substitutions.LaunchConfiguration('use_imu')}.items(), 
+                'use_imu': launch.substitutions.LaunchConfiguration('use_imu'),
+                'pub_odom': launch.substitutions.LaunchConfiguration('pub_odom'),
+                }.items(), 
                 ),
 
         launch.actions.IncludeLaunchDescription(

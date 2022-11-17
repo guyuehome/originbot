@@ -30,6 +30,8 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->get_parameter_or<bool>("auto_stop_on", auto_stop_on_, true);
     this->declare_parameter("use_imu");             //声明是否使用imu
     this->get_parameter_or<bool>("use_imu", use_imu_, false);
+    this->declare_parameter("pub_odom");             //声明是否发布odom的tf
+    this->get_parameter_or<bool>("pub_odom", pub_odom_, false);
     
     // 打印加载的参数值
     printf("Loading parameters: \n \
@@ -394,8 +396,10 @@ void OriginbotBase::odom_publisher(float vx, float vth)
     t.transform.rotation.z = q[2];
     t.transform.rotation.w = q[3];
 
-    // 广播里程计TF
-    tf_broadcaster_->sendTransform(t);
+    if(pub_odom_){
+        // 广播里程计TF
+        tf_broadcaster_->sendTransform(t);
+    }
 }
 
 void OriginbotBase::imu_publisher()

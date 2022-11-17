@@ -42,6 +42,9 @@ def generate_launch_description():
     use_imu_arg = DeclareLaunchArgument('use_imu', default_value='false',
                                          description='if has imu sensor to drive')
 
+    pub_odom_arg = DeclareLaunchArgument('pub_odom', default_value='false',
+                                         description='publish odom to base_footprint tf, true or false')
+
     originbot_base_node = Node(
         package='originbot_base',
         executable='originbot_base', 
@@ -53,7 +56,8 @@ def generate_launch_description():
                 'correct_factor_vx': LaunchConfiguration('correct_factor_vx'), 
                 'correct_factor_vth': LaunchConfiguration('correct_factor_vth'), 
                 'auto_stop_on': LaunchConfiguration('auto_stop_on'), 
-                'use_imu': LaunchConfiguration('use_imu'), 
+                'use_imu': LaunchConfiguration('use_imu'),
+                'pub_odom': LaunchConfiguration('pub_odom'),  
         }])
 
     base_footprint_tf = Node(
@@ -75,6 +79,7 @@ def generate_launch_description():
         correct_factor_vth_arg,
         auto_stop_on_arg,
         use_imu_arg,
+        pub_odom_arg,
         originbot_base_node,
         base_footprint_tf,
         imu_tf

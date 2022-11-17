@@ -138,6 +138,7 @@ private:
     rclcpp::TimerBase::SharedPtr timer_100ms_;
     bool auto_stop_on_ = true;
     bool use_imu_ = false;
+    bool pub_odom_ = false;
     unsigned int auto_stop_count_ = 0;
 
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
