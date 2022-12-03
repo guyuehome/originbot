@@ -42,7 +42,7 @@ def generate_launch_description():
     use_imu_arg = DeclareLaunchArgument('use_imu', default_value='false',
                                          description='if has imu sensor to drive')
 
-    pub_odom_arg = DeclareLaunchArgument('pub_odom', default_value='false',
+    pub_odom_arg = DeclareLaunchArgument('pub_odom', default_value='true',
                                          description='publish odom to base_footprint tf, true or false')
 
     originbot_base_node = Node(
