@@ -1,17 +1,3 @@
-// Copyright (c) 2022，Horizon Robotics.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #ifndef _LINE_FOLLOWER_PERCEPTION_H_
 #define _LINE_FOLLOWER_PERCEPTION_H_
 
@@ -29,22 +15,13 @@ using rclcpp::NodeOptions;
 using hobot::dnn_node::DNNInput;
 using hobot::dnn_node::DnnNode;
 using hobot::dnn_node::DnnNodeOutput;
-using hobot::dnn_node::DnnNodePara;
 using hobot::dnn_node::DNNResult;
 using hobot::dnn_node::ModelTaskType;
-using hobot::dnn_node::NV12PyramidInput;
-using hobot::dnn_node::TaskId;
-
-using hobot::dnn_node::Model;
-using hobot::dnn_node::ModelInferTask;
-using hobot::dnn_node::ModelManager;
-using hobot::dnn_node::ModelRoiInferTask;
 
 using hobot::dnn_node::DNNTensor;
 using hobot::dnn_node::OutputDescription;
 using hobot::dnn_node::OutputParser;
 
-using hobot::dnn_node::Filter2DResult;
 using hobot::dnn_node::InputDescription;
 using hobot::dnn_node::SingleBranchOutputParser;
 
@@ -96,3 +73,4 @@ class LineFollowerPerceptionNode : public DnnNode {
 };
 
 #endif  // _LINE_FOLLOWER_PERCEPTION_H_
+
