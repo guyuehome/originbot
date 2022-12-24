@@ -31,7 +31,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     this->declare_parameter("use_imu");             //声明是否使用imu
     this->get_parameter_or<bool>("use_imu", use_imu_, false);
     this->declare_parameter("pub_odom");             //声明是否发布odom的tf
-    this->get_parameter_or<bool>("pub_odom", pub_odom_, true);
+    this->get_parameter_or<bool>("pub_odom", pub_odom_, false);
     
     // 打印加载的参数值
     printf("Loading parameters: \n \
