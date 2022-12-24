@@ -52,7 +52,8 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     // 创建控制蜂鸣器和LED的服务
     buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", std::bind(&OriginbotBase::buzzer_callback, this, _1, _2));
     led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", std::bind(&OriginbotBase::led_callback, this, _1, _2));
-    pid_service_ = this->create_service<originbot_msgs::srv::OriginbotPID>("originbot_pid", std::bind(&OriginbotBase::pid_callback, this, _1, _2));
+    left_pid_service_ = this->create_service<originbot_msgs::srv::OriginbotPID>("originbot_left_pid", std::bind(&OriginbotBase::left_pid_callback, this, _1, _2));
+    right_pid_service_ = this->create_service<originbot_msgs::srv::OriginbotPID>("originbot_right_pid", std::bind(&OriginbotBase::right_pid_callback, this, _1, _2));
 
     // 创建TF广播器
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -630,7 +631,7 @@ void OriginbotBase::led_callback(const std::shared_ptr<originbot_msgs::srv::Orig
     }
 }                              
 
-void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
+void OriginbotBase::left_pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
                                        std::shared_ptr<originbot_msgs::srv::OriginbotPID::Response> response)
 {
     short motor_p = (short)(request->p * 1000);
@@ -663,14 +664,56 @@ void OriginbotBase::pid_callback(const std::shared_ptr<originbot_msgs::srv::Orig
         RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
     }
 
-    RCLCPP_INFO(this->get_logger(), "Set motor pid parameters to [%0.4f %0.4f %0.4f]", request->p, request->i, request->d);
+    RCLCPP_INFO(this->get_logger(), "Set left motor pid parameters to [%0.4f %0.4f %0.4f]", request->p, request->i, request->d);
 
     // printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
     //         pidFrame.header, pidFrame.id, pidFrame.length, pidFrame.data[0], pidFrame.data[1], pidFrame.data[2], 
     //         pidFrame.data[3], pidFrame.data[4], pidFrame.data[5], pidFrame.check, pidFrame.tail);
 
     response->result = true;
-}                       
+}
+
+void OriginbotBase::right_pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
+                                       std::shared_ptr<originbot_msgs::srv::OriginbotPID::Response> response)
+{
+    short motor_p = (short)(request->p * 1000);
+    short motor_i = (short)(request->i * 1000);
+    short motor_d = (short)(request->d * 1000);
+
+    DataFrame pidFrame;
+
+    // 封装PID参数的数据帧
+    pidFrame.header = 0x55;
+    pidFrame.id     = 0x09;
+    pidFrame.length = 0x06;
+    pidFrame.data[0]= motor_p & 0xFF;
+    pidFrame.data[1]= (motor_p>>8) & 0xFF;
+    pidFrame.data[2]= motor_i & 0xFF;;
+    pidFrame.data[3]= (motor_i>>8) & 0xFF;
+    pidFrame.data[4]= motor_d & 0xFF;;
+    pidFrame.data[5]= (motor_d>>8) & 0xFF;
+    pidFrame.check = (pidFrame.data[0] + pidFrame.data[1] + pidFrame.data[2] + 
+                      pidFrame.data[3] + pidFrame.data[4] + pidFrame.data[5]) & 0xff;
+    pidFrame.tail   = 0xbb; 
+
+    try
+    {
+        serial_.write(&pidFrame.header, sizeof(pidFrame)); //向串口发数据
+    }
+
+    catch (serial::IOException &e)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Unable to send data through serial port"); //如果发送数据失败,打印错误信息
+    }
+
+    RCLCPP_INFO(this->get_logger(), "Set right motor pid parameters to [%0.4f %0.4f %0.4f]", request->p, request->i, request->d);
+
+    // printf("Frame raw data: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n", 
+    //         pidFrame.header, pidFrame.id, pidFrame.length, pidFrame.data[0], pidFrame.data[1], pidFrame.data[2], 
+    //         pidFrame.data[3], pidFrame.data[4], pidFrame.data[5], pidFrame.check, pidFrame.tail);
+
+    response->result = true;
+}
 
 void OriginbotBase::timer_100ms_callback()
 {

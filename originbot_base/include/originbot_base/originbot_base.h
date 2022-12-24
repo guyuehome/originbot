@@ -118,7 +118,9 @@ private:
                                std::shared_ptr<originbot_msgs::srv::OriginbotBuzzer::Response> response);
     void led_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotLed::Request>  request,
                             std::shared_ptr<originbot_msgs::srv::OriginbotLed::Response> response);
-    void pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
+    void left_pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
+                            std::shared_ptr<originbot_msgs::srv::OriginbotPID::Response> response);
+    void right_pid_callback(const std::shared_ptr<originbot_msgs::srv::OriginbotPID::Request>  request,
                             std::shared_ptr<originbot_msgs::srv::OriginbotPID::Response> response);
 
     void timer_100ms_callback();
@@ -149,7 +151,8 @@ private:
    
     rclcpp::Service<originbot_msgs::srv::OriginbotBuzzer>::SharedPtr buzzer_service_;
     rclcpp::Service<originbot_msgs::srv::OriginbotLed>::SharedPtr led_service_;
-    rclcpp::Service<originbot_msgs::srv::OriginbotPID>::SharedPtr pid_service_;
+    rclcpp::Service<originbot_msgs::srv::OriginbotPID>::SharedPtr left_pid_service_;
+    rclcpp::Service<originbot_msgs::srv::OriginbotPID>::SharedPtr right_pid_service_;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 };
