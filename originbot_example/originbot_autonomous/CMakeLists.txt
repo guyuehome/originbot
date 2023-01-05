@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(originbot_teleop)
+project(originbot_autonomous)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -15,39 +15,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(QPOASES_INLUDE_DIRS /usr/local/include/qpOASES)
+include_directories(${QPOASES_INLUDE_DIRS})
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
-
-find_package(rclcpp REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system thread program_options) 
-
-
-include_directories(
-  include
-  )
-
-if(NOT Boost_FOUND)
-    message("Not found Boost")
-endif()
- 
-include_directories(${Boost_INCLUDE_DIRS})
-message("${Boost_INCLUDE_DIRS}")
-message("${Boost_LIBRARIES}")
-add_executable(originbot_teleop src/originbot_teleop.cc)
-ament_target_dependencies(originbot_teleop rclcpp  geometry_msgs)
-
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
-target_link_libraries(originbot_teleop ${Boost_LIBRARIES})
-install(TARGETS
-  originbot_teleop  
-  DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -60,6 +39,44 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_export_include_directories(include)
-
 ament_package()
+
+add_executable(purepursuit_node
+  src/originbot_purepursuit.cc
+  src/loadPath.cpp
+)
+
+add_executable(mpc_node
+  src/originbot_mpc.cc
+  src/loadPath.cpp
+)
+
+include_directories(include)
+target_link_libraries(mpc_node /usr/local/lib/libqpOASES.a)
+
+ament_target_dependencies(
+  purepursuit_node
+  geometry_msgs
+  nav_msgs
+  rclcpp
+  ament_index_cpp
+)
+
+ament_target_dependencies(
+  mpc_node
+  geometry_msgs
+  nav_msgs
+  rclcpp
+  ament_index_cpp
+)
+
+install(DIRECTORY 
+  config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(DIRECTORY 
+  waypoints
+  DESTINATION share/${PROJECT_NAME}
+)
+

@@ -1,0 +1,15 @@
+/mpc_controller:
+  ros__parameters:
+    car_length: 0.4
+    body_mass: 30.0
+    front_left_wheel_mass: 30.0
+    front_right_wheel_mass: 30.0
+    rear_left_wheel_mass: 30.0
+    rear_right_wheel_mass: 30.0
+    front_wheel_stiffiness: 1.0
+    rear_wheel_stiffiness: 1.0
+    control_period: 0.01
+    max_steer_angle: 25.0
+    reference_velocity: 0.5
+    horizon: 30.0
+    number_of_iteration: 100.0

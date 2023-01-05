@@ -1,21 +1,38 @@
-#include "originbot_purepursuit.hpp"
+/***********************************************************************
+Copyright (c) 2022, www.guyuehome.com
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-PurePursuit::PurePursuit(string nodename):Node(nodename) {
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+***********************************************************************/
+
+#include "originbot_purepursuit.h"
+
+PurePursuit::PurePursuit(string nodename):Node(nodename) 
+{
     RCLCPP_INFO(this->get_logger(),"Starting Pure Pursuit");
 
-    InitParm();
-    LoadPath();
+    initParm();
+    loadPath();
     pub_cmd = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",1);
     pub_path = this->create_publisher<nav_msgs::msg::Path>("base_path",1);
     sub_odom = this->create_subscription<nav_msgs::msg::Odometry>("odom",1,bind(&PurePursuit::odom_callback,this,_1));
 }
 
-void PurePursuit::InitParm() {
+void PurePursuit::initParm() 
+{
     track = 0.11;
     ld0 = 0.5;
     kv = 0.1;
-    string pkg_name = "Purepursuit";
+    string pkg_name = "originbot_autonomous";
     string waypoints_name = "path.csv";
     string pkg_path = ament_index_cpp::get_package_share_directory(pkg_name);
     waypoints_path = pkg_path+"/waypoints/"+waypoints_name;
@@ -24,7 +41,8 @@ void PurePursuit::InitParm() {
 }
 
 //加载路径点信息
-void PurePursuit::LoadPath() {
+void PurePursuit::loadPath() 
+{
     WaypointLoader wp(waypoints_path);
     //检查文件是否存在或是否为空
     bool isLoaded = wp.load_waypoints();
@@ -42,7 +60,8 @@ void PurePursuit::LoadPath() {
     }
 }
 
-void PurePursuit::PubPath() {
+void PurePursuit::pubPath() 
+{
     geometry_msgs::msg::PoseStamped pose;
     nav_msgs::msg::Path base_path;
     base_path.header.stamp = this->get_clock()->now();
@@ -65,8 +84,9 @@ void PurePursuit::PubPath() {
     pub_path->publish(base_path);
 }
 
-void PurePursuit::odom_callback(const nav_msgs::msg::Odometry::SharedPtr odom) {
-    PubPath();
+void PurePursuit::odom_callback(const nav_msgs::msg::Odometry::SharedPtr odom) 
+{
+    pubPath();
     int index = FindCloestindex(odom);
     double x_prev = xr[index];
     double y_prev = yr[index];
@@ -97,8 +117,8 @@ void PurePursuit::odom_callback(const nav_msgs::msg::Odometry::SharedPtr odom) {
     RCLCPP_INFO(this->get_logger(),"Velocity = %f, Steering angle = %f",cmd_vel.linear.x,(cmd_vel.angular.z)*180.0/M_PI);
 }
 
-//查找最近路径点下标
-int PurePursuit::FindCloestindex(const nav_msgs::msg::Odometry::SharedPtr odom) {   
+int PurePursuit::FindCloestindex(const nav_msgs::msg::Odometry::SharedPtr odom) 
+{   
     int index;
     vector<double> dist;
     double linear_x = odom->twist.twist.linear.x;
@@ -112,6 +132,7 @@ int PurePursuit::FindCloestindex(const nav_msgs::msg::Odometry::SharedPtr odom) 
     auto smallest = min_element(dist.begin(),dist.end());
     index = distance(dist.begin(),smallest);
 
+    //公式 : ld=l+kvld=l+kv (过于依赖前视距离的选取，可以采用动态前视距离ld=l+kvld=l+kv其中l、kl、k为系数，根据速度调整前视距离)
     double ld = kv*linear_x+ld0;
     double ld_now = 0;
 
@@ -124,7 +145,8 @@ int PurePursuit::FindCloestindex(const nav_msgs::msg::Odometry::SharedPtr odom) 
     return index;
 }
 
-double PurePursuit::calSteeringAngle(double alpha,double ld) {
+double PurePursuit::calSteeringAngle(double alpha,double ld) 
+{
     double steer = atan2(2*track*sin(alpha),ld);
 
     if (steer > M_PI) {
@@ -135,11 +157,12 @@ double PurePursuit::calSteeringAngle(double alpha,double ld) {
     return steer;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
     // 初始化ROS节点
     rclcpp::init(argc, argv);
 
-    // 创建机器人底盘类，通过spin不断查询订阅话题
+    // 创建purepursuit节点，通过spin不断查询订阅话题
     rclcpp::spin(std::make_shared<PurePursuit>("purepursuit"));
     
     // 关闭ROS2接口，清除资源
