@@ -14,26 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ***********************************************************************/
 
-#include "loadpath.h"
+#include "loadPath.h"
 
-WaypointLoader::WaypointLoader(const string name) {
+WaypointLoader::WaypointLoader(const string name)
+{
     path_name = name;
 }
 
 //加载路径点
-bool WaypointLoader::load_waypoints() {
+bool WaypointLoader::load_waypoints() 
+{
     bool fileLoadFlag;
     ifstream ifs;
     ifs.open(path_name,ios::in);
-    if(!ifs.is_open()) {
+    if(!ifs.is_open())
         fileLoadFlag = false;
-    }
     char ch;
     ifs >> ch;
     if(ifs.eof())
-    {
         fileLoadFlag = false;
-    }
     ifs.putback(ch);
 
     string line;
@@ -56,6 +55,7 @@ bool WaypointLoader::load_waypoints() {
     return fileLoadFlag;
 }
 
-vector<vector<double>> WaypointLoader::get_waypoints() {
+vector<vector<double>> WaypointLoader::get_waypoints() 
+{
     return waypoint;
 }

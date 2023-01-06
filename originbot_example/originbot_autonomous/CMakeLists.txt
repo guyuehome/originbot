@@ -42,16 +42,18 @@ endif()
 ament_package()
 
 add_executable(purepursuit_node
-  src/originbot_purepursuit.cc
-  src/loadPath.cpp
+  Purepursuit/src/originbot_purepursuit.cc
+  Purepursuit/src/loadPath.cc
 )
 
 add_executable(mpc_node
-  src/originbot_mpc.cc
-  src/loadPath.cpp
+  MPC/src/originbot_mpc.cc
+  MPC/src/loadPath.cc
 )
 
-include_directories(include)
+include_directories(MPC/include)
+include_directories(Purepursuit/include)
+
 target_link_libraries(mpc_node /usr/local/lib/libqpOASES.a)
 
 ament_target_dependencies(
@@ -70,6 +72,12 @@ ament_target_dependencies(
   ament_index_cpp
 )
 
+install(TARGETS
+  purepursuit_node
+  mpc_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 install(DIRECTORY 
   config
   DESTINATION share/${PROJECT_NAME}
@@ -79,4 +87,11 @@ install(DIRECTORY
   waypoints
   DESTINATION share/${PROJECT_NAME}
 )
+
+install(DIRECTORY 
+  MPC/launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+
 

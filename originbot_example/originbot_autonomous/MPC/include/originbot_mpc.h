@@ -37,7 +37,7 @@ limitations under the License.
 
 #include "qpOASES.hpp"
 
-//此demo借鉴APollo，其使用的是单车模型，此处我们采集输出为转弯数据用于模拟差动模型角速度
+//此demo借鉴Apollo，其使用的是单车模型，此处我们采集输出为转弯数据用于模拟差动模型角速度
 //参考链接：https://blog.csdn.net/u013914471/article/details/83824490
 
 using namespace std;
@@ -86,8 +86,6 @@ class MpcController : public rclcpp::Node{
         void pubPath();
         double  calSteeringAngle(double alpha,double ld) ;
         void odom_callback(const nav_msgs::msg::Odometry::SharedPtr odom);
-        string pkg_name = "democar_core";
-        string waypoints_name = "path2.csv";
         string waypoints_path;
         //小车物理属性
         //控制时间域

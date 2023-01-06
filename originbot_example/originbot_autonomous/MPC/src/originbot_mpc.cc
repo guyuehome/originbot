@@ -83,6 +83,8 @@ void MpcController::initParm()
     lr_ = wheel_base * (1 - mass_rear / mass_);                                                     //后轮轴距
     izz_ = lf_ * lf_ * mass_front + lr_ * lr_ * mass_rear;
     max_steer_angle *= M_PI/180.0;
+    string pkg_name = "originbot_autonomous";
+    string waypoints_name = "path.csv";
     string pkg_path = ament_index_cpp::get_package_share_directory(pkg_name);
     waypoints_path = pkg_path+"/waypoints/"+waypoints_name;
     RCLCPP_INFO(this->get_logger(),"waypoints file is loaded at directory: %s",waypoints_path.c_str());
@@ -481,7 +483,6 @@ void MpcController::odom_callback(const nav_msgs::msg::Odometry::SharedPtr odom_
     double linear_velocity = sqrt(vx * vx + vy * vy);
     double heading_rate = odom_msgs->twist.twist.angular.z;
     double steering = computeSteering(x,y,linear_velocity,yaw,heading_rate);
-
     geometry_msgs::msg::Twist cmd_vel;
     cmd_vel.linear.x = v_ref;
     cmd_vel.angular.z = steering;

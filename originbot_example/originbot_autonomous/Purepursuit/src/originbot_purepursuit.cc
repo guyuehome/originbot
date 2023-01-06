@@ -87,7 +87,7 @@ void PurePursuit::pubPath()
 void PurePursuit::odom_callback(const nav_msgs::msg::Odometry::SharedPtr odom) 
 {
     pubPath();
-    int index = FindCloestindex(odom);
+    int index = findCloestindex(odom);
     double x_prev = xr[index];
     double y_prev = yr[index];
 
@@ -117,7 +117,7 @@ void PurePursuit::odom_callback(const nav_msgs::msg::Odometry::SharedPtr odom)
     RCLCPP_INFO(this->get_logger(),"Velocity = %f, Steering angle = %f",cmd_vel.linear.x,(cmd_vel.angular.z)*180.0/M_PI);
 }
 
-int PurePursuit::FindCloestindex(const nav_msgs::msg::Odometry::SharedPtr odom) 
+int PurePursuit::findCloestindex(const nav_msgs::msg::Odometry::SharedPtr odom) 
 {   
     int index;
     vector<double> dist;
@@ -170,3 +170,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+

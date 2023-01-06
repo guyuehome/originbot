@@ -17,7 +17,7 @@ limitations under the License.
 #ifndef ORIGINBOT_PUREPURSUIT_H
 #define ORIGINBOT_PUREPURSUIT_H
 
-#include "loadpath.h"
+#include "loadPath.h"
 
 #include <iostream>
 #include <math.h>
