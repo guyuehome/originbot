@@ -4,7 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## **[v1.0.2] - 2023-1-17**
 
+### 新增
+
+- [轨迹跟踪](/application/tracking/){:target="_blank"}
+
+- [双PID调节](/manual/parameter_config/){:target="_blank"}
+
+- [按键控制](/manual/teleoperation/){:target="_blank"}
+
+### 优化
+
+- 修复导航时偶尔地图不出现的BUG
+
+- 优化 OriginBot_app 编译问题
+
+- 更新TogetherROS版本至1.1.3
 
 ## [v1.0.1] - 2022-12-03
 
