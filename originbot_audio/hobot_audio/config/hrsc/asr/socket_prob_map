@@ -1,0 +1,9 @@
+general socket_common_start 1
+general socket_common_end 1
+socket_common_end general 1
+general socket_command_start 0.6
+general socket_command_end 1
+socket_command_end general 0.6
+general socket_cwakeup_start 2
+general socket_cwakeup_end 2
+socket_cwakeup_end general 1

@@ -1,0 +1,10 @@
+{
+  "micphone_enable": 1,
+  "micphone_rate": 16000,
+  "micphone_chn": 8,  // mic+ref total num
+  "micphone_buffer_time": 0, // ring buffer length in us
+  "micphone_nperiods": 4,  // period time in us
+  "micphone_period_size": 512,  // period_size, how many frames one period contains
+  "voip_mode": 0,   // whether the call mode is voice
+  "save_audio": 0
+}
