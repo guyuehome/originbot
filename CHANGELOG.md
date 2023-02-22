@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## **[v1.0.3] - 2023-02-23**
+
+### 新增
+
+- [语音控制] (/application/audio_control/){:target="_blank"}
+
+### 优化
+
+- 优化 OriginBot_app 编译问题
+
+- 更新TogetherROS版本至1.1.4
+
 ## **[v1.0.2] - 2023-1-17**
 
 ### 新增
