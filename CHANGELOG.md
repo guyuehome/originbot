@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## **[v1.0.4] - 2023-04-17**
+
+### 新增
+
+- [FreeRTOS 微控制器实时操作系统](/manual/originbot_freertos/){:target="_blank"}、
+
+- [图像压缩](/manual/camera_visualization/){:target="_blank"}
+
+### 优化
+
+- 修复部分因系统更新造成的文档与功能不匹配问题
+
+- 更新TogetherROS版本至 1.1.6 以及升级系统版本为 x3_ubuntu_v1.1.6
 
 ## **[v1.0.3] - 2023-02-23**
 

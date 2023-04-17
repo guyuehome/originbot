@@ -33,4 +33,9 @@ def generate_launch_description():
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),
+        Node(
+            package='originbot_demo',
+            executable='transport_img',
+            arguments=['--ros-args', '--log-level', 'error']
+        ),
     ])
