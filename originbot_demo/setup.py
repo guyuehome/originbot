@@ -25,6 +25,7 @@ setup(
             'echo_status    = originbot_demo.echo_status:main',
             'control_buzzer = originbot_demo.control_buzzer:main',
             'control_led    = originbot_demo.control_led:main',
+            'transport_img  = originbot_demo.transport_img:main',
         ],
     },
 )
