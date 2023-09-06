@@ -1,0 +1,30 @@
+launch:
+- node:
+    pkg: "kruisee_lidar"
+    exec: "kruisee_lidar_node"
+    name: "kruisee_lidar_node"
+    output: "screen"
+    param:
+    -
+      name: "sdk_core_path"
+      value: "install/kruisee_lidar"
+    -
+      name: "topic"
+      value: "scan"
+    -
+      name: "queue_size"
+      value: 50
+    -
+      name: "frame_id"
+      value: "map"
+    -
+      name: "use_polar_coordinates"
+      value: true
+    -
+      name: "use_cartesian_cooridnates"
+      value: false
+- node:
+    pkg: "rviz2"
+    exec: "rviz2"
+    name: "rviz2"
+    args: "-d install/kruisee_lidar/config/kruisee_lidar.rviz"
