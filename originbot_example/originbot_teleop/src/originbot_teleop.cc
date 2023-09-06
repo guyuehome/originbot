@@ -1,3 +1,19 @@
+/***********************************************************************
+Copyright (c) 2022, www.guyuehome.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+***********************************************************************/
+
 #include "originbot_teleop.hpp"
 
 //init启动
@@ -19,7 +35,7 @@ OriginbotTeleop::OriginbotTeleop(std::string nodeName) : Node(nodeName) {
 
     pub_cmd = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",1);
     showMenu();
-    originbot_teleopkeyboardLoop();
+    teleopKeyboardLoop();
 }
 
 void OriginbotTeleop::stopRobot() {
@@ -38,109 +54,72 @@ void OriginbotTeleop::showMenu() {
     std::cout << "press ctrl+c to quit" << std::endl;
 }
 
-void OriginbotTeleop::originbot_teleopkeyboardLoop() {
+void OriginbotTeleop::teleopKeyboardLoop() {
     struct pollfd ufd;
     ufd.fd = kfd;
     ufd.events = POLLIN;
     char key;
-    int speed = 0;
-    int turn = 0;				
     bool dirty = false;
+    int speed = 0,turn = 0;
+
     while (rclcpp::ok()) {
-          boost::this_thread::interruption_point();
-            int sparkbasebit = 0;
-            int num;
-            if ((num = poll(&ufd, 1, 500)) < 0) {
-                tcsetattr(kfd, TCSANOW, &initial_settings);
-                perror("poll():");
-                return;
-            } else if (num > 0) {
-                new_settings.c_cc[VMIN] = 0;
-                tcsetattr(0, TCSANOW, &new_settings);
-                read(0,&key,1);
-                new_settings.c_cc[VMIN] = 1;
-                tcsetattr(0, TCSANOW, &new_settings);
-            } else {
-                if (dirty == true) {
-                    stopRobot();
-                    dirty = false;
-                }
-                continue;
+        boost::this_thread::interruption_point();
+        int originbotBaseBit = 0;
+        int ret;
+
+        if ((ret = poll(&ufd, 1, 500)) < 0) {
+            tcsetattr(kfd, TCSANOW, &initial_settings);
+            perror("poll():");
+            return;
+        } else if (ret > 0) {
+            new_settings.c_cc[VMIN] = 0;
+            tcsetattr(0, TCSANOW, &new_settings);
+            read(0, &key, 1);
+            new_settings.c_cc[VMIN] = 1;
+            tcsetattr(0, TCSANOW, &new_settings);
+        } else {
+            if (dirty) {
+                stopRobot();
+                dirty = false;
             }
-            switch (key) {
-                case KEYCODE_W:	
-                    speed = 1;
-                    turn = 0;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout << "Move forward" << std::endl;
-                    break;
-                case KEYCODE_S:;
-                    speed = -1;
-                    turn = 0;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout << "Move backward" << std::endl;
-                    break;
-                case KEYCODE_A:
-                    speed = 0;
-                    turn = 1;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout << "Left rotate" << std::endl;
-                    break;
-                case KEYCODE_D:
-                    speed = 0;
-                    turn = -1;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout << "Right rotate" << std::endl; 
-                    break;
-                case KEYCODE_C:
-                    speed = -1;
-                    turn = 1;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout <<"Left backward turn" << std::endl;
-                    break;
-                case KEYCODE_Z:
-                    speed = -1;
-                    turn = -1;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout <<"Right backward turn"<< std::endl ;
-                    break;
-                case KEYCODE_Q:
-                    speed = 1;
-                    turn = 1;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout <<"Right forward turn"<< std::endl ;
-                    break;
-                case KEYCODE_E:
-                    speed = 1;
-                    turn = -1;
-                    dirty = true;
-                    sparkbasebit = 1;
-                    std::cout <<"Left forward turn"<< std::endl ;
-                    break;
-                default:
-                    speed = 0;
-                    turn = 0;
-                    dirty = false;
-                    sparkbasebit = 1;
-            }
-            if (sparkbasebit == 1) {
-                cmdvel_.linear.x = speed * _speed_linear_x;	
-                cmdvel_.angular.z = turn * _speed_angular_z;	
-                pub_cmd->publish(cmdvel_);
-            }
+            continue;
+        }
+        std::map<char, std::tuple<int, int, std::string>> keymap = {
+            {KEYCODE_W, std::make_tuple(1, 0, "Move forward")},
+            {KEYCODE_S, std::make_tuple(-1, 0, "Move backward")},
+            {KEYCODE_A, std::make_tuple(0, 1, "Left rotate")},
+            {KEYCODE_D, std::make_tuple(0, -1, "Right rotate")},
+            {KEYCODE_C, std::make_tuple(-1, 1, "Left backward turn")},
+            {KEYCODE_Z, std::make_tuple(-1, -1, "Right backward turn")},
+            {KEYCODE_Q, std::make_tuple(1, 1, "Right forward turn")},
+            {KEYCODE_E, std::make_tuple(1, -1, "Left forward turn")}
+        };
+
+        auto it = keymap.find(key);
+        if (it != keymap.end()) {
+            speed = std::get<0>(it->second);
+            turn = std::get<1>(it->second);
+            dirty = true;
+            originbotBaseBit = 1;
+            std::cout << std::get<2>(it->second) << std::endl;
+        } else {
+            speed = 0;
+            turn = 0;
+            dirty = false;
+            originbotBaseBit = 1;
+        }
+
+        if (originbotBaseBit == 1) {
+            cmdvel_.linear.x = speed * _speed_linear_x;
+            cmdvel_.angular.z = turn * _speed_angular_z;
+            pub_cmd->publish(cmdvel_);
+        }
     }
 }
 int main(int argc,char **argv) {
     rclcpp::init(argc,argv);
     auto node = std::make_shared<OriginbotTeleop>("originbot_teleop");
-    boost::thread thread = boost::thread(boost::bind(&OriginbotTeleop::originbot_teleopkeyboardLoop, node));
+    boost::thread thread = boost::thread(boost::bind(&OriginbotTeleop::teleopKeyboardLoop, node));
     rclcpp::spin(node);
     thread.interrupt();
     rclcpp::shutdown();
