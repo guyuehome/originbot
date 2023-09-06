@@ -127,8 +127,8 @@ int LineFollowerPerceptionNode::SetNodePara() {
   if (!dnn_node_para_ptr_) {
     return -1;
   }
-  RCLCPP_ERROR(rclcpp::get_logger("LineFollowerPerceptionNode"), "path:%s\n", model_path_.c_str());
-  RCLCPP_ERROR(rclcpp::get_logger("LineFollowerPerceptionNode"), "name:%s\n", model_name_.c_str());
+  RCLCPP_INFO(rclcpp::get_logger("LineFollowerPerceptionNode"), "path:%s\n", model_path_.c_str());
+  RCLCPP_INFO(rclcpp::get_logger("LineFollowerPerceptionNode"), "name:%s\n", model_name_.c_str());
   dnn_node_para_ptr_->model_file = model_path_;
   dnn_node_para_ptr_->model_name = model_name_;
   dnn_node_para_ptr_->model_task_type = model_task_type_;

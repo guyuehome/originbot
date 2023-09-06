@@ -73,4 +73,3 @@ class LineFollowerPerceptionNode : public DnnNode {
 };
 
 #endif  // _LINE_FOLLOWER_PERCEPTION_H_
-
