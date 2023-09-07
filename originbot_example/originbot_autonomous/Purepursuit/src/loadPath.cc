@@ -22,7 +22,7 @@ WaypointLoader::WaypointLoader(const string name)
 }
 
 //加载路径点
-bool WaypointLoader::load_waypoints() 
+bool WaypointLoader::loadWayPoints() 
 {
     bool fileLoadFlag;
     ifstream ifs;
@@ -48,14 +48,14 @@ bool WaypointLoader::load_waypoints()
         v.push_back(atof(field.c_str()));
         getline(sin,field,',');
         v.push_back(atof(field.c_str()));
-        waypoint.push_back(v);  
+        wayPoint.push_back(v);  
     }
     fileLoadFlag = true;
     ifs.close();
     return fileLoadFlag;
 }
 
-vector<vector<double>> WaypointLoader::get_waypoints() 
+vector<vector<double>> WaypointLoader::getWayPoints() 
 {
-    return waypoint;
+    return wayPoint;
 }
