@@ -28,32 +28,20 @@ HBAudioCapture::HBAudioCapture(const std::string &node_name,
   this->declare_parameter<std::string>("config_path", config_path_);
   this->declare_parameter<std::string>("audio_pub_topic_name",
                                        audio_pub_topic_name_);
+  this->declare_parameter<std::string>("asr_pub_topic_name",
+                                       asr_pub_topic_name_);
 
   this->get_parameter<std::string>("config_path", config_path_);
   this->get_parameter<std::string>("audio_pub_topic_name",
                                    audio_pub_topic_name_);
+  this->get_parameter<std::string>("asr_pub_topic_name",
+                                   asr_pub_topic_name_);
+
   std::stringstream ss;
   ss << "Parameter:"
      << "\n config_path: " << config_path_
-     << "\n audio_pub_topic_name: " << audio_pub_topic_name_;
-  RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "%s", ss.str().c_str());
-}
-
-HBAudioCapture::HBAudioCapture(const std::string &node_name,
-                               const std::string &namespace_,
-                               const NodeOptions &options)
-    : rclcpp::Node(node_name, namespace_, options) {
-  this->declare_parameter<std::string>("config_path", config_path_);
-  this->declare_parameter<std::string>("audio_pub_topic_name",
-                                       audio_pub_topic_name_);
-
-  this->get_parameter<std::string>("config_path", config_path_);
-  this->get_parameter<std::string>("audio_pub_topic_name",
-                                   audio_pub_topic_name_);
-  std::stringstream ss;
-  ss << "Parameter:"
-     << "\n config_path: " << config_path_
-     << "\n audio_pub_topic_name: " << audio_pub_topic_name_;
+     << "\n audio_pub_topic_name: " << audio_pub_topic_name_
+     << "\n asr_pub_topic_name: " << asr_pub_topic_name_;
   RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "%s", ss.str().c_str());
 }
 
@@ -76,7 +64,7 @@ int HBAudioCapture::Init() {
   }
 
   /* init micphone device*/
-  micphone_device_->name = const_cast<char *>("hw:0,0");
+  micphone_device_->name = const_cast<char *>(micphone_name_.c_str());
   micphone_device_->format = SND_PCM_FORMAT_S16;
   micphone_device_->direct = SND_PCM_STREAM_CAPTURE;
   micphone_device_->rate = micphone_rate_;
@@ -97,24 +85,25 @@ int HBAudioCapture::Init() {
                 std::placeholders::_1),
       std::bind(&HBAudioCapture::AudioCmdDataFunc, this, std::placeholders::_1),
       std::bind(&HBAudioCapture::AudioEventFunc, this, std::placeholders::_1),
-      micphone_chn_, config_path_, voip_mode_);
+      std::bind(&HBAudioCapture::AudioASRDataFunc, this, std::placeholders::_1),
+      micphone_chn_, config_path_, voip_mode_, mic_type_,
+      asr_output_mode_, asr_output_channel_);
 
   RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "init success");
   // system("rm ./*.pcm -rf");
-  if (save_audio) {
+  if (save_audio_) {
     audio_infile_.open("./audio_in.pcm",
                        std::ios::app | std::ios::out | std::ios::binary);
     audio_sdk_.open("./audio_voip.pcm",
                     std::ios::app | std::ios::out | std::ios::binary);
   }
 
-
-
-  rclcpp::QoS qos(rclcpp::KeepLast(7));
-  qos.reliable();
-  qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
   msg_publisher_ = this->create_publisher<audio_msg::msg::SmartAudioData>(
       audio_pub_topic_name_, 10);
+  
+  if (asr_output_mode_ == 1 || asr_output_mode_ == 2) {
+    asr_msg_publisher_ = this->create_publisher<std_msgs::msg::String>(asr_pub_topic_name_, 10);
+  }
   is_init_ = true;
   return 0;
 }
@@ -184,7 +173,7 @@ int HBAudioCapture::MicphoneGetThread() {
     //         std::chrono::high_resolution_clock::now().time_since_epoch())
     //         .count();
     AudioEngine::Instance()->InputData(buffer, size, false);
-    if (save_audio && audio_infile_.is_open()) {
+    if (save_audio_ && audio_infile_.is_open()) {
       audio_infile_.write(buffer, size);
     }
   }
@@ -200,7 +189,7 @@ void HBAudioCapture::AudioDataFunc(char *buffer, int size) {
   frame->frame_type.value = frame->frame_type.SMART_AUDIO_TYPE_VOIP;
   frame->data.resize(size);
   memcpy(&frame->data[0], buffer, size);
-  if (save_audio && audio_sdk_.is_open()) {
+  if (save_audio_ && audio_sdk_.is_open()) {
    audio_sdk_.write(buffer,size);
   }
   msg_publisher_->publish(std::move(frame));
@@ -250,6 +239,15 @@ void HBAudioCapture::AudioEventFunc(int event) {
   msg_publisher_->publish(std::move(frame));
 }
 
+void HBAudioCapture::AudioASRDataFunc(const char *asr) {
+  RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "asr result:%s", asr);
+  if (asr_output_mode_ == 1 || asr_output_mode_ == 2) {
+    auto message = std::make_unique<std_msgs::msg::String>();
+    message->data = asr;
+    asr_msg_publisher_->publish(std::move(message));
+  }
+}
+
 int HBAudioCapture::ParseConfig(std::string config_file) {
   if (config_file.empty()) return -1;
   RCLCPP_INFO(rclcpp::get_logger("hobot_audio"), "hobot audio config file:%s",
@@ -268,12 +266,43 @@ int HBAudioCapture::ParseConfig(std::string config_file) {
     result = atoi(value.c_str());
   };
 
+  auto parse_line_string = [](const std::string &json, std::string &result) {
+    size_t colonPos = json.find(":");
+    if (colonPos == std::string::npos)
+      return;
+
+    size_t valueStart = json.find_first_not_of(" \t\n\r", colonPos + 1);
+    if (valueStart == std::string::npos)
+      return;
+
+    if (json[valueStart] == '\"') {
+      size_t valueContentStart = valueStart + 1;
+      size_t valueContentEnd = json.find_first_of("\"", valueContentStart);
+      if (valueContentEnd == std::string::npos)
+        return;
+
+      result =
+          json.substr(valueContentStart, valueContentEnd - valueContentStart);
+    } else {
+      size_t valueEnd = json.find_first_of(",}\n\r", valueStart);
+      if (valueEnd == std::string::npos)
+        return;
+
+      result = json.substr(valueStart, valueEnd - valueStart);
+    }
+  };
+
   std::string line;
   while (std::getline(ifs, line)) {
     if (line.find("\"micphone_enable\"") != std::string::npos) {
       parse_line(line, micphone_enable_);
       RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "micphone_enable: %d",
                   micphone_enable_);
+    }
+    if (line.find("\"micphone_name\"") != std::string::npos) {
+      parse_line_string(line, micphone_name_);
+      RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "micphone_name: %d",
+                  micphone_name_);
     }
     if (line.find("\"micphone_rate\"") != std::string::npos) {
       parse_line(line, micphone_rate_);
@@ -305,12 +334,27 @@ int HBAudioCapture::ParseConfig(std::string config_file) {
       RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "voip_mode: %d",
                   voip_mode_);
     }
+    if (line.find("\"mic_type\"") != std::string::npos) {
+      parse_line(line, mic_type_);
+      RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "mic_type: %d",
+                  mic_type_);
+    }
+    if (line.find("\"asr_mode\"") != std::string::npos) {
+      parse_line(line, asr_output_mode_);
+      RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "asr_mode: %d",
+                  asr_output_mode_);
+    }
+    if (line.find("\"asr_channel\"") != std::string::npos) {
+      parse_line(line, asr_output_channel_);
+      RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "asr_channel: %d",
+                  asr_output_channel_);
+    }
     if (line.find("\"save_audio\"") != std::string::npos) {
       int save = 0;
       parse_line(line, save);
       RCLCPP_WARN(rclcpp::get_logger("hobot_audio"), "save_audio: %d",
                   save);
-      save_audio = save;
+      save_audio_ = save;
     }
   }
   ifs.close();

@@ -24,7 +24,7 @@
 namespace hobot {
 namespace audio {
 
-void VoipDataCallback(const void *cookie, const HrscCallbackData *data) {
+void VoipDataCallback(const void *, const HrscCallbackData *data) {
   if (!data) return;
   RCLCPP_DEBUG(rclcpp::get_logger("audio_capture"),
                "recv hrsc sdk callback audio, angle:%f, score:%f, data size:%d",
@@ -39,14 +39,14 @@ void VoipDataCallback(const void *cookie, const HrscCallbackData *data) {
   // }
 }
 
-void WakeupDataCallback(const void *cookie, const HrscCallbackData *data,
+void WakeupDataCallback(const void *, const HrscCallbackData *data,
                         const int keyword_index) {
   if (!data) return;
   std::cout << "recv hrsc sdk wakeup data , size is " << data->audio_buffer.size
             << ", key index:" << keyword_index << std::endl;
 }
 
-void EventCallback(const void *cookie, HrscEventType event) {
+void EventCallback(const void *, HrscEventType event) {
   static int wkp_count = 0;
   if (event == kHrscEventWkpNormal || event == kHrscEventWkpOneshot) {
     std::cout << "recv hrsc sdk event wakeup success, wkp count is "
@@ -57,7 +57,7 @@ void EventCallback(const void *cookie, HrscEventType event) {
   }
 }
 
-void CmdDataCallback(const void *cookie, const char *cmd) {
+void CmdDataCallback(const void *, const char *cmd) {
   if (!cmd) return;
   std::cout << "recv hrsc sdk command data: " << cmd << std::endl;
   if (AudioEngine::Instance()->GetAudioCmdDataCb()) {
@@ -65,10 +65,17 @@ void CmdDataCallback(const void *cookie, const char *cmd) {
   }
 }
 
-void DoaCallback(const void *cookie, int doa) {
+void DoaCallback(const void *, int doa) {
   std::cout << "recv hrsc sdk doa data: " << doa << std::endl;
   if (AudioEngine::Instance()->GetAudioSmartDataCb()) {
     AudioEngine::Instance()->GetAudioSmartDataCb()(doa);
+  }
+}
+
+void AsrCallback(const void *, const char *asr) {
+  std::cout << "asr is: " << asr << std::endl;
+  if (AudioEngine::Instance()->GetASREventCb()) {
+    AudioEngine::Instance()->GetASREventCb()(asr);
   }
 }
 
@@ -105,8 +112,10 @@ int AudioEngine::ParseConfig(std::string config_file) {
 
 int AudioEngine::Init(AudioDataFunc audio_cb, AudioSmartDataFunc audio_smart_cb,
                       AudioCmdDataFunc cmd_cb, AudioEventFunc event_cb,
+                      AudioASRDataFunc asr_cb,
                       const int mic_chn, const std::string config_path,
-                      const int voip_mode) {
+                      const int voip_mode, const int mic_type,
+                      const int asr_output_mode, const int asr_output_channel) {
   if (init_) {
     RCLCPP_WARN(rclcpp::get_logger("audio_capture"),
                 "has already initialized.");
@@ -114,6 +123,9 @@ int AudioEngine::Init(AudioDataFunc audio_cb, AudioSmartDataFunc audio_smart_cb,
   }
   mic_chn_num_ = mic_chn;
   voip_mode_ = voip_mode;
+  mic_type_ = mic_type;
+  asr_mode_ = asr_output_mode;
+  asr_channel_ = asr_output_channel;
   std::string config_file = config_path + "/audio_config.json";
   sdk_file_path_ = config_path + "/hrsc";
   // ParseConfig(config_file);
@@ -127,6 +139,7 @@ int AudioEngine::Init(AudioDataFunc audio_cb, AudioSmartDataFunc audio_smart_cb,
   audio_smart_cb_ = audio_smart_cb;
   audio_cmd_cb_ = cmd_cb;
   audio_event_cb_ = event_cb;
+  audio_asr_cb_ = asr_cb;
   init_ = true;
   RCLCPP_WARN(rclcpp::get_logger("audio_capture"), "init hrsc sdk success!");
   return 0;
@@ -217,11 +230,18 @@ int AudioEngine::InitSDK() {
   effect_cfg_.support_command_word = 0;
   effect_cfg_.wakeup_prefix = 200;
   effect_cfg_.wakeup_suffix = 200;
+  effect_cfg_.is_use_linear_mic_flag = mic_type_;
+
+  effect_cfg_.asr_output_mode = asr_mode_;
+  effect_cfg_.asr_output_channel = asr_channel_;
+
   effect_cfg_.HrscVoipDataCallback = VoipDataCallback;
   effect_cfg_.HrscWakeupDataCallback = WakeupDataCallback;
   effect_cfg_.HrscEventCallback = EventCallback;
   effect_cfg_.HrscCmdCallback = CmdDataCallback;
   effect_cfg_.HrscDoaCallbadk = DoaCallback;
+  effect_cfg_.HrscAsrCallback = AsrCallback;
+
   sdk_handle_ = HrscInit(&effect_cfg_);
   if (sdk_handle_ == nullptr) {
     RCLCPP_ERROR(rclcpp::get_logger("audio_capture"), "hrsc init error!!!");

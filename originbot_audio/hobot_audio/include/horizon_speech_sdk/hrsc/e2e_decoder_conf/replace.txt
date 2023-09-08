@@ -1,0 +1,18 @@
+h u d	hud
+l d w	ldw
+a p a	apa
+l k a	lka
+applecarplay	apple carplay
+打开a c	打开ac
+关闭a c	关闭ac
+一档	一挡
+二档	二挡
+三档	三挡
+四档	四挡
+五档	五挡
+六档	六挡
+七档	七挡
+八档	八挡
+九档	九挡
+十档	十挡
+农一点	浓一点

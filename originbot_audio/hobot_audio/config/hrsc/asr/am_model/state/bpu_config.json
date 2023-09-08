@@ -1,8 +1,0 @@
-{
-    "core_engine": "dual",
-    "engine_type": "naive",
-    "max_task" : 64,
-    "max_bpu_buffer" : 1024,
-    "debug" : 0,
-    "enable_core_num" : 2
-}
