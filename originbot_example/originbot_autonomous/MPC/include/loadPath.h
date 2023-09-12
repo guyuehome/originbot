@@ -29,7 +29,7 @@ public:
     WaypointLoader(const string name);
     virtual ~WaypointLoader(){};
     bool loadWayPoints();
-    vector<vector<double>> getWaypoints();
+    vector<vector<double>> getWayPoints();
 
 private:
     string path_name;

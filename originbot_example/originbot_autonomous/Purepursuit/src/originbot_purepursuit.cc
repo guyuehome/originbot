@@ -50,7 +50,7 @@ void PurePursuit::loadPath()
         RCLCPP_ERROR(this->get_logger(),"File is not exist or file is empty!");
         exit(1);
     }
-    vector<vector<double>> wp_temp = wp.getWaypoints();
+    vector<vector<double>> wp_temp = wp.getWayPoints();
     for(vector<vector<double>>::const_iterator it=wp_temp.begin();it!=wp_temp.end();it++) {
         //获取路径点和位姿信息
         xr.push_back((*it)[0]);     //x

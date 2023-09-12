@@ -55,7 +55,7 @@ bool WaypointLoader::loadWayPoints()
     return fileLoadFlag;
 }
 
-vector<vector<double>> WaypointLoader::getWaypoints() 
+vector<vector<double>> WaypointLoader::getWayPoints() 
 {
     return wayPoint;
 }

@@ -98,7 +98,7 @@ void MpcController::loadPath()
         RCLCPP_ERROR(this->get_logger(),"File is not exist or file is empty!");
         exit(1);
     }
-    vector<vector<double>> wp = wploader.getWaypoints();
+    vector<vector<double>> wp = wploader.getWayPoints();
     for(vector<vector<double>>::const_iterator it=wp.begin();it!=wp.end();it++) {
         xr.push_back((*it)[0]);
         yr.push_back((*it)[1]);
