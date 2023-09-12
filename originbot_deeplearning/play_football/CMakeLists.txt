@@ -26,7 +26,6 @@ find_package(hobot_cv REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(nav2_msgs REQUIRED)
 
 set(SYS_ROOT ${CMAKE_SYSROOT})
 message("SYS_ROOT is " ${SYS_ROOT})
@@ -66,7 +65,6 @@ ament_target_dependencies(
   hbm_img_msgs
   hobot_cv
   geometry_msgs
-  nav2_msgs
   rclcpp_action
   rclcpp_components
 )

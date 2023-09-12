@@ -488,7 +488,7 @@ int Football_node::PostProcess(
       auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(
                           tp_now - tp_start)
                           .count();
-      RCLCPP_WARN(rclcpp::get_logger("playfootball_node"),
+      RCLCPP_INFO(rclcpp::get_logger("playfootball_node"),
                   "input fps: %.2f, out fps: %.2f, infer time ms: %d, "
                   "post process time ms: %d",
                   node_output->rt_stat->input_fps,
