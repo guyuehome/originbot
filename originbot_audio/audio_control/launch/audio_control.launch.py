@@ -21,18 +21,19 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python import get_package_share_directory
 
+
 def generate_launch_description():
     return LaunchDescription([
         # 启动智能语音识别pkg
-        Node(
-            package='hobot_audio',
-            executable='hobot_audio',
-            output='screen',
-            parameters=[
-                {"config_path": "./config"},
-                {"audio_pub_topic_name": "/audio_smart"}
-            ],
-            arguments=['--ros-args', '--log-level', 'error']
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('hobot_audio'),
+                    'launch/hobot_audio.launch.py')),
+            launch_arguments={
+                'audio_pub_topic_name': '/audio_smart'
+
+            }.items()
         ),
         # 启动语音控制pkg
         Node(
