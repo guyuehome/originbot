@@ -3,12 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## **[v2.0.0] - 2023-09-14**
+## **[v2.0.0] - 2023-09-18**
 
 ### 新增
 - 支持NodeHub功能使用
 - 新增originbot_example,用于存放ROS中常用到的示例，包括轨迹跟踪、获取指定帧nv12或bgr格式图像、键盘控制
 - 新增gazebo环境下建图和导航案例
+- 新增氪见KRJ10雷达驱动功能包
+- 新增不响应低压导致蜂鸣器响应的控制器固件，可支持如手机充电器给stm32供电继续使用小车
 
 ### 优化
 - 优化旭日X3派板卡为RDK X3
