@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 支持NodeHub功能使用
 - 新增originbot_example,用于存放ROS中常用到的示例，包括轨迹跟踪、获取指定帧nv12或bgr格式图像、键盘控制
 - 新增gazebo环境下建图和导航案例
+- 新增氪见KRJ10雷达驱动功能包
 
 ### 优化
 - 优化旭日X3派板卡为RDK X3
