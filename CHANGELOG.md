@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## **[v2.0.0] - 2023-09-14**
+
+### 新增
+- 支持NodeHub功能使用
+- 新增originbot_example,用于存放ROS中常用到的示例，包括轨迹跟踪、获取指定帧nv12或bgr格式图像、键盘控制
+- 新增gazebo环境下建图和导航案例
+
+### 优化
+- 优化旭日X3派板卡为RDK X3
+- 优化网站内容
+- 更新TogetheROS版本至v2.0.2,升级系统版本至ubuntu-preinstalled-server-arm64_v2.0版本   
+- 修复SLAM和导航无法多次运行的BUG
+- 增强导航精度，优化控制器端电机初始化指向同一定时器问题
+- 优化底盘驱动、巡线等程序，增加程序运行效率
+- 优化人体跟踪、手势识别等程序，适配RDK X3
+
 ## **[v1.0.4] - 2023-04-17**
 
 ### 新增
