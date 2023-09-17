@@ -89,8 +89,6 @@ class OriginbotBase : public rclcpp::Node
 public:
     OriginbotBase(std::string nodeName);
     ~OriginbotBase();
-
-    void driver_loop();
     
 private:
     void readRawData();

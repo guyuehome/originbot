@@ -24,12 +24,12 @@ def generate_launch_description():
             executable='mipi_cam',
             output='screen',
             parameters=[
-                {"camera_calibration_file_path": "/opt/tros/lib/mipi_cam/config/GC4663_calibration.yaml"},
+                {"mipi_camera_calibration_file_path": "/opt/tros/lib/mipi_cam/config/GC4663_calibration.yaml"},
                 {"out_format": "nv12"},
                 {"image_width": 960},
                 {"image_height": 544},
                 {"io_method": "shared_mem"},
-                {"video_device": "GC4663"}
+                {"mipi_video_device": "GC4663"}
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),

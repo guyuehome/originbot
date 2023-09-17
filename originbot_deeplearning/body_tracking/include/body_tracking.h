@@ -54,8 +54,6 @@ class TrackingManager {
   // avoid robot move far away
   void RunOverMovingProtectionStrategy();
   void ProcessSmart(const ai_msgs::msg::PerceptionTargets::ConstSharedPtr &msg);
-  // 只更新present_rect和frame_id
-  void UpdateSmart(const ai_msgs::msg::PerceptionTargets::ConstSharedPtr &msg);
   // check if last command send to robot is complete
   bool RobotCommandIsRunning();
   // cal the angle of robot and track
@@ -71,9 +69,6 @@ class TrackingManager {
   // 只使用视觉检测结果数据，判断是否需要激活跟随
   bool TrackingSwitchWithVision();
 
-  // 设置gpio led灯，1点亮，0关闭
-  void SetLed(int r, int g, int b);
-
   std::mutex robot_strategy_mtx_;
   // 如果上一帧智能数据的策略未处理完，当前智能数据不处理
   std::atomic_bool last_frame_done_;
@@ -83,7 +78,6 @@ class TrackingManager {
 
   TrackInfo track_info_;
   TrackCfg track_cfg_;
-  HwGpioCfg hw_gpio_cfg_;
 
   bool start_ = false;
 
@@ -97,5 +91,6 @@ class TrackingManager {
   bool last_cmdvel_is_cancel_ = false;
   // 0: rotate, 1: move, 2: rotate&move
   int last_cmdvel_type_ = -1;
+  float last_move_step_ratio_ = 1.0;
 };
 #endif

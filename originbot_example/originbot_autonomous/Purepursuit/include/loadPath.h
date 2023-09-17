@@ -25,15 +25,15 @@ using namespace std;
 
 class WaypointLoader
 {
-    public:
-        WaypointLoader(const string name);
-        virtual ~WaypointLoader(){};
-        bool load_waypoints();
-        vector<vector<double>> get_waypoints();
+public:
+    WaypointLoader(const string name);
+    virtual ~WaypointLoader(){};
+    bool loadWayPoints();
+    vector<vector<double>> getWayPoints();
 
-    private:
-        string path_name;
-        vector<vector<double>> waypoint;
+private:
+    string path_name;
+    vector<vector<double>> wayPoint;
 };
 
 #endif //LOAD_PATH_H

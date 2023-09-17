@@ -43,8 +43,8 @@ class ParametersClass : public rclcpp::Node {
                                    cfg_->activate_robot_move_thr);
       this->declare_parameter<int>("stop_robot_move_to_top_thr",
                                    cfg_->stop_robot_move_to_top_thr);
-      this->declare_parameter<float>("move_step", cfg_->move_step);
-      this->declare_parameter<float>("rotate_step", cfg_->rotate_step);
+      this->declare_parameter<float>("linear_velocity", cfg_->move_step);
+      this->declare_parameter<float>("angular_velocity", cfg_->rotate_step);
       this->declare_parameter<float>("stop_move_rect_width_ratio_thr",
                                      cfg_->stop_move_rect_width_ratio_thr);
       this->declare_parameter<float>("start_move_rect_width_ratio_thr",
@@ -74,8 +74,8 @@ class ParametersClass : public rclcpp::Node {
                         cfg_->activate_robot_move_thr);
     this->get_parameter("stop_robot_move_to_top_thr",
                         cfg_->stop_robot_move_to_top_thr);
-    this->get_parameter("move_step", cfg_->move_step);
-    this->get_parameter("rotate_step", cfg_->rotate_step);
+    this->get_parameter("linear_velocity", cfg_->move_step);
+    this->get_parameter("angular_velocity", cfg_->rotate_step);
     this->get_parameter("stop_move_rect_width_ratio_thr",
                         cfg_->stop_move_rect_width_ratio_thr);
     this->get_parameter("start_move_rect_width_ratio_thr",
@@ -99,8 +99,8 @@ class ParametersClass : public rclcpp::Node {
        << std::endl;
     //  ss << "stop_robot_move_to_top_thr: " << cfg_->stop_robot_move_to_top_thr
     //     << std::endl;
-    ss << "move_step: " << cfg_->move_step << std::endl;
-    ss << "rotate_step: " << cfg_->rotate_step << std::endl;
+    ss << "linear_velocity: " << cfg_->move_step << std::endl;
+    ss << "angular_velocity: " << cfg_->rotate_step << std::endl;
     //  ss << "stop_move_rect_width_ratio_thr: "
     //     << cfg_->stop_move_rect_width_ratio_thr << std::endl;
     //  ss << "start_move_rect_width_ratio_thr: "

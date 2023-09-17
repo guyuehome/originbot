@@ -12,25 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from ament_index_python import get_package_share_directory
 
 
 def generate_launch_description():
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'audio_config_path',
+            default_value='./config',
+            description='hobot audio config path'),
+        DeclareLaunchArgument(
+            'audio_pub_topic_name',
+            default_value='/audio_smart',
+            description='hobot audio publish topic name'),
         # 启动音频采集pkg
         Node(
             package='hobot_audio',
             executable='hobot_audio',
             output='screen',
             parameters=[
-                {"config_path": "./config"},
-                {"audio_pub_topic_name": "/audio_smart"}
+                {"config_path": LaunchConfiguration('audio_config_path')},
+                {"audio_pub_topic_name": LaunchConfiguration(
+                    'audio_pub_topic_name')}
             ],
             arguments=['--ros-args', '--log-level', 'error']
         )

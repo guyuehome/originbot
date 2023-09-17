@@ -1,0 +1,10 @@
+sos = 5999 
+eos = 5999
+chunk_size       = 8
+num_left_chunks  = 4
+subsampling_rate = 8
+right_context    = 14
+is_bidirectional_decoder = 1
+valid_mask_value = 1.0
+invalid_mask_value = 0.0
+manual_quant_scale = 0.0078740155951329465

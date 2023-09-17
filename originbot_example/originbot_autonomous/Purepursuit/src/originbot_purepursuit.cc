@@ -45,12 +45,12 @@ void PurePursuit::loadPath()
 {
     WaypointLoader wp(waypoints_path);
     //检查文件是否存在或是否为空
-    bool isLoaded = wp.load_waypoints();
+    bool isLoaded = wp.loadWayPoints();
     if (!isLoaded) {
         RCLCPP_ERROR(this->get_logger(),"File is not exist or file is empty!");
         exit(1);
     }
-    vector<vector<double>> wp_temp = wp.get_waypoints();
+    vector<vector<double>> wp_temp = wp.getWayPoints();
     for(vector<vector<double>>::const_iterator it=wp_temp.begin();it!=wp_temp.end();it++) {
         //获取路径点和位姿信息
         xr.push_back((*it)[0]);     //x

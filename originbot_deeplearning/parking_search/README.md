@@ -128,7 +128,7 @@ cp -r install/lib/parking_perception/config/ .
 # mipi摄像头输入
 export CAM_TYPE=mipi
 
-ros2 launch parking_search hobot_parking_search.launch.py
+ros2 launch parking_search parking_search.launch.py
 ```
 
 ### **Linux**

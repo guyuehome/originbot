@@ -142,11 +142,11 @@ typedef struct {
    */
   unsigned int wakeup_suffix;
   /**
-   * @brief : asr timeout(seconds)
+   * @brief : asr timeout(millisecond)
    */
   unsigned int asr_timeout;
   /**
-   * @brief : VAD timeout(seconds)
+   * @brief : VAD timeout(millisecond)
    */
   unsigned int vad_timeout;
   /**
@@ -177,6 +177,20 @@ typedef struct {
    * @brief: the unique str of device if needed activate
    */
   const char *device_unique_str;
+  /**
+   * @brief: the flag of using linear or cir mic
+   */
+  unsigned int is_use_linear_mic_flag;
+  /**
+   * @brief:  0 not output anything
+   *          1 output asr after wakeup
+   *          2 output everything
+   */
+  unsigned int asr_output_mode;
+  /**
+   * @brief: if asr_output_mode = 2, output specific channel asr
+   */
+  unsigned int asr_output_channel;
   /**
    * @brief notify user when a new event happen
    * @param cookie, hrsc_effect_config_t->priv
@@ -220,7 +234,7 @@ typedef struct {
    */
   void (*HrscAuthCallback)(const void *cookie, const int code);
   /**
-   * @brief the callback of auth code
+   * @brief the callback of cmd
    * @param cookie, HrscEffectConfig->priv
    * @param code
    */
@@ -231,6 +245,12 @@ typedef struct {
    * @param code
    */
   void (*HrscDoaCallbadk)(const void *cookie, int doa);
+  /**
+   * @brief the callback of asr
+   * @param cookie, HrscEffectConfig->priv
+   * @param code
+   */
+  void (*HrscAsrCallback)(const void *cookie, const char *asr);
 } HrscEffectConfig;
 
 /**
@@ -308,7 +328,7 @@ int HrscStop(void *handle);
 int HrscRelease(void **handle);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif //__HRSC_SDK_H__

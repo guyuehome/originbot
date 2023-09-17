@@ -13,13 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***********************************************************************/
-
-
-
-
 #include "dnn_node/dnn_node_data.h"
 #include <rclcpp_action/rclcpp_action.hpp>
-#include <nav2_msgs/action/navigate_to_pose.hpp>
 #include "ai_msgs/msg/perception_targets.hpp"
 #include "dnn_node/dnn_node.h"
 #include "dnn_node/util/image_proc.h"

@@ -2,8 +2,8 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>parking_search</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <version>2.0.0</version>
+  <description>TogetheROS parking search</description>
   <maintainer email="zixi01.chen@horizon.ai">chenzixi</maintainer>
   <license>Apache License 2.0</license>
 
@@ -12,6 +12,8 @@
   <depend>rclcpp</depend>
   <depend>ai_msgs</depend>
   <depend>rclcpp_action</depend>
+
+  <exec_depend>parking_perception</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

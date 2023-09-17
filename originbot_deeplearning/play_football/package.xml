@@ -16,7 +16,6 @@
   <depend>dnn_node</depend>
   <depend>hobot_cv</depend>
   <depend>geometry_msgs</depend>
-  <depend>nav2_msgs</depend>
   <depend>rclcpp_action</depend>
   <depend>rclcpp_components</depend>
 
