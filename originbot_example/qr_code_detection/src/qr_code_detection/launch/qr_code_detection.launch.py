@@ -58,7 +58,7 @@ def generate_launch_description():
                 {"in_format": "bgr8"},
                 {"out_mode": "ros"},
                 {"out_format": "jpeg"},
-                {"sub_topic": "/qrcode_detect"},
+                {"sub_topic": "/qrcode_detected/img_result"},
                 {"pub_topic": "/image_jpeg"}
         ],
         arguments=['--ros-args', '--log-level', 'error']
