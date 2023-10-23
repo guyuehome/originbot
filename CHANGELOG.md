@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## **[v2.0.1] - 2023-10-24**
+
+### 新增
+- 新增[二维码识别与跟踪](/application/qrcode_detection/){:target="_blank"}
+
+### 优化
+- 修复SLAM仿真建图使用DEB下载功能包名不一致造成启动失败的BUG
+- 修复v2.0.0镜像键盘控制tros环境无法使用的BUG
+
 ## **[v2.0.0] - 2023-09-18**
 
 ### 新增
