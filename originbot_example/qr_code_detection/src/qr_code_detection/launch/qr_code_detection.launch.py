@@ -38,13 +38,13 @@ def generate_launch_description():
         executable='mipi_cam',
         output='screen',
         parameters=[
-                {"camera_calibration_file_path": "/opt/tros/lib/mipi_cam/config/GC4663_calibration.yaml"},
-                {"out_format": "nv12"},
-                {"image_width": 640},
-                {"image_height": 480},
-                {"io_method": "shared_mem"},
-                {"video_device": "GC4663"}
-        ],
+            {"mipi_camera_calibration_file_path": "/opt/tros/lib/mipi_cam/config/GC4663_calibration.yaml"},
+            {"out_format": "nv12"},
+            {"image_width": 640},
+            {"image_height": 480},
+            {"io_method": "shared_mem"},
+            {"video_device": "GC4663"}
+            ],
         arguments=['--ros-args', '--log-level', 'error']
     )
 
@@ -58,7 +58,7 @@ def generate_launch_description():
                 {"in_format": "bgr8"},
                 {"out_mode": "ros"},
                 {"out_format": "jpeg"},
-                {"sub_topic": "/qrcode_detect"},
+                {"sub_topic": "/qrcode_detected/img_result"},
                 {"pub_topic": "/image_jpeg"}
         ],
         arguments=['--ros-args', '--log-level', 'error']

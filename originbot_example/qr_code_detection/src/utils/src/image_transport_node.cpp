@@ -41,16 +41,16 @@ public:
 private:
     void image_callback(HbmMsg1080P::SharedPtr msg)
     {
-        cv::Mat nv12Image(msg->height * 3 / 2, msg->width, CV_8UC1, 
-            const_cast<uint8_t *>(msg->data.data()));
+      cv::Mat nv12Image(msg->height * 3 / 2, msg->width, CV_8UC1, 
+        const_cast<uint8_t *>(msg->data.data()));
 
-        cv::Mat bgrImage;
-        cv::cvtColor(nv12Image, bgrImage, cv::COLOR_YUV2BGR_NV12);
+      cv::Mat bgrImage;
+      cv::cvtColor(nv12Image, bgrImage, cv::COLOR_YUV2BGR_NV12);
 
-        std_msgs::msg::Header hdr;
-        sensor_msgs::msg::Image::SharedPtr rosMsg;
-        rosMsg = cv_bridge::CvImage(hdr, "bgr8", bgrImage).toImageMsg();
-        this->image_pub_.publish(std::move(rosMsg));
+      std_msgs::msg::Header hdr;
+      sensor_msgs::msg::Image::SharedPtr rosMsg;
+      rosMsg = cv_bridge::CvImage(hdr, "bgr8", bgrImage).toImageMsg();
+      this->image_pub_.publish(std::move(rosMsg));
     }
 
     rclcpp::SubscriptionHbmem<HbmMsg1080P>::SharedPtr sublisher_;
