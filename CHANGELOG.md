@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## **[v2.0.2] - 2023-11-24**
+
+### 新增
+- 新增[WebViz可视化](/manual/webviz/){:target="_blank"}
+
+### 优化
+- 修复mipi_cam显示bgr数据不出来的BUG
+- 升级tros为2.1.1版本
+- 将版本号明确至镜像文件中
+
 ## **[v2.0.1] - 2023-10-24**
 
 ### 新增
