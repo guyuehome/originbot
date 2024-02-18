@@ -15,13 +15,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(OpenCV REQUIRED)
 find_package(hbm_img_msgs REQUIRED)
 
 link_directories(
@@ -34,11 +32,10 @@ add_executable(image_transport_node
 
 ament_target_dependencies(
   image_transport_node
-  "rclcpp"
-  "cv_bridge"
-  "sensor_msgs"
-  "OpenCV"
-  "hbm_img_msgs"
+  rclcpp
+  sensor_msgs
+  cv_bridge
+  hbm_img_msgs
 )
 
 # Install executables
