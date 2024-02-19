@@ -68,7 +68,7 @@ def generate_launch_description():
                 {"in_format": "bgr8"},
                 {"out_mode": "ros"},
                 {"out_format": "jpeg"},
-                {"sub_topic": "/image_out"},
+                {"sub_topic": "/vlp_image"},
                 {"pub_topic": "/image_jpeg"}
         ],
         arguments=['--ros-args', '--log-level', 'error']

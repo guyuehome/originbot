@@ -12,23 +12,23 @@ from sensor_msgs.msg import CompressedImage
 
 import time
 
-SOURCE_FOLDER = "/userdata/dev_ws/src/vlpr/vlpr/vlpt_package"
-TARGET_FOLDER = "/userdata/dev_ws/install/vlpr/lib/vlpr/vlpt_package"
+# SOURCE_FOLDER = "/userdata/dev_ws/src/vlpr/vlpr/vlpt_package"
+# TARGET_FOLDER = "/userdata/dev_ws/install/vlpr/lib/vlpr/vlpt_package"
 
-def copy_package():
-    source_path = os.path.join(os.getcwd(), SOURCE_FOLDER)
-    target_path = os.path.join(os.getcwd(), TARGET_FOLDER)
-    if not os.path.exists(target_path):
-        shutil.copytree(source_path, target_path)
-        print("packages init ok")
-    else:
-        print("packages have existed")
+# def copy_package():
+#     source_path = os.path.join(os.getcwd(), SOURCE_FOLDER)
+#     target_path = os.path.join(os.getcwd(), TARGET_FOLDER)
+#     if not os.path.exists(target_path):
+#         shutil.copytree(source_path, target_path)
+#         print("packages init ok")
+#     else:
+#         print("packages have existed")
 
 class VlpR(Node):
     def __init__(self, dbnet_path, crnn_path) -> None:
         super().__init__('vlpr_node')
         # 导入所需要的包
-        copy_package()
+        # copy_package()
         
         from vlpt_package.utils.utils import strLabelConverter
         from vlpt_package.crnn.crnn_infer import crnn_model
@@ -45,6 +45,7 @@ class VlpR(Node):
         self.get_logger().info("models init successfully")
         
         self.bridge = CvBridge()
+        self.vlp_image_msg = Image()
         self.image_sub = self.create_subscription(CompressedImage,"/image_out/compressed",self.image_callback,10)
         self.vlp_image_pub = self.create_publisher(Image, "/vlp_image",10)
     
@@ -52,6 +53,7 @@ class VlpR(Node):
         try:
             image = self.bridge.compressed_imgmsg_to_cv2(data)
             self.vlp_recognize(image)
+            self.vlp_image_pub.publish(self.vlp_image_msg)
         except CvBridgeError as e:
             print(e)
         
@@ -90,16 +92,16 @@ class VlpR(Node):
             crnn_infer_img = cv2.cvtColor(image[y:y+h,x:x+w,:],cv2.COLOR_BGR2GRAY)
             raw_pred,sim_pred = self.crnn.predict(crnn_infer_img)
             result = ''.join(c for c in sim_pred if c.isdigit())
-            # vlp_image = cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            # vlp_image = self.bgr2nv12_opencv(vlp_image)
-            vlp_image_msg = self.bridge.cv2_to_imgmsg(image, encoding = "bgr8")
-            self.vlp_image_pub.publish(vlp_image_msg)
-            # if len(result) == 4:
-            self.get_logger().info('result: OB%s' % result)
-                
+            if len(result) == 4:
+                self.get_logger().info('result: OB%s' % result)
+
+            cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            self.vlp_image_msg = self.bridge.cv2_to_imgmsg(image, encoding = "bgr8")
+
         else:
+            self.vlp_image_msg = self.bridge.cv2_to_imgmsg(image, encoding = "bgr8")
             self.get_logger().info("can't find License Plate!")
-            
+
     def bgr2nv12_opencv(self, image):
         height, width = image.shape[0], image.shape[1]
         area = height * width
@@ -113,8 +115,11 @@ class VlpR(Node):
         nv12[height * width:] = uv_packed
         return nv12
             
-CRNN_PATH = '/userdata/dev_ws/src/vlpr/vlpr/vlpt_package/crnn/crnn_simp.bin'            
-DBNET_PATH = '/userdata/dev_ws/src/vlpr/vlpr/vlpt_package/dbnet/dbnet_simp.bin'
+# CRNN_PATH = '/userdata/dev_ws/src/vlpr/vlpr/vlpt_package/crnn/crnn_simp.bin'
+# DBNET_PATH = '/userdata/dev_ws/src/vlpr/vlpr/vlpt_package/dbnet/dbnet_simp.bin'
+import pkg_resources
+CRNN_PATH = pkg_resources.resource_filename('vlpt_package.crnn', 'crnn_simp.bin')
+DBNET_PATH = pkg_resources.resource_filename('vlpt_package.dbnet', 'dbnet_simp.bin')
 
 def main(args=None):
     rclpy.init(args=args)
