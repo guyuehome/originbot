@@ -11,7 +11,9 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         # launch 文件相关配置
-        ('share/' + package_name, glob("launch/*.launch.py"))
+        ('share/' + package_name, glob("launch/*.launch.py")),
+        # model
+        ('share/' + package_name+'/model', glob("model/*.*"))
     ],
     install_requires=['setuptools'],
     zip_safe=True,

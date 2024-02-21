@@ -25,7 +25,8 @@ from std_msgs.msg import String
 from geometry_msgs.msg import Pose
 import numpy as np
 
-modelPath = "/userdata/dev_ws/src/originbot/originbot_example/qr_code_detection/model/"
+import os
+from ament_index_python.packages import get_package_share_directory
 
 #预定义变量
 color = (0, 0, 255)
@@ -53,6 +54,10 @@ class QrCodeDetection(Node):
         self.pub_qrcode_pose = self.create_publisher(
             Pose, "/qrcode_detected/pose_result", 1)
         self.pose_result = Pose()
+
+        # model路径
+        modelPath = os.path.join(get_package_share_directory('qr_code_detection'), 'model/')
+        # self.get_logger().info('path:"{}"'.format(modelPath))
 
         self.detect_obj = cv2.wechat_qrcode_WeChatQRCode(
             modelPath+'detect.prototxt', modelPath+'detect.caffemodel',
