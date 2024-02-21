@@ -17,49 +17,23 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
-
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system thread program_options) 
-
-
-include_directories(
-  include
-  )
+find_package(Boost REQUIRED COMPONENTS system thread program_options)
 
 if(NOT Boost_FOUND)
-    message("Not found Boost")
+  message(FATAL_ERROR "Boost library not found")
 endif()
- 
-include_directories(${Boost_INCLUDE_DIRS})
-message("${Boost_INCLUDE_DIRS}")
-message("${Boost_LIBRARIES}")
+
 add_executable(originbot_teleop src/originbot_teleop.cc)
-ament_target_dependencies(originbot_teleop rclcpp  geometry_msgs)
+ament_target_dependencies(originbot_teleop rclcpp geometry_msgs)
+target_include_directories(originbot_teleop PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
 target_link_libraries(originbot_teleop ${Boost_LIBRARIES})
-install(TARGETS
-  originbot_teleop  
+
+install(TARGETS originbot_teleop
   DESTINATION lib/${PROJECT_NAME})
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
-
-ament_export_include_directories(include)
 
 ament_package()
