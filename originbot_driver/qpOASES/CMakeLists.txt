@@ -79,6 +79,8 @@ ENDIF()
 
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__DEBUG__")
 
+add_compile_options(-Wno-format-truncation -Wno-shadow -Wno-misleading-indentation)
+
 ############################################################
 ######################## rpath #############################
 ############################################################
