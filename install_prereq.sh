@@ -1,7 +1,11 @@
 #!/bin/sh
 # Install the prerequisites for the ROS exploring code
+# 升级 tros和其他可升级软件
+# 安装 ros2-foxy
+# 安装 originbot 依赖包
 
-sudo apt upgrade
+echo -e "\e[32m 更新可升级的包(tros) \e[0m"
+sudo apt update && sudo apt upgrade
 echo -e "\e[32m 安装originbot 依赖包 \e[0m"
 sudo apt -y install \
   git \
