@@ -57,3 +57,32 @@ pip install opencv-contrib-python==4.8.1.78
 pip install torch==2.2.0
 # 安装pyclipper
 pip install pyclipper==1.3.0.post5
+
+# 从TogetheROS的安装路径中拷贝出运行示例需要的配置文件
+echo -e "\e[32m 拷贝配置文件到工作空间 \e[0m"
+cp -r /opt/tros/lib/mono2d_body_detection/config/ /userdata/dev_ws/
+cp -r /opt/tros/lib/hand_lmk_detection/config/ /userdata/dev_ws/
+cp -r /opt/tros/lib/hand_gesture_detection/config/ /userdata/dev_ws/
+
+# 编译安装硬件驱动
+echo -e "\e[32m 编译安装硬件驱动 \e[0m"
+
+# 检查qpOASES目录是否存在
+if [ -d "/userdata/dev_ws/src/originbot/originbot_driver/qpOASES/" ]; then
+    cd /userdata/dev_ws/src/originbot/originbot_driver/qpOASES/
+    mkdir build && cd build
+    cmake ..
+    sudo make && sudo make install
+    cd .. && sudo rm -r build/
+else
+    echo "目录 /userdata/dev_ws/src/originbot/originbot_driver/qpOASES/ 不存在，跳过编译安装。"
+fi
+
+# 检查serial_ros2目录是否存在
+if [ -d "/userdata/dev_ws/src/originbot/originbot_driver/serial_ros2/" ]; then
+    cd /userdata/dev_ws/src/originbot/originbot_driver/serial_ros2/
+    make && make install
+    make clean
+else
+    echo "目录 /userdata/dev_ws/src/originbot/originbot_driver/serial_ros2/ 不存在，跳过编译安装。"
+fi
