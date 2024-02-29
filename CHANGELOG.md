@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## **[v2.1.0] - 2024-03-01**
+
+### 新增
+
+- 新增[车牌识别](/application/vlpr/){:target="_blank"}
+
+- 新增一键配置 Shell 脚本，以便携安装编译所需依赖
+
+- 新增 rtab、Fortess等仿真插件/环境配置
+
+### 优化
+
+- 优化 OriginBot 仓库代码结构，清除文件及代码层级冗余内容，清除编译冗余信息
+
+- 优化 OriginBot Controller 中存在的 PID 单位换算问题
+
+- 优化 originbot_teleop 功能包，支持调速功能 
+
+- 升级 TROS 版本至 v2.1.2
+
 ## **[v2.0.2] - 2023-11-24**
 
 ### 新增
