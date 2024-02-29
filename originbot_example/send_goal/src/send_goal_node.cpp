@@ -22,7 +22,6 @@ limitations under the License.
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
-#include <rclcpp_components/register_node_macro.hpp>
 
 #include <std_msgs/msg/string.hpp>
 #include <nav2_msgs/action/navigate_to_pose.hpp>
@@ -30,15 +29,16 @@ limitations under the License.
 class GoalCoordinate : public rclcpp::Node
 {
 public:
+
     using NavigateToPose = nav2_msgs::action::NavigateToPose;
     using GoalHandleFibonacci = rclcpp_action::ClientGoalHandle<NavigateToPose>;
-    explicit GoalCoordinate(const rclcpp::NodeOptions &options) : Node("GoalCoordinate", options),x(0.0)
+    GoalCoordinate() : Node("GoalCoordinate")
     {
         this->client_ptr_ = rclcpp_action::create_client<NavigateToPose>(this, "navigate_to_pose");
         this->timer_ = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&GoalCoordinate::send_goal, this));
     }
     
-float x = 1.0;
+    float x = 1.0;
     void send_goal()
     {
         using namespace std::placeholders;
@@ -53,8 +53,8 @@ float x = 1.0;
         goal_msg.pose.header.frame_id = "map";
         // goal_msg.pose.header.stamp = rclcpp::Time::now();
 
-        goal_msg.pose.pose.position.x = 10.0;
-        goal_msg.pose.pose.position.y = 20.0;
+        goal_msg.pose.pose.position.x = 1.0;
+        goal_msg.pose.pose.position.y = 1.0;
         goal_msg.pose.pose.orientation.w = 1.0;
 
         RCLCPP_INFO(this->get_logger(), "Sending goal");
@@ -112,4 +112,10 @@ private:
     }
 };
 
-RCLCPP_COMPONENTS_REGISTER_NODE(GoalCoordinate)
+int main(int argc, char **argv)
+{
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<GoalCoordinate>());
+    rclcpp::shutdown();
+    return 0;
+}
