@@ -2,7 +2,7 @@ from setuptools import setup
 from glob import glob
 import os
 
-package_name = 'vlpr'
+package_name = 'originbot_vlpr'
 
 setup(
     name=package_name,
@@ -13,11 +13,10 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
-        (os.path.join('lib', package_name, 'vlpt_package'), glob('vlpr/vlpt_package/*.*')),
-        (os.path.join('lib', package_name, 'vlpt_package/crnn'), glob('vlpr/vlpt_package/crnn/*.*')),
-        (os.path.join('lib', package_name, 'vlpt_package/dbnet'), glob('vlpr/vlpt_package/dbnet/*.*')),
-        (os.path.join('lib', package_name, 'vlpt_package/utils'), glob('vlpr/vlpt_package/utils/*.*')),
-
+        (os.path.join('lib', package_name, 'vlpt_package'), glob('originbot_vlpr/vlpt_package/*.*')),
+        (os.path.join('lib', package_name, 'vlpt_package/crnn'), glob('originbot_vlpr/vlpt_package/crnn/*.*')),
+        (os.path.join('lib', package_name, 'vlpt_package/dbnet'), glob('originbot_vlpr/vlpt_package/dbnet/*.*')),
+        (os.path.join('lib', package_name, 'vlpt_package/utils'), glob('originbot_vlpr/vlpt_package/utils/*.*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -28,7 +27,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "vlpr_node = vlpr.vlpr_node:main"
+            'vlpr_node = originbot_vlpr.vlpr_node:main'
         ],
     },
 )

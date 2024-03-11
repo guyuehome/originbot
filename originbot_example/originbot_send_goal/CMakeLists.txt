@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(send_goal)
+project(originbot_send_goal)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)

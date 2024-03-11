@@ -8,7 +8,7 @@ def generate_launch_description():
         executable="image_transport_node"
         )
     vlpr_node = Node(
-        package="vlpr",
+        package="originbot_vlpr",
         executable="vlpr_node"
         )
     launch_description = LaunchDescription([image_transport_node,vlpr_node])

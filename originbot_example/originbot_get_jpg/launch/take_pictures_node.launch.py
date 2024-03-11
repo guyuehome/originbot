@@ -55,50 +55,63 @@ def generate_launch_description():
             'codec_in_mode': 'shared_mem',
             'codec_out_mode': 'ros',
             'codec_sub_topic': '/hbmem_img',
-            'codec_pub_topic': '/image_jpeg'
+            'codec_pub_topic': '/image'
         }.items()
     )
-    hobot_codec_node = Node(
-        package='hobot_codec',
-        executable='hobot_codec_republish',
+
+    # web
+    web_smart_topic_arg = DeclareLaunchArgument(
+        'smart_topic',
+        default_value='/hobot_mono2d_body_detection',
+        description='websocket smart topic')
+    web_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('websocket'),
+                'launch/websocket.launch.py')),
+        launch_arguments={
+            'websocket_image_topic': '/image',
+            'websocket_smart_topic': LaunchConfiguration('smart_topic')
+        }.items()
+    )
+
+    # mono2d body detection
+    mono2d_body_pub_topic_arg = DeclareLaunchArgument(
+        'mono2d_body_pub_topic',
+        default_value='/hobot_mono2d_body_detection',
+        description='mono2d body ai message publish topic')
+    mono2d_body_det_node = Node(
+        package='mono2d_body_detection',
+        executable='mono2d_body_detection',
         output='screen',
         parameters=[
-                {"channel": 1},
-                {"in_mode": "ros"},
-                {"in_format": "bgr8"},
-                {"out_mode": "ros"},
-                {"out_format": "jpeg"},
-                {"sub_topic": "/vlp_image"},
-                {"pub_topic": "/image_jpeg"}
+            {"ai_msg_pub_topic_name": LaunchConfiguration(
+                'mono2d_body_pub_topic')}
+        ],
+        arguments=['--ros-args', '--log-level', 'warn']
+    )
+    take_pictures_ = Node(
+        package='originbot_get_jpg',
+        executable='take_pictures',
+        output='screen',
+        parameters=[
+            {"sub_img_topic": "/hbmem_img"},
+            {"take_nums":1000}
         ],
         arguments=['--ros-args', '--log-level', 'error']
     )
-    websocket_node = Node(
-        package='websocket',
-        executable='websocket',
-        output='screen',
-        parameters=[
-                {"image_topic": "/image_jpeg"},
-                {"image_type": "mjpeg"},
-                {"only_show_image": True}
-        ],
-        arguments=['--ros-args', '--log-level', 'error']
-    )
-    image_transport_node = Node(
-        package="utils",
-        executable="image_transport_node"
-        )
-    
-    vlpr_node = Node(
-        package="vlpr",
-        executable="vlpr_node"
-        )
+
     return LaunchDescription([
         mipi_cam_device_arg,
+        # image publish
         mipi_node,
-        # jpeg_codec_node,
-        image_transport_node,
-        hobot_codec_node,
-        websocket_node,
-        vlpr_node
+        # image codec
+        take_pictures_,
+        jpeg_codec_node,
+        # body detection
+        mono2d_body_pub_topic_arg,
+        mono2d_body_det_node,
+        # web display
+        web_smart_topic_arg,
+        web_node,
     ])
