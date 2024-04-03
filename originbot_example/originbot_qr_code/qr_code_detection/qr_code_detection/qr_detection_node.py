@@ -40,9 +40,9 @@ class QrCodeDetection(Node):
         super().__init__('qrcode_detect')
         self.bridge = cv_bridge.CvBridge()
 
-        # 接受来自utils/NV122BGR的imgae_out
+        # 接收CompressedImage
         self.image_sub = self.create_subscription(
-            CompressedImage, "/image_out/compressed", self.image_callback, 10)
+            CompressedImage, "/qrcode_detected/image_sub", self.image_callback, 10)
 
         self.pub_img = self.create_publisher(
             Image, '/qrcode_detected/img_result', 10)
@@ -114,11 +114,12 @@ def main(args=None):
     rclpy.init(args=args)
 
     qrCodeDetection = QrCodeDetection()
-    while rclpy.ok():
-        rclpy.spin(qrCodeDetection)
-
-    qrCodeDetection.destroy_node()
-    rclpy.shutdown()
+    try:
+        while rclpy.ok():
+            rclpy.spin_once(qrCodeDetection)
+    except KeyboardInterrupt:
+        qrCodeDetection.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':

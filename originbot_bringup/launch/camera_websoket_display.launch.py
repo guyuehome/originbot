@@ -1,6 +1,4 @@
-#!/usr/bin/python3
-
-# Copyright (c) 2022, www.guyuehome.com
+# Copyright (c) 2022，Horizon Robotics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,41 +19,46 @@ from launch_ros.actions import Node
 
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from ament_index_python import get_package_share_directory
+from ament_index_python import get_package_share_directory,get_package_prefix
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
-    mipi_cam_device_arg = DeclareLaunchArgument(
-        'device',
-        default_value='GC4663',
-        description='mipi camera device')
+    # Copy config files
+    config_path = os.path.join(get_package_prefix('mono2d_body_detection'), "lib/mono2d_body_detection")
+    os.system(f"cp -r {config_path}/config .")
 
-    mipi_node = IncludeLaunchDescription(
+    print("using usb_cam")
+    # using usb cam publish image
+    usb_cam_device_arg = DeclareLaunchArgument(
+        'device',
+        default_value='/dev/video8',
+        description='usb camera device')
+
+    usb_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
-                get_package_share_directory('mipi_cam'),
-                'launch/mipi_cam.launch.py')),
+                get_package_share_directory('hobot_usb_cam'),
+                'launch/hobot_usb_cam.launch.py')),
         launch_arguments={
-            'mipi_image_width': '960',
-            'mipi_image_height': '544',
-            'mipi_io_method': 'shared_mem',
-            'mipi_video_device': LaunchConfiguration('device')
+            'usb_image_width': '640',
+            'usb_image_height': '480',
+            'usb_video_device': LaunchConfiguration('device')
         }.items()
     )
-
-    # nv12->jpeg
-    jpeg_codec_node = IncludeLaunchDescription(
+    
+    # jpeg->nv12
+    nv12_codec_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('hobot_codec'),
-                'launch/hobot_codec_encode.launch.py')),
+                'launch/hobot_codec_decode.launch.py')),
         launch_arguments={
-            'codec_in_mode': 'shared_mem',
-            'codec_out_mode': 'ros',
-            'codec_sub_topic': '/hbmem_img',
-            'codec_pub_topic': '/image'
+            'codec_in_mode': 'ros',
+            'codec_out_mode': 'shared_mem',
+            'codec_sub_topic': '/image',
+            'codec_pub_topic': '/hbmem_img'
         }.items()
     )
 
@@ -92,11 +95,11 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        mipi_cam_device_arg,
+        usb_cam_device_arg,
         # image publish
-        mipi_node,
+        usb_node,
         # image codec
-        jpeg_codec_node,
+        nv12_codec_node,
         # body detection
         mono2d_body_pub_topic_arg,
         mono2d_body_det_node,

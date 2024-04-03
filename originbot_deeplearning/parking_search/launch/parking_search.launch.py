@@ -17,12 +17,17 @@ import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription,SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python import get_package_share_directory
 
 
 def generate_launch_description():
+    # 设置环境变量 CAM_TYPE
+    cam_type_env_var = SetEnvironmentVariable(
+        name='CAM_TYPE',
+        value='usb'
+    )
     # parking search
     parking_search_node = Node(
         package='parking_search',
@@ -57,6 +62,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        cam_type_env_var,
         parking_perception_node,
         parking_search_node
     ])
