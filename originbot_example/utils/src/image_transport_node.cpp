@@ -32,7 +32,7 @@ public:
         RCLCPP_INFO(this->get_logger(), node_name);
 
         // 创建消息订阅者，从摄像头节点订阅图像消息
-        sublisher_ = this->create_subscription_hbmem<HbmMsg1080P>(
+        sublisher_ = this->create_subscription<HbmMsg1080P>(
             "/hbmem_img", 10, std::bind(&Nv122BGR::image_callback, this, std::placeholders::_1));
         compress_pub_ = this->create_publisher<CompressedImage>("/image_out/compressed", 10);
         image_pub_ = this->create_publisher<Image>("/image_out", 10);
@@ -44,9 +44,10 @@ private:
         // 对订阅到的图片消息进行验证，本示例只支持处理NV12格式图片数据
         if (!img_msg)
             return;
-        if ("nv12" != std::string(reinterpret_cast<const char *>(img_msg->encoding.data())))
+        auto msg_encoding=std::string(reinterpret_cast<const char*>(img_msg->encoding.data()));
+        if ("nv12" != msg_encoding)
         {
-            RCLCPP_ERROR(rclcpp::get_logger("Nv122BGR"), "Only support nv12 img encoding!");
+            RCLCPP_ERROR(rclcpp::get_logger("Nv122BGR"), "Img encoding is %s,but only support nv12!");
             return;
         }
         cv::Mat nv12Image(img_msg->height * 3 / 2, img_msg->width, CV_8UC1,
@@ -60,7 +61,7 @@ private:
     }
     rclcpp::Publisher<CompressedImage>::SharedPtr compress_pub_;
     rclcpp::Publisher<Image>::SharedPtr image_pub_;
-    rclcpp::SubscriptionHbmem<HbmMsg1080P>::ConstSharedPtr sublisher_ = nullptr;
+    rclcpp::Subscription<HbmMsg1080P>::ConstSharedPtr sublisher_ = nullptr;
 };
 
 int main(int argc, char **argv)

@@ -45,7 +45,6 @@ class ImageCompressor(Node):
         compressed_msg.format = 'jpeg'
         compressed_msg.data = np.array(compressed).tostring()
 
-        self.compressed_pub.publish(compressed_msg)
         decompressed = cv2.imdecode(np.frombuffer(compressed_msg.data, np.uint8), cv2.IMREAD_COLOR)
         bgr8_msg = self.bridge.cv2_to_imgmsg(decompressed, encoding='bgr8')
         self.compressed_pub.publish(compressed_msg)
@@ -54,8 +53,12 @@ class ImageCompressor(Node):
 def main(args=None):
     rclpy.init(args=args)
     compressor = ImageCompressor()
-    rclpy.spin(compressor)
-    rclpy.shutdown()
+    try:
+        while rclpy.ok():
+            rclpy.spin_once(compressor)
+    except KeyboardInterrupt:
+        compressor.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
