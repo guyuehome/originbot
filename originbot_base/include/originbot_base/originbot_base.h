@@ -134,6 +134,7 @@ private:
     std::shared_ptr<std::thread> read_data_thread_;
     DataImu imu_data_;
     RobotStatus robot_status_;
+    bool buzzer_mute_ = false;
 
     rclcpp::TimerBase::SharedPtr timer_100ms_;
     bool auto_stop_on_ = true;
