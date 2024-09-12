@@ -1,4 +1,4 @@
-# Copyright (c) 2022，Horizon Robotics.
+# Copyright (c) 2024，D-Robotics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED) 
 find_package(geometry_msgs REQUIRED)
 find_package(ai_msgs REQUIRED) 
+find_package(rclcpp_action REQUIRED)
 
 include_directories(include
 ${PROJECT_SOURCE_DIR}
@@ -57,6 +58,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 ament_target_dependencies(${PROJECT_NAME}
 "rclcpp"
+"rclcpp_action"
 "geometry_msgs"
 "ai_msgs")
 

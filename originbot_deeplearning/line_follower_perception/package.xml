@@ -2,9 +2,9 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>line_follower_perception</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="kairui.wang@horizon.ai">kairui</maintainer>
+  <version>2.1.0</version>
+  <description>TogetheROS app line follower perception</description>
+  <maintainer email="kairui.wang@d-robotics.cc">kairui</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

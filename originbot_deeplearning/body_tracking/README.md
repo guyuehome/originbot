@@ -1,274 +1,352 @@
-# 功能介绍
+English| [简体中文](./README_cn.md)
 
-通过视觉进行人体目标检测与跟踪，并生成运动控制指令控制机器人自动跟随目标运动。该功能支持机器人实物和Gazebo仿真两种体验方式。
+# Feature introduction
+
+Detect and track human targets visually, and generate motion control commands to control the robot to automatically follow the target's movement. This feature supports two modes of experience: physical robot and Gazebo simulation.
 
 
-# 机器人实物
+# Physical robot
 
-## 物料清单
+## Bill of materials
 
-以下机器人均已适配RDK X3
+The following robots are all compatible with RDK X3
 
-| 机器人名称          | 生产厂家 | 参考链接                                                     |
-| :------------------ | -------- | ------------------------------------------------------------ |
-| OriginBot智能机器人 | 古月居   | [点击跳转](https://www.originbot.org/)                       |
-| X3派机器人          | 轮趣科技 | [点击跳转](https://item.taobao.com/item.htm?spm=a230r.1.14.17.55e556912LPGGx&id=676436236906&ns=1&abbucket=12#detail) |
-| 履带智能车          | 微雪电子 | [点击跳转](https://detail.tmall.com/item.htm?abbucket=9&id=696078152772&rn=4d81bea40d392509d4a5153fb2c65a35&spm=a1z10.5-b-s.w4011-22714387486.159.12d33742lJtqRk) |
-| RDK X3 Robot        | 亚博智能 | [点击跳转](https://detail.tmall.com/item.htm?id=726857243156&scene=taobao_shop&spm=a1z10.1-b-s.w5003-22651379998.21.421044e12Yqrjm) |
+| Robot Name           | Manufacturer | Reference Link                                               |
+| :------------------  | --------    | ------------------------------------------------------------ |
+| OriginBot Smart Robot| Guyueju     | [Click here to jump](https://www.originbot.org/)             |
+| X3 Pie Robot         | Lunqu Technology | [Click here to jump](https://item.taobao.com/item.htm?spm=a230r.1.14.17.55e556912LPGGx&id=676436236906&ns=1&abbucket=12#detail) |
+| Tracked Smart Car    | Weixue Electronics | [Click here to jump](https://detail.tmall.com/item.htm?abbucket=9&id=696078152772&rn=4d81bea40d392509d4a5153fb2c65a35&spm=a1z10.5-b-s.w4011-22714387486.159.12d33742lJtqRk) |
+| RDK X3 Robot         | Yabo Intelligent | [Click here to jump](https://detail.tmall.com/item.htm?id=726857243156&scene=taobao_shop&spm=a1z10.1-b-s.w5003-22651379998.21.421044e12Yqrjm) |
 
-## 使用方法
+## Instructions
 
-### 准备工作
+### Preparations
 
-1. 机器人具备运动底盘、相机及RDK套件，硬件已经连接并测试完毕；
-2. 已有ROS底层驱动，机器人可接收“/cmd_vel”指令运动，并根据指令正确运动。
+1. The robot has a movement chassis, camera, and RDK kit, and the hardware is connected and tested;
+2. ROS low-level driver is available, the robot can receive "/cmd_vel" commands for motion, and move correctly according to the commands.
 
-### 机器人组装
-以下操作过程以OriginBot为例，满足条件的其他机器人使用方法类似。参考机器人官网的[使用指引](https://www.originbot.org/guide/quick_guide/)，完成机器人的硬件组装、镜像烧写及示例运行，确认机器人的基础功能可以顺利运行。
+### Robot assembly
+The following operating process is based on OriginBot, and the usage method for other robots meeting the conditions is similar. Refer to the robot's official website [instructions](https://www.originbot.org/guide/quick_guide/), complete the assembly of the robot's hardware, image writing, and example operation, confirming that the basic functions of the robot can run smoothly.
 
-### 安装功能包
-**1.参考[OriginBot说明](https://github.com/nodehubs/originbot_minimal/blob/develop/README.md)，完成Originbit基础功能安装**
+### Install packages
+**1. Refer to [OriginBot instructions](https://github.com/nodehubs/originbot_minimal/blob/develop/README.md) to complete the installation of Originbit basic functions**
 
-**2.安装人体跟随功能包**
+**2. Install human tracking package**
 
-启动机器人后，通过终端或者VNC连接机器人，点击本页面右上方的“一键部署”按钮，复制如下命令在RDK的系统上运行，完成人体跟随相关Node的安装。
+After starting the robot, connect to the robot through terminal or VNC, click the "One-Click Deployment" button on this page's upper right corner, copy and run the following command on RDK system to install the human tracking-related nodes.
 
+tros foxy:
 ```bash
 sudo apt update
 sudo apt install -y tros-body-tracking
 ```
 
-### 运行人体跟随功能
+tros humble:
+```bash
+sudo apt update
+sudo apt install -y tros-humble-body-tracking
+```
 
-**1.启动机器人底盘**
+### Run human tracking function
 
-启动机器人，如OriginBot的启动命令如下：
+**1. Start the robot chassis**
 
+Start the robot, for example, the startup command for OriginBot is as follows:
+
+tros foxy:
 ```bash
 source /opt/tros/setup.bash
 ros2 launch originbot_base robot.launch.py 
 ```
 
-**2.启动人体跟随**
-
-启动一个新的终端，通过如下指令启动人体跟随功能：
+tros humble:
 ```bash
-# 拷贝人体跟随的模型
-cp -r /opt/tros/lib/mono2d_body_detection/config/ .
+source /opt/tros/humble/setup.bash
+ros2 launch originbot_base robot.launch.py
+```
 
-#启动Node
+**2. Start Human Body Tracking**
+
+Start a new terminal and initiate human body tracking function with the following commands:
+
+tros foxy:
+```bash
+# Copy the model of body tracking
+cp -r /opt/tros/${TROS_DISTRO}/lib/mono2d_body_detection/config/ .
+
+# Source Node
 source /opt/tros/setup.bash
 
-# 配置使用的相机接口，如使用usb相机，"mipi"改为"usb"
+# Configure the camera interface being used, if using a USB camera, change "mipi" to "usb"
 export CAM_TYPE=mipi
 
-# 运行人体跟随
+# Run human body tracking
 ros2 launch body_tracking body_tracking_without_gesture.launch.py 
 ```
 
-启动成功后，站在机器人摄像头前，需要让机器人识别到整个身体，慢慢移动身体，可以看到机器人已经开始跟随人体运动。若视野中存在多个人体，则以当前占据视野面积最大的人体作为跟踪目标，持续跟随移动。
+tros humble:
+```bash
+# Source Node
+source /opt/tros/humble/setup.bash
+
+# Copy the model of body tracking
+cp -r /opt/tros/${TROS_DISTRO}/lib/mono2d_body_detection/config/ .
+
+# Configure the camera interface being used, if using a USB camera, change "mipi" to "usb"
+export CAM_TYPE=mipi
+
+# Run human body tracking
+ros2 launch body_tracking body_tracking_without_gesture.launch.py
+```
+
+After successful startup, stand in front of the robot's camera. Move your body slowly to allow the robot to recognize the entire body. You will see the robot start to follow the movement of the person. If there are multiple bodies in the field of view, the body with the largest occupied area in the current field of view will be the tracking target, continuously following the movement.
 
 ![body_detection](images/body_detection.gif)
 
-**3.查看视觉识别效果**
+**3. View Visual Recognition Effects**
 
-打开同一网络电脑的浏览器，访问机器人的IP地址，即可看到视觉识别的实时效果：
+Open the browser on the same networked computer, visit the IP address of the robot, and you will see real-time visual recognition effects:
 
 ![ezgif-5-5c246b7347](images/ezgif-5-5c246b7347.gif)
 
-# Gazebo仿真
+# Gazebo Simulation
 
-Gazebo仿真适用于持有RDK X3但没有机器人实物的开发者体验人体跟随功能。
+Gazebo simulation is suitable for developers who have the RDK X3 but do not have the physical robot to experience the human body tracking function.
 
-## 物料清单
+## Bill of Materials
 
-| 机器人名称          | 生产厂家 | 参考链接                                                     |
-| :------------------ | -------- | ------------------------------------------------------------ |
-| RDK X3             | 多厂家 | [点击跳转](https://developer.horizon.ai/sunrise) |
+| Robot Name       | Manufacturer | Reference Link                                               |
+| :--------------- | ------------ | ------------------------------------------------------------ |
+| RDK X3           | Multiple     | [Click to jump](https://developer.horizon.ai/sunrise)        |
 
-## 使用方法
+## Usage
 
-### 准备工作
+### Preparation
 
-在体验之前，需要具备以下基本条件：
+Before experiencing it, you need to meet the following basic conditions:
 
-- 开发者有RDK套件实物，及配套的相机
-- PC电脑端已经完成ROS Gazebo及Turtlebot机器人相关功能包安装
-- 确保使用的PC与RDK处于统一网络中
+- Developers have physical RDK kits and accompanying cameras.
+- The PC has completed the installation of ROS Gazebo and Turtlebot robot-related function packages.
+- Ensure that the PC being used and the RDK are in the same network.
 
-### 安装功能包
+### Install PackagesOnce the RDK X3 is started, connect to the robot via terminal or VNC, click the "One-click Deployment" button on [NodeHub](http://it-dev.horizon.ai/nodehubDetail/167289845913411076) at the top right, and copy and run the following commands on the RDK system to install the related Nodes for human body tracking.
 
-启动RDK X3后，通过终端或者VNC连接机器人，点击[NodeHub](http://it-dev.horizon.ai/nodehubDetail/167289845913411076)右上方的“一键部署”按钮，复制如下命令在RDK的系统上运行，完成人体跟随相关Node的安装。
-
+tros foxy:
 ```bash
 sudo apt update
 sudo apt install -y tros-test-body-tracking
 ```
 
-### 运行人体跟随功能
+tros humble:
+```bash
+sudo apt update
+sudo apt install -y tros-humble-test-body-tracking
+```
 
-**1.启动仿真环境及机器人**
+### Run Human Body Tracking Functionality
 
-在PC端Ubuntu的终端中使用如下命令启动Gazebo，并加载机器人模型：
+**1. Start the Simulation Environment and Robot**
 
+On the PC side's Ubuntu terminal, use the following commands to start Gazebo and load the robot model:
+
+foxy:
 ```bash
 source /opt/ros/foxy/setup.bash
 export TURTLEBOT3_MODEL=burger
 ros2 launch turtlebot3_gazebo empty_world.launch.py
 ```
 
-启动成功后，仿真环境中小车效果如下：
+humble:
+```bash
+source /opt/ros/humble/setup.bash
+export TURTLEBOT3_MODEL=burger
+ros2 launch turtlebot3_gazebo empty_world.launch.py
+```
+
+After successful startup, the car in the simulation environment looks as follows:
 
 ![gazebo1](images/gazebo1.jpeg)
 
 
 
-**2.启动人体跟随**
+**2. Start Human Body Tracking**
 
-在RDK的系统中，启动终端，通过如下指令启动人体跟随功能：
+In the RDK system, start a terminal and use the following commands to initiate the human body tracking functionality:
 
+
+tros foxy:
 ```bash
-# 拷贝人体跟随的模型
-cp -r /opt/tros/lib/mono2d_body_detection/config/ .
+# Copy the model for body tracking
+cp -r /opt/tros/${TROS_DISTRO}/lib/mono2d_body_detection/config/ .
 
-#启动Node
+# Start the Node
 source /opt/tros/setup.bash
 
-# 配置使用的相机接口，如使用usb相机，"mipi"改为"usb"
+# Configure the camera interface used, if using a USB camera, change "mipi" to "usb"
 export CAM_TYPE=mipi
 
-# 运行人体跟随
-ros2 launch body_tracking body_tracking_without_gesture.launch.py 
+# Run the human body tracking
+ros2 launch body_tracking body_tracking_without_gesture.launch.py
 ```
 
-启动成功后，站在机器人摄像头前，需要让机器人识别到整个身体，慢慢移动身体，可以看到机器人已经开始跟随人体运动。若视野中存在多个人体，则以当前占据视野面积最大的人体作为跟踪目标，持续跟随移动。
+tros humble:
+```bash
+# Start the Node
+source /opt/tros/humble/setup.bash
+
+# Copy the model for body tracking
+cp -r /opt/tros/${TROS_DISTRO}/lib/mono2d_body_detection/config/ .
+
+# Configure the camera interface used, if using a USB camera, change "mipi" to "usb"
+export CAM_TYPE=mipi
+
+# Run the human body tracking
+ros2 launch body_tracking body_tracking_without_gesture.launch.py
+```
+
+After successful startup, stand in front of the robot camera, let the robot recognize the entire body by slowly moving, and you can see the robot has started to follow the human body movement. If there are multiple human bodies in the field of view, the one occupying the largest area will be selected as the tracking target, continuously following the movement.
 
 ![tracking](images/tracking.gif)
 
-**3.查看视觉识别效果**
+**3. View Visual Recognition Results**
 
-打开PC端的浏览器，访问RDK的IP地址，即可看到视觉识别的实时效果：
+Open a web browser on the PC side, access the RDK's IP address, and you can observe real-time visual recognition results:# Advanced Features
 
-![webservice](images/webservice.jpeg)
+## Gesture Wake-Up
 
+This function supports waking up the human body tracking function through gestures. When the wake-up gesture is enabled, the robot will track the person who made the wake-up gesture. It is generally used in scenarios with many people and complex environments to avoid accidental triggering of control functions by enabling the wake-up gesture.
 
+To use this function, modify the following command while running the human body tracking function, with all other operations remaining the same:
 
-# 进阶功能
-
-## 手势唤醒
-
-本功能支持通过手势唤醒人体跟随功能，当启用唤醒手势时，机器人会跟随做了唤醒手势的人体。一般用于人较多，环境复杂的场景，通过启用唤醒手势避免误触发控制功能。
-
-如需使用该功能，在运行人体跟随功能时，修改为如下指令，其他操作不变：
-
+tros foxy:
 ```bash
-# 拷贝人体跟随的模型
-cp -r /opt/tros/lib/mono2d_body_detection/config/ .
-cp -r /opt/tros/lib/hand_lmk_detection/config/ .
-cp -r /opt/tros/lib/hand_gesture_detection/config/ .
+# Copy the model for body tracking
+cp -r /opt/tros/${TROS_DISTRO}/lib/mono2d_body_detection/config/ .
+cp -r /opt/tros/${TROS_DISTRO}/lib/hand_lmk_detection/config/ .
+cp -r /opt/tros/${TROS_DISTRO}/lib/hand_gesture_detection/config/ .
 
-#启动Node
+# Start Node
 source /opt/tros/setup.bash
 
-# 配置使用的相机接口，如使用usb相机，"mipi"改为"usb"
+# Configure the camera interface used, if using a USB camera, change "mipi" to "usb"
 export CAM_TYPE=mipi
 
-# 运行人体跟随
+# Run body tracking
 ros2 launch body_tracking body_tracking.launch.py 
 ```
 
-手势唤醒说明：
+tros humble:
+```bash
+# Start Node
+source /opt/tros/humble/setup.bash
 
-| 图示                                 | 手势 | 唤醒说明                                                     |
-| ------------------------------------ | ---- | ------------------------------------------------------------ |
-| ![image-ok](images/image-ok.png)     | OK   | 唤醒跟随手势，识别之后启动人体跟随功能                       |
-| ![image-palm](images/image-palm.png) | Palm | 取消跟随手势，停止人体跟随功能，取消后需要重新使用唤醒手势选择跟随人体 |
+# Copy the model for body tracking
+cp -r /opt/tros/${TROS_DISTRO}/lib/mono2d_body_detection/config/ .
+cp -r /opt/tros/${TROS_DISTRO}/lib/hand_lmk_detection/config/ .
+cp -r /opt/tros/${TROS_DISTRO}/lib/hand_gesture_detection/config/ .
 
+# Configure the camera interface used, if using a USB camera, change "mipi" to "usb"
+export CAM_TYPE=mipi
 
+# Run body tracking
+ros2 launch body_tracking body_tracking.launch.py
+```
 
-**注意：**
+Gesture Wake-Up Instructions:
 
-做唤醒或取消手势时，需要举起手（人手在人肩部以上）做手势，避免手势算法误报导致误唤醒/取消。 
+| Illustration                        | Gesture | Wake-Up Description                                            |
+| ----------------------------------- | ------- | ------------------------------------------------------------ |
+| ![image-ok](images/image-ok.png)    | OK      | Wake-Up gesture, activate human body tracking after recognition |
+| ![image-palm](images/image-palm.png)| Palm    | Cancel tracking gesture, stop human body tracking. After cancellation, the wake-up gesture needs to be used again to select the tracked person |
 
-# 接口说明
+**Note:**
+
+When making a wake-up or cancellation gesture, raise your hand (hand above the shoulder) to avoid mis-waking up/cancellation due to gesture algorithm errors.
+
+# Interface Description
 
 ![interfaces](images/interfaces.jpg)
 
-## 话题
+## Topics
 
-人体识别和手势唤醒的结果都通过[hobot_msgs/ai_msgs/msg/PerceptionTargets](https://github.com/HorizonRDK/hobot_msgs/blob/develop/ai_msgs/msg/Target.msg)话题发布，该话题的详细定义如下：
+The results of human body recognition and gesture wake-up are published through the [hobot_msgs/ai_msgs/msg/PerceptionTargets](https://github.com/D-Robotics/hobot_msgs/blob/develop/ai_msgs/msg/Target.msg) topic. The detailed definition of this topic is as follows:
 
 ```
-# 消息头
+# Header of the message
 std_msgs/Header header
 
-# 感知结果的处理帧率
+# Frame rate for processing perception results
 int16 fps
 
-# 性能统计信息，比如记录每个模型推理的耗时
+# Performance statistics, such as recording the inference time for each model
 Perf[] perfs
 
-# 感知目标集合
+# Collection of perception targets
 Target[] targets
 
-# 消失目标集合
+# Collection of disappeared targets
 Target[] disappeared_targets
 ```
 
 
 
-| 名称                          | 消息类型                                                     | 说明                                                   |
-| ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
-| /cmd_vel                      | geometry_msgs/msg/Twist                                      | 发布控制机器人移动的速度指令                           |
-| /hobot_mono2d_body_detection  | [hobot_msgs/ai_msgs/msg/PerceptionTargets](hobot_msgs/ai_msgs/msg/PerceptionTargets) | 发布识别到的人体目标信息                               |
-| /hobot_hand_gesture_detection | [hobot_msgs/ai_msgs/msg/PerceptionTargets](hobot_msgs/ai_msgs/msg/PerceptionTargets) | 发布识别到的手势目标信息（开启手势唤醒之后才会出现）   |
-| /hobot_hand_lmk_detection     | [hobot_msgs/ai_msgs/msg/PerceptionTargets](hobot_msgs/ai_msgs/msg/PerceptionTargets) | 发布识别到的手势关键点信息（开启手势唤醒之后才会出现） |
+| Name                          | Message Type                                                | Description                                              |
+| ----------------------------- | ----------------------------------------------------------- | -------------------------------------------------------- |
+| /cmd_vel                      | geometry_msgs/msg/Twist                                     | Publishes speed commands to control robot movement.       |
+| /hobot_mono2d_body_detection  | [hobot_msgs/ai_msgs/msg/PerceptionTargets](hobot_msgs/ai_msgs/msg/PerceptionTargets) | Publishes information about recognized human body targets. |
+| /hobot_hand_gesture_detection | [hobot_msgs/ai_msgs/msg/PerceptionTargets](hobot_msgs/ai_msgs/msg/PerceptionTargets) | Publishes information about recognized gesture targets (only appear when gesture wake-up is activated). |
+| /hobot_hand_lmk_detection     | [hobot_msgs/ai_msgs/msg/PerceptionTargets](hobot_msgs/ai_msgs/msg/PerceptionTargets) | Publishes information about recognized gesture key points (only appear when gesture wake-up is activated). |
 
 
 
-## 参数
+## Parameters
 
-| 参数名                    | 类型        | 说明                                                         | 是否必须 | 支持的配置                                                   | 默认值                        | 是否支持运行时动态配置 |
-| ------------------------- | ----------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------ | ----------------------------- | ---------------------- |
-| track_serial_lost_num_thr | int         | 目标连续消失帧数阈值。超过此阈值认为目标消失。               | 否       | 无限制                                                       | 100                           | 是                     |
-| activate_wakeup_gesture   | int         | 是否启用唤醒手势。                                           | 否       | 0/1。0：不启用，1：启用。                                    | 0                             | 是                     |
-| linear_velocity      | float       | 平移运动的步长，单位米。                                     | 否       | 无限制                                                       | 0.1                           | 是                     |
-| angular_velocity     | float       | 旋转运动的步长，单位弧度。                                   | 否       | 无限制                                                       | 0.5                           | 是                     |
-| twist_pub_topic_name      | std::string | 发布Twist类型的运动控制消息的topic名                         | 否       | 根据实际部署环境配置。一般机器人订阅的topic为/cmd_vel，ROS2 turtlesim示例订阅的topic为turtle1/cmd_vel。 | /cmd_vel                      | 否                     |
-| ai_msg_sub_topic_name     | std::string | 订阅包含手势识别结果的AI消息的topic名                        | 否       | 根据实际部署环境配置                                         | /hobot_hand_gesture_detection | 否                     |
-| img_width                 | int         | 检测框对应的图片分辨率的宽度                                 | 否       | 根据发布的图片分辨率配置                                     | 960                           | 是                     |
-| img_height                | int         | 检测框对应的图片分辨率的高度                                 | 否       | 根据发布的图片分辨率配置                                     | 544                           | 是                     |
-| activate_robot_move_thr   | int         | 激活平移运动的像素阈值。当人体检测框距离上边界的像素小于此阈值时激活平移运动。 | 否       | 0-img_height                                                 | 5                             | 是                     |
-| activate_robot_rotate_thr | int         | 激活旋转运动的欧拉角度，当被跟随人体和机器人之间的角度大于此阈值时激活旋转运动。 | 否       | 0-90                                                         | 45                            |                        |
+| Parameter Name              | Type        | Description                                                  | Required | Supported Configuration                                      | Default Value                 | Support Dynamic Reconfigure |
+| --------------------------- | ----------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------ | ----------------------------- | --------------------------- |
+| track_serial_lost_num_thr   | int         | Threshold of consecutive frames a target can be lost. If exceeded, the target is considered lost. | No       | Unlimited                                                    | 100                           | Yes                         |
+| activate_wakeup_gesture     | int         | Whether to enable wake-up gesture.                          | No       | 0/1. 0: Disable, 1: Enable.                                  | 0                             | Yes                         |
+| linear_velocity             | float       | Step length for translational motion in meters.              | No       | Unlimited                                                    | 0.1                           | Yes                         |
+| angular_velocity            | float       | Step length for rotational motion in radians.                | No       | Unlimited                                                    | 0.5                           | Yes                         |
+| twist_pub_topic_name        | std::string | Topic name for publishing Twist type motion control messages. | No       | Configured based on deployment environment. Typically, robots subscribe to /cmd_vel, and ROS2 turtlesim example subscribes to turtle1/cmd_vel. | /cmd_vel                      | No                          |
+| ai_msg_sub_topic_name       | std::string | Topic name for subscribing AI messages containing gesture recognition results. | No       | Configured based on deployment environment.                   | /hobot_hand_gesture_detection | No                          |
+| img_width                   | int         | Width of image resolution corresponding to detection box.     | No       | Configured based on published image resolution.              | 960                           | Yes                         |
+| img_height                  | int         | Height of image resolution corresponding to detection box.    | No       | Configured based on published image resolution.              | 544                           | Yes                         |
+| activate_robot_move_thr     | int         | Pixel threshold to activate translational motion. When the distance between the human detection box and the upper boundary is less than this threshold, translational motion is activated. | No       | 0-img_height                                                | 5                             | Yes                         |
+| activate_robot_rotate_thr   | int         | Euler angle threshold to activate rotational motion. When the angle between the followed human and the robot is greater than this threshold, rotational motion is activated. | No       | 0-90                                                        | 45                            |                             |
 
 
 
-# 原理简介
+# Introduction
 
-该功能由相机图像采集、人体检测和跟踪、人体跟随策略、图像编解码、WEB展示端等部分组成，流程如下图：
+This feature consists of camera image capturing, human body detection and tracking, human following strategy, image encoding and decoding, WEB display end, etc., as shown in the following flowchart:
 
 ![20220922180336](images/20220922180336.png)
 
-在视野中识别到人体后，判断人体检测框中心点和机器人之间的角度，角度超过阈值（activate_robot_rotate_thr）时，控制机器人旋转，保持被跟随人体在机器人正前方。当被跟随人体消失时，停止机器人运动，并寻找新的被跟随人体。当跟随人体在机器人正前方时，判断人体检测框上边界（检测框的top坐标），超过阈值（activate_robot_move_thr）时，控制机器人运动。
+Upon detecting a human body in the field of view, calculate the angle between the center of the human body detection box and the robot. When the angle exceeds the threshold value (activate_robot_rotate_thr), control the robot to rotate to keep the followed person directly in front of the robot. When the followed person disappears, stop the robot's movement and search for a new person to follow. When the followed person is directly in front of the robot, determine if the top boundary of the human body detection box (the top coordinate of the detection box) exceeds the threshold value (activate_robot_move_thr), then control the robot's movement.
 
-> 详细实现原理请见“参考资料”。
-
-
-
-# 参考资料
-
-- 实现原理讲解视频：[点击跳转](https://developer.horizon.ai/college/detail/id=98129467158916314)
-- OriginBot人体跟随示例：[点击跳转](https://www.originbot.org/application/body_detection/)
+> For a detailed implementation explanation, please refer to the "References".
 
 
 
-# 常见问题
+# References
 
-**1、Ubuntu下运行启动命令报错`-bash: ros2: command not found`**
+- Video explaining the implementation principle: [Click here](https://developer.horizon.ai/college/detail/id=98129467158916314)
+- OriginBot human following example: [Click here](https://www.originbot.org/application/body_detection/)
 
-当前终端未设置ROS2环境，执行以下命令配置环境：
 
+
+# Frequently Asked Questions
+
+**1. When running the startup command on Ubuntu, an error shows `-bash: ros2: command not found`**
+
+This indicates that the ROS2 environment is not set in the current terminal. Execute the following command to configure the environment:
+
+tros foxy:
 ```
 source /opt/tros/setup.bash
 ```
 
+tros humble:
+```
+source /opt/tros/humble/setup.bash
+```

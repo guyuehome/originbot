@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2022, www.guyuehome.com
+# Copyright (c) 2024, www.guyuehome.com
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,35 +27,36 @@ from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
-    mipi_cam_device_arg = DeclareLaunchArgument(
+    print("使用USB摄像头")
+    # 使用USB摄像头发布图像
+    usb_cam_device_arg = DeclareLaunchArgument(
         'device',
-        default_value='GC4663',
-        description='mipi camera device')
+        default_value='/dev/video8',
+        description='USB摄像头设备')
 
-    mipi_node = IncludeLaunchDescription(
+    usb_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
-                get_package_share_directory('mipi_cam'),
-                'launch/mipi_cam.launch.py')),
+                get_package_share_directory('hobot_usb_cam'),
+                'launch/hobot_usb_cam.launch.py')),
         launch_arguments={
-            'mipi_image_width': '960',
-            'mipi_image_height': '544',
-            'mipi_io_method': 'shared_mem',
-            'mipi_video_device': LaunchConfiguration('device')
+            'usb_image_width': '640',
+            'usb_image_height': '480',
+            'usb_video_device': LaunchConfiguration('device')
         }.items()
     )
 
-    # nv12->jpeg
-    jpeg_codec_node = IncludeLaunchDescription(
+    # jpeg->nv12
+    nv12_codec_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('hobot_codec'),
-                'launch/hobot_codec_encode.launch.py')),
+                'launch/hobot_codec_decode.launch.py')),
         launch_arguments={
-            'codec_in_mode': 'shared_mem',
-            'codec_out_mode': 'ros',
-            'codec_sub_topic': '/hbmem_img',
-            'codec_pub_topic': '/image'
+            'codec_in_mode': 'ros',
+            'codec_out_mode': 'shared_mem',
+            'codec_sub_topic': '/image',
+            'codec_pub_topic': '/hbmem_img'
         }.items()
     )
 
@@ -63,7 +64,7 @@ def generate_launch_description():
     web_smart_topic_arg = DeclareLaunchArgument(
         'smart_topic',
         default_value='/hobot_mono2d_body_detection',
-        description='websocket smart topic')
+        description='WebSocket智能话题')
     web_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -75,11 +76,11 @@ def generate_launch_description():
         }.items()
     )
 
-    # mono2d body detection
+    # mono2d人体检测
     mono2d_body_pub_topic_arg = DeclareLaunchArgument(
         'mono2d_body_pub_topic',
         default_value='/hobot_mono2d_body_detection',
-        description='mono2d body ai message publish topic')
+        description='mono2d人体AI消息发布话题')
     mono2d_body_det_node = Node(
         package='mono2d_body_detection',
         executable='mono2d_body_detection',
@@ -91,16 +92,25 @@ def generate_launch_description():
         arguments=['--ros-args', '--log-level', 'warn']
     )
 
+    shared_mem_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('hobot_shm'),
+                'launch/hobot_shm.launch.py'))
+    )
+
     return LaunchDescription([
-        mipi_cam_device_arg,
-        # image publish
-        mipi_node,
-        # image codec
-        jpeg_codec_node,
-        # body detection
+        usb_cam_device_arg,
+        # 启动零拷贝环境配置节点
+        shared_mem_node,
+        # 图像发布
+        usb_node,
+        # 图像编解码
+        nv12_codec_node,
+        # 人体检测
         mono2d_body_pub_topic_arg,
         mono2d_body_det_node,
-        # web display
+        # Web显示
         web_smart_topic_arg,
         web_node
     ])

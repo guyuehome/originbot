@@ -20,18 +20,18 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 {
     // 加载参数
     std::string port_name="ttyS3";    
-    this->declare_parameter("port_name");           //声明及获取串口号参数
-    this->get_parameter_or<std::string>("port_name", port_name, "ttyS3");
-    this->declare_parameter("correct_factor_vx");   //声明及获取线速度校正参数
-    this->get_parameter_or<float>("correct_factor_vx", correct_factor_vx_, 1.0);
-    this->declare_parameter("correct_factor_vth");  //声明及获取角速度校正参数
-    this->get_parameter_or<float>("correct_factor_vth", correct_factor_vth_, 1.0);
-    this->declare_parameter("auto_stop_on");        //声明及获取自动停车功能的开关值
-    this->get_parameter_or<bool>("auto_stop_on", auto_stop_on_, true);
-    this->declare_parameter("use_imu");             //声明是否使用imu
-    this->get_parameter_or<bool>("use_imu", use_imu_, false);
-    this->declare_parameter("pub_odom");             //声明是否发布odom的tf
-    this->get_parameter_or<bool>("pub_odom", pub_odom_, false);
+    this->declare_parameter("port_name", "ttyS3");           //声明及获取串口号参数
+    this->get_parameter("port_name", port_name);
+    this->declare_parameter("correct_factor_vx", 1.0);   //声明及获取线速度校正参数 
+    this->get_parameter("correct_factor_vx", correct_factor_vx_);
+    this->declare_parameter("correct_factor_vth", 1.0);  //声明及获取角速度校正参数
+    this->get_parameter("correct_factor_vth", correct_factor_vth_);
+    this->declare_parameter("auto_stop_on", true);        //声明及获取自动停车功能的开关值
+    this->get_parameter("auto_stop_on", auto_stop_on_);
+    this->declare_parameter("use_imu", false);             //声明是否使用imu
+    this->get_parameter("use_imu", use_imu_);
+    this->declare_parameter("pub_odom", false);             //声明是否发布odom的tf
+    this->get_parameter("pub_odom", pub_odom_);
     
     // 打印加载的参数值
     printf("Loading parameters: \n \
@@ -43,18 +43,21 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
             port_name.c_str(), correct_factor_vx_, correct_factor_vth_, auto_stop_on_, use_imu_); 
 
     // 创建里程计、机器人状态的发布者
-    odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
-    status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", 10);
+    rclcpp::QoS qos(10);
+    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+
+    odom_publisher_   = this->create_publisher<nav_msgs::msg::Odometry>("odom", qos);
+    status_publisher_ = this->create_publisher<originbot_msgs::msg::OriginbotStatus>("originbot_status", qos);
 
     // 创建速度指令的订阅者
-    cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
-    
+    cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", qos, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
+
     // 创建控制蜂鸣器和LED的服务
     buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", std::bind(&OriginbotBase::buzzer_callback, this, _1, _2));
     led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", std::bind(&OriginbotBase::led_callback, this, _1, _2));
     left_pid_service_ = this->create_service<originbot_msgs::srv::OriginbotPID>("originbot_left_pid", std::bind(&OriginbotBase::left_pid_callback, this, _1, _2));
     right_pid_service_ = this->create_service<originbot_msgs::srv::OriginbotPID>("originbot_right_pid", std::bind(&OriginbotBase::right_pid_callback, this, _1, _2));
-
     // 创建TF广播器
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
@@ -85,7 +88,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     if(use_imu_)
     {
         // 创建IMU的话题发布者
-        imu_publisher_    = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
+        imu_publisher_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
 
         // IMU初始化标定
         if(imu_calibration())
@@ -274,7 +277,7 @@ double OriginbotBase::imu_conversion(uint8_t data_high, uint8_t data_low)
 
 void OriginbotBase::processAccelerationData(DataFrame &frame)
 {
-    //RCLCPP_INFO(this->get_logger(), "Process acceleration data");
+    // RCLCPP_INFO(this->get_logger(), "Process acceleration data");
 
     imu_data_.acceleration_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * 16 * 9.8;
     imu_data_.acceleration_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * 16 * 9.8;
@@ -283,7 +286,7 @@ void OriginbotBase::processAccelerationData(DataFrame &frame)
 
 void OriginbotBase::processAngularData(DataFrame &frame)
 {
-    //RCLCPP_INFO(this->get_logger(), "Process angular data");
+    // RCLCPP_INFO(this->get_logger(), "Process angular data");
 
     imu_data_.angular_x = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(2000);
     imu_data_.angular_y = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(2000);
@@ -292,7 +295,7 @@ void OriginbotBase::processAngularData(DataFrame &frame)
 
 void OriginbotBase::processEulerData(DataFrame &frame)
 {
-    //RCLCPP_INFO(this->get_logger(), "Process euler data");
+    // RCLCPP_INFO(this->get_logger(), "Process euler data");
 
     imu_data_.roll  = imu_conversion(frame.data[1], frame.data[0]) / 32768 * degToRad(180);
     imu_data_.pitch = imu_conversion(frame.data[3], frame.data[2]) / 32768 * degToRad(180);
@@ -436,6 +439,11 @@ void OriginbotBase::imu_publisher()
     imu_msg.orientation_covariance = {0.0025, 0.0000, 0.0000, 0.0000, 0.0025, 0.0000, 0.0000, 0.0000, 0.0025};
 
     // 发布IMU话题
+    if (imu_publisher_ == nullptr)
+    {
+        // RCLCPP_ERROR(this->get_logger(), "IMU publisher is null, cannot publish message");
+        return;
+    }
     imu_publisher_->publish(imu_msg);
 }
 

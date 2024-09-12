@@ -15,33 +15,24 @@ using rclcpp::NodeOptions;
 using hobot::dnn_node::DNNInput;
 using hobot::dnn_node::DnnNode;
 using hobot::dnn_node::DnnNodeOutput;
-using hobot::dnn_node::DNNResult;
 using hobot::dnn_node::ModelTaskType;
 
 using hobot::dnn_node::DNNTensor;
-using hobot::dnn_node::OutputDescription;
-using hobot::dnn_node::OutputParser;
 
-using hobot::dnn_node::InputDescription;
-using hobot::dnn_node::SingleBranchOutputParser;
-
-class LineCoordinateResult : public DNNResult {
+class LineCoordinateResult {
  public:
   float x;
   float y;
-  void Reset() override {x = -1.0; y = -1.0;}
+  void Reset() {x = -1.0; y = -1.0;}
 };
 
-class LineCoordinateParser
-  : public SingleBranchOutputParser<LineCoordinateResult> {
+class LineCoordinateParser {
  public:
   LineCoordinateParser() {}
   ~LineCoordinateParser() {}
   int32_t Parse(
       std::shared_ptr<LineCoordinateResult>& output,
-      std::vector<std::shared_ptr<InputDescription>>& input_descriptions,
-      std::shared_ptr<OutputDescription>& output_description,
-      std::shared_ptr<DNNTensor>& output_tensor) override;
+      std::shared_ptr<DNNTensor>& output_tensor);
 };
 
 class LineFollowerPerceptionNode : public DnnNode {
@@ -52,7 +43,6 @@ class LineFollowerPerceptionNode : public DnnNode {
 
  protected:
   int SetNodePara() override;
-  int SetOutputParser() override;
   int PostProcess(const std::shared_ptr<DnnNodeOutput> &outputs) override;
 
  private:
@@ -64,12 +54,13 @@ class LineFollowerPerceptionNode : public DnnNode {
   bool GetParams();
   bool AssignParams(const std::vector<rclcpp::Parameter> & parameters);
   ModelTaskType model_task_type_ = ModelTaskType::ModelInferType;
-  rclcpp::SubscriptionHbmem<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr
+  rclcpp::Subscription<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr
     subscriber_;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
   cv::Mat image_bgr_;
   std::string model_path_;
   std::string model_name_;
+  std::shared_ptr<LineCoordinateParser> line_coordinate_parser_;
 };
 
 #endif  // _LINE_FOLLOWER_PERCEPTION_H_

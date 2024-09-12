@@ -1,4 +1,4 @@
-# Copyright (c) 2022，Horizon Robotics.
+# Copyright (c) 2024，D-Robotics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ def generate_launch_description():
         ],
         arguments=['--ros-args', '--log-level', 'warn']
     )
-    #此处嵌套了相机模组相关启动文件
+
     hand_gesture_det_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(

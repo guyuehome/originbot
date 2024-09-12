@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2022, www.guyuehome.com
+# Copyright (c) 2024, www.guyuehome.com
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ def generate_launch_description():
     ld = launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument(name='use_lidar', default_value='false'),
         launch.actions.DeclareLaunchArgument(name='use_camera', default_value='false'),
-        launch.actions.DeclareLaunchArgument(name='use_imu', default_value='false'),
+        launch.actions.DeclareLaunchArgument(name='use_imu', default_value='true'),
         launch.actions.DeclareLaunchArgument(name='pub_odom', default_value='true'),
 
         launch.actions.IncludeLaunchDescription(
@@ -40,7 +40,7 @@ def generate_launch_description():
         launch.actions.IncludeLaunchDescription(
             launch.launch_description_sources.PythonLaunchDescriptionSource(
                 os.path.join(get_package_share_directory('originbot_bringup'),
-                             'launch','ydlidar.launch.py')),
+                             'launch','vp100.launch.py')),
                 condition=launch.conditions.IfCondition(
                     launch.substitutions.LaunchConfiguration('use_lidar'))),
 

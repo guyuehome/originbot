@@ -1,4 +1,4 @@
-# Copyright (c) 2022，Horizon Robotics.
+# Copyright (c) 2024，D-Robotics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 # find dependencies
@@ -42,8 +42,20 @@ find_package(hbm_img_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 
+# Set the correct paths for libraries based on the example
+set(SYS_ROOT ${CMAKE_SYSROOT})  # Ensure this is set correctly as per your system
+
+include_directories(include
+  ${PROJECT_SOURCE_DIR}
+  ${SYS_ROOT}/usr/include/opencv/
+  ${SYS_ROOT}/usr/include/
+)
+
 link_directories(
-  ${CMAKE_SYSROOT}/usr/lib/hbbpu/
+  ${SYS_ROOT}/usr/lib/hbbpu/
+  ${SYS_ROOT}/usr/lib/hbmedia/
+  ${SYS_ROOT}/usr/lib/
+  ${SYS_ROOT}/usr/hobot/lib/
 )
 
 add_executable(line_follower_perception src/line_follower_perception.cpp)
@@ -59,6 +71,8 @@ ament_target_dependencies(
 
 target_link_libraries(${PROJECT_NAME}
   hbmem
+  alog
+  cnn_intf
 )
 
 target_include_directories(line_follower_perception PUBLIC

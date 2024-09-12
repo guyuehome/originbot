@@ -27,7 +27,7 @@ class Follower(Node):
 
         self.bridge = cv_bridge.CvBridge()
 
-        self.image_sub = self.create_subscription(Image, '/image_raw', self.image_callback, 10)
+        self.image_sub = self.create_subscription(Image, '/image', self.image_callback, 10)
         self.cmd_vel_pub = self.create_publisher(Twist, 'cmd_vel', 10)
         self.pub = self.create_publisher(Image, '/camera/process_image', 10)
 

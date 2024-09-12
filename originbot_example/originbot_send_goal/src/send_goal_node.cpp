@@ -1,20 +1,3 @@
-/***********************************************************************
-Copyright (c) 2022, www.guyuehome.com
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-***********************************************************************/
-
-
 #include <functional>
 #include <future>
 #include <memory>
@@ -31,7 +14,7 @@ class GoalCoordinate : public rclcpp::Node
 public:
 
     using NavigateToPose = nav2_msgs::action::NavigateToPose;
-    using GoalHandleFibonacci = rclcpp_action::ClientGoalHandle<NavigateToPose>;
+    using GoalHandleNavigateToPose = rclcpp_action::ClientGoalHandle<NavigateToPose>;
     GoalCoordinate() : Node("GoalCoordinate")
     {
         this->client_ptr_ = rclcpp_action::create_client<NavigateToPose>(this, "navigate_to_pose");
@@ -71,28 +54,26 @@ private:
     rclcpp_action::Client<NavigateToPose>::SharedPtr client_ptr_;
     rclcpp::TimerBase::SharedPtr timer_;
 
-    void goal_response_callback(std::shared_future<GoalHandleFibonacci::SharedPtr> future)
+    void goal_response_callback(std::shared_ptr<GoalHandleNavigateToPose> goal_handle)
     {
-        auto goal_handle = future.get();
         if (!goal_handle)
         {
             RCLCPP_ERROR(this->get_logger(), "Goal was rejected by server");
         }
-
         else
         {
             RCLCPP_INFO(this->get_logger(), "Goal accepted by server, waiting for result");
         }
     }
 
-    void feedback_callback(GoalHandleFibonacci::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback)
+    void feedback_callback(GoalHandleNavigateToPose::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback)
     {
         auto distance_feedback_msg = std_msgs::msg::String();
         distance_feedback_msg.data = "Remaining Distance from Destination: " + std::to_string(feedback->distance_remaining);
-        RCLCPP_INFO(this->get_logger(), distance_feedback_msg.data);
+        RCLCPP_INFO(this->get_logger(), "%s", distance_feedback_msg.data.c_str());
     }
 
-    void result_callback(const GoalHandleFibonacci::WrappedResult &result)
+    void result_callback(const GoalHandleNavigateToPose::WrappedResult &result)
     {
         switch (result.code)
         {
