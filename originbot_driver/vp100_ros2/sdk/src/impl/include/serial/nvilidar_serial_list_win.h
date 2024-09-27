@@ -12,9 +12,6 @@
 #include <vector>
 #include <string>
 
-
-using namespace std;
-
 typedef struct 
 {
 	std::string port;

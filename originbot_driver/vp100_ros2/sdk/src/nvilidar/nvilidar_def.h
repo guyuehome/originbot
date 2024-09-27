@@ -9,7 +9,7 @@
 //======================================basic parameter============================================ 
 
 //SDK version 
-#define NVILIDAR_SDKVerision     "1.0.0"
+#define NVILIDAR_SDKVerision     "1.0.3"
 
 //PI def
 #ifndef M_PI
@@ -17,11 +17,10 @@
 #endif 
 
 //other 
-#define NVILIDAR_DEFAULT_TIMEOUT     2000    //default timeout 
-#define NVILIDAR_POINT_TIMEOUT		 2000	 //one circle time  for example, the lidar speed is 10hz ,the timeout must smaller the 100ms
-
+#define NVILIDAR_DEFAULT_TIMEOUT     	2000    //default timeout 
+#define NVILIDAR_POINT_TIMEOUT		 	2000	 //one circle time  for example, the lidar speed is 10hz ,the timeout must smaller the 100ms
+ 
 #define NVILIDAR_COMMUNICATE_TWO_WAY	0
-#define NVILIDAR_SINGLE_PACK_POINTS		8		//one pack has N points 
 
 //lidar model  list 
 typedef enum
@@ -31,31 +30,15 @@ typedef enum
    	NVILIDAR_Tail,
 }LidarModelListEnumTypeDef;
 
+//lidar error flag 
+typedef enum{
+	VP100_ERROR_CODE_RESET = 0,			//lidar reset...
+	VP100_ERROR_CODE_MOTOR_LOCK  = 1,	//motor not run 
+	VP100_ERROR_CODE_UP_NO_POINT = 2,	//upboard no data 
+	VP100_ERROR_CODE_NORMAL = 0xFF,		//normal 
+}VP100Lidar_ErrorFlagEnumTypeDef;
 
 //======================================other parameters============================================ 
-
-//filter para 
-//lidar filter para --- lidar tail para 
-typedef struct{
-	bool   enable;
-	int    level;
-	bool   distance_limit_flag;
-	int    distance_limit_value;
-	int    neighbors;
-}TailFilterPara;
-//lidar filter para --- lidar sliding filter para 
-typedef struct{
-	bool   enable;          
-	int    jump_threshold;  
-	int    max_range;       
-	bool   max_range_flag;  
-	int    window;
-}SlidingFilterPara;
-//lidar filter para 
-typedef struct{
-	TailFilterPara  tail_filter;
-	SlidingFilterPara  sliding_filter;
-}FilterPara;
 
 //lidar current state 
 typedef struct
@@ -68,8 +51,6 @@ typedef struct
 //lidar configure para
 typedef struct
 {
-	LidarModelListEnumTypeDef  lidar_model_name;	//lidar model name 
-
 	std::string frame_id;				//ID
 	std::string serialport_name;		//serialport name 
 	int    		serialport_baud;		//serialport baudrate 
@@ -90,45 +71,27 @@ typedef struct
 
 	bool 		resolution_fixed;		//is good resolution  
 
-	FilterPara	filter_para;			//lidar pointcloud filter para info 
+	bool 		log_enable_flag;		//is use the log?
 }Nvilidar_UserConfigTypeDef;
-
-//lidar receive info typedef 
-typedef union {
-	uint8_t buf[256];
-	Nvilidar_Node_Package_Quality        pack_qua;
-	Nvilidar_Node_Package_No_Quality     pack_no_qua;
-}Nvilidar_PackageBufTypeDef;
 
 //lidar point 
 typedef struct{
 	uint16_t   distance;
 	double     angle;
-	uint8_t    quality;	
+	uint16_t   quality;	
 	double     speed;	
 }Nvilidar_PackagePoint;
 
-//package info 
-typedef struct 
-{
-	bool     packageHasQuality;		//is has quality,it is defined by protocol 
-	Nvilidar_PackagePoint  packagePoints[NVILIDAR_SINGLE_PACK_POINTS];    //points info 
-	bool     packageErrFlag;       //error flag 
-	uint16_t packageCheckSumGet;   //crc get from protocol 
-	uint16_t packageCheckSumCalc;  //crc calculate 
-	uint16_t packageSpeed;         //lidar speed 
-	bool     packageHas0CAngle;    //is 0 
-	uint16_t package0CIndex;   		//is 0 index 
-	uint64_t packageStamp;		   //time stamp  
-}Nvilidar_PointViewerPackageInfoTypeDef;
-
-//one circle data info  
+//circle data  
 typedef struct
 {
 	uint64_t  startStamp;			//One Lap Start Timestamp 
 	uint64_t  stopStamp;			//One Lap Stop Timestamp 
+	uint64_t  differStamp;	  		//differ Timestamp
 	std::vector<Nvilidar_Node_Info>  lidarCircleNodePoints;	//lidar point data
+	VP100Lidar_ErrorFlagEnumTypeDef  error_code;			//error code 
 }CircleDataInfoTypeDef;
+
 
 
 //======================================Output data information============================================ 
@@ -144,6 +107,8 @@ typedef struct {
 	float range;
 	/// lidar intensity
 	float intensity;
+	/// stamp 
+	uint64_t stamp;
 } NviLidarPoint;
 
 /**
@@ -171,14 +136,17 @@ typedef struct {
 
 
 typedef struct {
-	/// System time when first range was measured in nanoseconds
-	uint64_t stamp;
-	/// Array of lidar points
+	// System time when first range was measured in nanoseconds
+	uint64_t stamp_start;
+	uint64_t stamp_stop;
+	uint64_t stamp_differ;
+	// Array of lidar points
 	std::vector<NviLidarPoint> points;
-	/// Configuration of scan
-	NviLidarConfig config;
+	// Configuration of scan
+	NviLidarConfig config;	
+	// error code 
+	VP100Lidar_ErrorFlagEnumTypeDef  error_code;
 } LidarScan;
-
 
 
 #endif

@@ -7,7 +7,7 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-variable)
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 ####################find package#####################################
@@ -25,6 +25,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_SOURCE_DIR}/sdk/src/impl/include
   ${PROJECT_SOURCE_DIR}/sdk/src/nvilidar
+  ${PROJECT_SOURCE_DIR}/sdk/src/3rdparty
   )
 
 #---------------------------------------------------------------------------------------
@@ -35,8 +36,7 @@ add_executable(vp100_ros2_node
     sdk/src/impl/src/serial/nvilidar_serial_unix.cpp
     sdk/src/impl/src/serial/nvilidar_serial_win.cpp
     sdk/src/nvilidar/nvilidar_driver_serialport.cpp
-    sdk/src/nvilidar/nvilidar_process.cpp
-    sdk/src/nvilidar/nvilidar_filter.cpp) 
+    sdk/src/nvilidar/nvilidar_process.cpp) 
 #---------------------------------------------------------------------------------------
 # link libraries
 #--------------------------------------------------------------------------------------
@@ -56,8 +56,7 @@ add_executable(vp100_ros2_client
     sdk/src/impl/src/serial/nvilidar_serial_unix.cpp
     sdk/src/impl/src/serial/nvilidar_serial_win.cpp
     sdk/src/nvilidar/nvilidar_driver_serialport.cpp
-    sdk/src/nvilidar/nvilidar_process.cpp
-    sdk/src/nvilidar/nvilidar_filter.cpp)
+    sdk/src/nvilidar/nvilidar_process.cpp)
 #---------------------------------------------------------------------------------------
 # link libraries
 #--------------------------------------------------------------------------------------

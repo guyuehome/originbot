@@ -64,7 +64,7 @@ nvilidar_ros2_driver is a new ros package, which is designed to gradually become
    
    current ros support 2 types of Lidar,VP100A and VP100L.
 
-   the Lidar's baudrate is 115200bps
+   the VP100A Lidar's baudrate is 115200bps,the VP100L Lidar's baudrate is 230400bps.
 
 ## Interface function definition
 ### 1. bool LidarProcess::LidarInitialialize()
@@ -141,16 +141,7 @@ vp100_ros2_node:
     angle_offset_change_flag: false
     angle_offset: 0.0
     ignore_array_string: ""
-    filter_sliding_enable: true
-    filter_tail_enable: true
-    filter_sliding_jump_threshold: 50
-    filter_sliding_max_range_flag: false
-    filter_sliding_max_range: 8000
-    filter_sliding_window: 3
-    filter_tail_distance_limit_flag: false
-    filter_tail_distance_limit_value: 8000
-    filter_tail_level: 8
-    filter_tail_neighbors: 0
+    log_enable_flag: true
 
 ```
 ### Parameter define
@@ -173,16 +164,7 @@ vp100_ros2_node:
 | angle_offset_change_flag  | angle offset enable to set,default:false|
 | angle_offset  | angle offset,default:0.0|
 | ignore_array_string  | if you want to filter some point's you can change it,it is anti-clockwise for the lidar.eg. you can set the value "30,60,90,120",you can remove the 30°~60° and 90°~120° points in the view|
-| filter_sliding_enable | smooth filter enable,default:true |
-| filter_tail_enable | tailing filter function,default:true |
-| filter_sliding_jump_threshold | smooth filter jump point thresholds,Not recommended to modify.<br>The larger the value, the smoother it is, but too large a value may cause the corners to be less pronounced. |
-| filter_sliding_max_range_flag | Smooth filtering takes effect within a specified distance threshold,Not recommended to modify.<br>defalut:false,no distance limit |
-| filter_sliding_max_range | If filter_sliding_max_range_flag=True within this distance then do <br>the smoothing filtering algorithm, otherwise use the raw data,default:8000 |
-| filter_sliding_window | Smooth filtering algorithm window, default:5 |
-| filter_tail_distance_limit_flag | The trailing filter takes effect within the specified <br>distance threshold, and modification is not recommended.defalut: false, no distance limitation|
-| filter_tail_distance_limit_value | If filter_tail_distance_limit_flag=True within this distance <br>then do the trailing filter algorithm, otherwise use the raw data |
-| filter_tail_level | Tail dragging algorithm Rating, with 1 being the minimum and 30 being the maximum. The larger the value, the better the filtering effect, but too large will lead to too few valid points. Default:8 |
-| filter_tail_neighbors | Number of neighboring points filtered by the trailing algorithm , i.e., trailing points are detected and the first N and last N data are filtered, Default:0 |
+| log_enable_flag |  if you want to write log to file,you must write it 'true' |
 
 
 
