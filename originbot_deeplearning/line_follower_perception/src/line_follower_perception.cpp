@@ -193,9 +193,9 @@ void LineFollowerPerceptionNode::subscription_callback(
 
   hbDNNRoi roi;
   roi.left = 0;
-  roi.top = 160;
-  roi.right = 960 - 1;
-  roi.bottom = 384 - 1;
+  roi.top = 128;
+  roi.right = 640 - 1;
+  roi.bottom = 352 - 1;
   hbDNNTensor input_tensor;
   prepare_nv12_tensor_without_padding(reinterpret_cast<const char*>(msg->data.data()),
                                       msg->height,
@@ -305,8 +305,9 @@ int32_t LineCoordinateParser::Parse(
   hbSysFlushMem(&(tensor.sysMem[0]), HB_SYS_MEM_CACHE_INVALIDATE);
   float x = reinterpret_cast<float *>(tensor.sysMem[0].virAddr)[0];
   float y = reinterpret_cast<float *>(tensor.sysMem[0].virAddr)[1];
-  result->x = (x * 112 + 112) * 960.0 / 224.0;
-  result->y = 224 - (y * 112 + 112) + 272 - 112;
+
+  result->x = (x * 112 + 112) *640.0 / 224.0;
+  result->y = 224 - (y * 112 + 112) + 240 - 112;
   RCLCPP_INFO(rclcpp::get_logger("LineFollowerPerceptionNode"),
                "coor rawx: %f,  rawy:%f, x: %f    y:%f", x, y, result->x, result->y);
   return 0;
