@@ -1,7 +1,7 @@
 vp100_ros2_node:
   ros__parameters:
-    serialport_name: "/dev/ttyUSB1"
-    serialport_baud: 115200
+    serialport_name: "/dev/ttyUSB0"
+    serialport_baud: 230400
     frame_id: "laser_link"
     resolution_fixed: false
     auto_reconnect: true
@@ -16,13 +16,4 @@ vp100_ros2_node:
     angle_offset_change_flag: false
     angle_offset: 0.0
     ignore_array_string: ""
-    filter_sliding_enable: true
-    filter_tail_enable: true
-    filter_sliding_jump_threshold: 50
-    filter_sliding_max_range_flag: false
-    filter_sliding_max_range: 8000
-    filter_sliding_window: 3
-    filter_tail_distance_limit_flag: false
-    filter_tail_distance_limit_value: 8000
-    filter_tail_level: 8
-    filter_tail_neighbors: 0
+    log_enable_flag: true

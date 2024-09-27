@@ -14,14 +14,22 @@
 #include <cmath>
 
 #include "nvilidar_process.h"
+#include "mytimer.hpp"
 
 //version 
-#define ROS2Verision "1.0.0"
+#define ROS2Verision "1.0.3"
 
 //define
 #define READ_PARAM(TYPE, NAME, VAR, VALUE) VAR = VALUE; \
        	node->declare_parameter<TYPE>(NAME, VAR); \
        	node->get_parameter(NAME, VAR);
+
+//get stamp 
+uint64_t  get_stamp_callback(){
+    uint64_t current_time = 0;
+    current_time = rclcpp::Clock().now().nanoseconds();
+    return current_time;
+}
 
 int main(int argc,char *argv[])
 {
@@ -42,9 +50,9 @@ int main(int argc,char *argv[])
     Nvilidar_UserConfigTypeDef cfg;
 
     //sync para form rviz 
-    READ_PARAM(std::string, "serialport_name", (cfg.serialport_name), "/dev/ttyUSB0");
-    READ_PARAM(int, "serialport_baud", (cfg.serialport_baud), 115200);
-    READ_PARAM(std::string, "frame_id", (cfg.frame_id), "laser_link");
+    READ_PARAM(std::string, "serialport_name", (cfg.serialport_name), "/dev/nvilidar");
+    READ_PARAM(int, "serialport_baud", (cfg.serialport_baud), 230400);
+    READ_PARAM(std::string, "frame_id", (cfg.frame_id), "laser_frame");
     READ_PARAM(bool, "resolution_fixed", (cfg.resolution_fixed), true);
     READ_PARAM(bool, "auto_reconnect", (cfg.auto_reconnect), false);
     READ_PARAM(bool, "reversion", (cfg.reversion), false);
@@ -58,20 +66,10 @@ int main(int argc,char *argv[])
 	READ_PARAM(bool, "angle_offset_change_flag", (cfg.angle_offset_change_flag), false);
     READ_PARAM(double, "angle_offset", (cfg.angle_offset), 0.0);
     READ_PARAM(std::string, "ignore_array_string", (cfg.ignore_array_string), "");
-	//filter 
-	READ_PARAM(bool, "filter_sliding_enable", (cfg.filter_para.sliding_filter.enable), true);
-    READ_PARAM(bool, "filter_tail_enable", (cfg.filter_para.tail_filter.enable), true);
-	READ_PARAM(int, "filter_sliding_jump_threshold", (cfg.filter_para.sliding_filter.jump_threshold), 50);
-	READ_PARAM(bool, "filter_sliding_max_range_flag", (cfg.filter_para.sliding_filter.max_range_flag), false);
-    READ_PARAM(int, "filter_sliding_max_range", (cfg.filter_para.sliding_filter.max_range), 8000);
-    READ_PARAM(int, "filter_sliding_window", (cfg.filter_para.sliding_filter.window), 3);
-    READ_PARAM(bool, "filter_tail_distance_limit_flag", (cfg.filter_para.tail_filter.distance_limit_flag), false);
-    READ_PARAM(int, "filter_tail_distance_limit_value", (cfg.filter_para.tail_filter.distance_limit_value), 8000);
-    READ_PARAM(int, "filter_tail_level", (cfg.filter_para.tail_filter.level), 8);
-    READ_PARAM(int, "filter_tail_neighbors", (cfg.filter_para.tail_filter.neighbors), 0);
-
+    READ_PARAM(bool, "log_enable_flag", (cfg.log_enable_flag), true);
+    
     //choice use serialport
-    vp100_lidar::LidarProcess laser(cfg.serialport_name,cfg.serialport_baud);
+    vp100_lidar::LidarProcess laser(cfg.serialport_name,cfg.serialport_baud,get_stamp_callback,1e9);
 
     //reload lidar parameter 
     laser.LidarReloadPara(cfg); 
@@ -109,8 +107,8 @@ int main(int argc,char *argv[])
 					auto scan_msg = std::make_shared<sensor_msgs::msg::LaserScan>();
                     size_t avaliable_count = 0;
 
-					scan_msg->header.stamp.sec = RCL_NS_TO_S(scan.stamp);
-					scan_msg->header.stamp.nanosec =  scan.stamp - RCL_S_TO_NS(scan_msg->header.stamp.sec);
+					scan_msg->header.stamp.sec = RCL_NS_TO_S(scan.stamp_start);
+					scan_msg->header.stamp.nanosec =  scan.stamp_start - RCL_S_TO_NS(scan_msg->header.stamp.sec);
 					scan_msg->header.frame_id = cfg.frame_id;
 					scan_msg->angle_min = scan.config.min_angle;
 					scan_msg->angle_max = scan.config.max_angle;
@@ -127,8 +125,8 @@ int main(int argc,char *argv[])
 					scan_msg->intensities.resize(size);
                 	avaliable_count = 0;
 					for(size_t i=0; i < scan.points.size(); i++) {
-						int index = std::ceil((scan.points[i].angle - scan.config.min_angle)/scan.config.angle_increment);
-						if(index >=0 && index < size) 
+						size_t index = std::ceil((scan.points[i].angle - scan.config.min_angle)/scan.config.angle_increment);
+						if(index < size) 
 						{
                         	avaliable_count++;
 
