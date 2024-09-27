@@ -119,11 +119,12 @@ class QrCodeControl(Node):
 def main(args=None):
     rclpy.init(args=args)
     qrcode_control = QrCodeControl()
-    while rclpy.ok():
-        rclpy.spin(qrcode_control)
-
-    qrcode_control.destroy_node()
-    rclpy.shutdown()
+    try:
+        while rclpy.ok():
+            rclpy.spin_once(qrcode_control)
+    except KeyboardInterrupt:
+        qrcode_control.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

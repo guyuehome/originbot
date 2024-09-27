@@ -63,9 +63,12 @@ class Follower(Node):
 def main(args=None):
     rclpy.init(args=args)    
     follower = Follower()
-    rclpy.spin(follower)
-    follower.destroy_node()
-    rclpy.shutdown()
+    try:
+        while rclpy.ok():
+            rclpy.spin_once(follower)
+    except KeyboardInterrupt:
+        follower.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

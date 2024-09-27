@@ -28,12 +28,12 @@ class VlpR(Node):
         
         self.bridge = CvBridge()
         self.vlp_image_msg = Image()
-        self.image_sub = self.create_subscription(CompressedImage,"/image_out/compressed",self.image_callback,10)
+        self.image_sub = self.create_subscription(Image,"/vlpr_node/image_sub",self.image_callback,10)
         self.vlp_image_pub = self.create_publisher(Image, "/vlp_image",10)
     
     def image_callback(self, data):
         try:
-            image = self.bridge.compressed_imgmsg_to_cv2(data)
+            image = self.bridge.imgmsg_to_cv2(data)
             self.vlp_recognize(image)
             self.vlp_image_pub.publish(self.vlp_image_msg)
         except CvBridgeError as e:
@@ -106,5 +106,9 @@ DBNET_PATH = pkg_resources.resource_filename('vlpt_package.dbnet', 'dbnet_simp.b
 def main(args=None):
     rclpy.init(args=args)
     node = VlpR(DBNET_PATH, CRNN_PATH)
-    rclpy.spin(node)
-    rclpy.shutdown()
+    try:
+        while rclpy.ok():
+            rclpy.spin_once(node)
+    except KeyboardInterrupt:
+        node.destroy_node()
+        rclpy.shutdown()

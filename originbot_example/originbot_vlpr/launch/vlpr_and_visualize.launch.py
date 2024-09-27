@@ -27,78 +27,79 @@ from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
-    mipi_cam_device_arg = DeclareLaunchArgument(
-        'device',
-        default_value='GC4663',
-        description='mipi camera device')
-
-    mipi_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('mipi_cam'),
-                'launch/mipi_cam.launch.py')),
-        launch_arguments={
-            'mipi_image_width': '960',
-            'mipi_image_height': '544',
-            'mipi_io_method': 'shared_mem',
-            'mipi_video_device': LaunchConfiguration('device')
-        }.items()
+    usb_cam = Node(
+        package='hobot_usb_cam',
+        executable='hobot_usb_cam',
+        name='hobot_usb_cam',
+        parameters=[
+            {"camera_calibration_file_path": "/opt/tros/lib/hobot_usb_cam/config/usb_camera_calibration.yaml"},
+            {"frame_id": "default_usb_cam"},
+            {"framerate": 30},
+            {'image_width': 640},
+            {'image_height': 480},
+            {"io_method": "mmap"},
+            {"pixel_format": "mjpeg"},
+            {"video_device": "/dev/video8"},
+            {"zero_copy": True}
+        ],
+        arguments=['--ros-args', '--log-level', 'error']
     )
 
-    # nv12->jpeg
-    jpeg_codec_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('hobot_codec'),
-                'launch/hobot_codec_encode.launch.py')),
-        launch_arguments={
-            'codec_in_mode': 'shared_mem',
-            'codec_out_mode': 'ros',
-            'codec_sub_topic': '/hbmem_img',
-            'codec_pub_topic': '/image_jpeg'
-        }.items()
-    )
-    hobot_codec_node = Node(
+    # mjpeg->bgr8
+    bgr8codec = Node(
         package='hobot_codec',
         executable='hobot_codec_republish',
         output='screen',
         parameters=[
                 {"channel": 1},
-                {"in_mode": "ros"},
-                {"in_format": "bgr8"},
+                {"in_mode": "shared_mem"},
+                {"in_format": "jpeg"},
+                {"sub_topic": "/hbmem_img"},
                 {"out_mode": "ros"},
-                {"out_format": "jpeg"},
-                {"sub_topic": "/vlp_image"},
-                {"pub_topic": "/image_jpeg"}
+                {"out_format": "bgr8"},
+                {"pub_topic": "/image_raw"}
         ],
         arguments=['--ros-args', '--log-level', 'error']
     )
-    websocket_node = Node(
-        package='websocket',
-        executable='websocket',
-        output='screen',
-        parameters=[
-                {"image_topic": "/image_jpeg"},
-                {"image_type": "mjpeg"},
-                {"only_show_image": True}
-        ],
-        arguments=['--ros-args', '--log-level', 'error']
-    )
-    image_transport_node = Node(
-        package="utils",
-        executable="image_transport_node"
-        )
-    
+
     vlpr_node = Node(
         package="originbot_vlpr",
-        executable="vlpr_node"
-        )
+        executable="vlpr_node",
+        remappings=[("/vlpr_node/image_sub","/image_raw")],
+        arguments=['--ros-args', '--log-level', 'info']
+    )
+
+    hobot_codec_node = Node(
+        package='hobot_codec',
+        executable='hobot_codec_republish',
+        output='screen',
+        parameters=[
+            {"channel": 1},
+            {"in_mode": "ros"},
+            {"in_format": "bgr8"},
+            {"out_mode": "ros"},
+            {"out_format": "jpeg"},
+            {"sub_topic": "/vlp_image"},
+            {"pub_topic": "/image_jpeg"}
+        ],
+        arguments=['--ros-args', '--log-level', 'error']
+    )
+    # web
+    web_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('websocket'),
+                'launch/websocket.launch.py')),
+        launch_arguments={
+            'websocket_image_topic': '/image_jpeg',
+            'websocket_only_show_image': 'True'
+        }.items()
+    )
+
     return LaunchDescription([
-        mipi_cam_device_arg,
-        mipi_node,
-        # jpeg_codec_node,
-        image_transport_node,
+        usb_cam,
+        bgr8codec,
+        vlpr_node,
         hobot_codec_node,
-        websocket_node,
-        vlpr_node
+        web_node
     ])

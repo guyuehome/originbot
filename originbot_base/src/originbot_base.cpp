@@ -19,7 +19,7 @@ limitations under the License.
 OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
 {
     // 加载参数
-    std::string port_name="ttyS3";    
+    std::string port_name="ttyS3";
     this->declare_parameter("port_name");           //声明及获取串口号参数
     this->get_parameter_or<std::string>("port_name", port_name, "ttyS3");
     this->declare_parameter("correct_factor_vx");   //声明及获取线速度校正参数
@@ -50,6 +50,7 @@ OriginbotBase::OriginbotBase(std::string nodeName) : Node(nodeName)
     cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&OriginbotBase::cmd_vel_callback, this, _1));
     
     // 创建控制蜂鸣器和LED的服务
+    this->buzzer_mute_ = getenv("buzzer_mute");// export buzzer_mute=1/unset buzzer_mute
     buzzer_service_ = this->create_service<originbot_msgs::srv::OriginbotBuzzer>("originbot_buzzer", std::bind(&OriginbotBase::buzzer_callback, this, _1, _2));
     led_service_ = this->create_service<originbot_msgs::srv::OriginbotLed>("originbot_led", std::bind(&OriginbotBase::led_callback, this, _1, _2));
     left_pid_service_ = this->create_service<originbot_msgs::srv::OriginbotPID>("originbot_left_pid", std::bind(&OriginbotBase::left_pid_callback, this, _1, _2));
@@ -527,6 +528,15 @@ void OriginbotBase::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr 
 
 bool OriginbotBase::buzzer_control(bool on)
 {
+    if(this->buzzer_mute_)
+    {
+        if(on)
+        {
+            RCLCPP_INFO(this->get_logger(), "buzzer is muted.");
+            printf("buzzer is muted.");
+        }
+        on=false;
+    }
     DataFrame configFrame;
 
     // 封装蜂鸣器指令的数据帧

@@ -15,39 +15,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch import LaunchDescription
-import os
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python import get_package_share_directory
-from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
-
-    web_service_launch_include = IncludeLaunchDescription(
+    usb_cam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
-                get_package_share_directory('websocket'),
-                'launch/websocket_service.launch.py'))
+                get_package_share_directory('originbot_bringup'),
+                    'launch/camera_internal.launch.py')),
+        launch_arguments={
+            'usb_image_width': '640',
+            'usb_image_height': '480'
+        }.items()
     )
-    mipi_cam_node = Node(
-        package='mipi_cam',
-        executable='mipi_cam',
-        output='screen',
-        parameters=[
-            {"mipi_camera_calibration_file_path": "/opt/tros/lib/mipi_cam/config/GC4663_calibration.yaml"},
-            {"out_format": "nv12"},
-            {"image_width": 640},
-            {"image_height": 480},
-            {"io_method": "shared_mem"},
-            {"video_device": "GC4663"}
-            ],
+    image_transport_node = Node(
+        package='utils',
+        executable='image_transport_node',
         arguments=['--ros-args', '--log-level', 'error']
     )
-
+    qr_detection_node = Node(
+        package='qr_code_detection',
+        executable='qr_detection_node',
+        remappings=[("/qrcode_detected/image_sub","/image_out/compressed")],
+        arguments=['--ros-args', '--log-level', 'info']
+    )
     hobot_codec_node = Node(
         package='hobot_codec',
         executable='hobot_codec_republish',
@@ -63,32 +60,21 @@ def generate_launch_description():
         ],
         arguments=['--ros-args', '--log-level', 'error']
     )
-    websocket_node = Node(
-        package='websocket',
-        executable='websocket',
-        output='screen',
-        parameters=[
-                {"image_topic": "/image_jpeg"},
-                {"image_type": "mjpeg"},
-                {"only_show_image": True},
-                {"smart_topic": "/ai_msg_mono2d_trash_detection"},
-        ],
-        arguments=['--ros-args', '--log-level', 'error']
-    )
-    image_transport_node = Node(
-        package='utils',
-        executable='image_transport_node',
-        arguments=['--ros-args', '--log-level', 'error']
-    )
-    qr_detection_node = Node(
-        package='qr_code_detection',
-        executable='qr_detection_node',
+    # web
+    web_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('websocket'),
+                'launch/websocket.launch.py')),
+        launch_arguments={
+            'websocket_image_topic': '/image_jpeg',
+            'websocket_only_show_image': 'True'
+        }.items()
     )
     return LaunchDescription([
-        web_service_launch_include,
-        mipi_cam_node,
+        usb_cam,
         image_transport_node,
         qr_detection_node,
         hobot_codec_node,
-        websocket_node,
+        web_node
     ])
