@@ -7,7 +7,7 @@ OriginBot is an open-source robot kit and a community-driven project aimed at en
 
 ### Official Website
 
-[https://www.originbot.org/](https://www.originbot.org/)
+[https://www.originbot.org/en/](https://www.originbot.org/en/)
 
 ### Source Code Repositories
 
@@ -19,7 +19,7 @@ OriginBot is an open-source robot kit and a community-driven project aimed at en
 
 ### Community Forum
 
-[https://guyuehome.com/Bubble/circleDetail/id/95](https://guyuehome.com/Bubble/circleDetail/id/95)
+[https://www.guyuehome.com/interlocution](https://www.guyuehome.com/interlocution)
 
 
 ## Software Architecture
